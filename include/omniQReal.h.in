@@ -1,0 +1,60 @@
+/* 
+ * $TSUKUBA_Release: Omni Compiler Version 0.9.1 $
+ * $TSUKUBA_Copyright:
+ *  Copyright (C) 2010-2014 University of Tsukuba, 
+ *  	      2012-2014  University of Tsukuba and Riken AICS
+ *  
+ *  This software is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU Lesser General Public License version
+ *  2.1 published by the Free Software Foundation.
+ *  
+ *  Please check the Copyright and License information in the files named
+ *  COPYRIGHT and LICENSE under the top  directory of the Omni Compiler
+ *  Software release kit.
+ *  
+ *  * The specification of XcalableMP has been designed by the XcalableMP
+ *    Specification Working Group (http://www.xcalablemp.org/).
+ *  
+ *  * The development of this software was partially supported by "Seamless and
+ *    Highly-productive Parallel Programming Environment for
+ *    High-performance computing" project funded by Ministry of Education,
+ *    Culture, Sports, Science and Technology, Japan.
+ *  $
+ */
+/* 
+ * $Id$
+ * $RWC_Release$
+ * $RWC_Copyright$
+ */
+#ifndef _OMNIQREAL_H
+#define _OMNIQREAL_H
+
+#ifdef ENABLE_QREAL
+#include "gmp.h"
+
+typedef struct {
+    int _mp_prec;
+    int _mp_size;
+    mp_exp_t _mp_exp;
+#ifndef __OMNI_FRONTEND_INCORE__
+    @omniQRealFillGap@
+#endif /* __OMNI_FRONTEND_INCORE__ */
+    mp_limb_t *_mp_d;
+    mp_limb_t _omLimb[@omniQRealPrecInLimb@];
+} _omQReal_t;
+
+#else
+typedef struct {
+    int _mp_prec;
+    int _mp_size;
+    @omniExpT@ _mp_exp;
+#ifndef __OMNI_FRONTEND_INCORE__
+    @omniQRealFillGap@
+#endif /* __OMNI_FRONTEND_INCORE__ */
+    @omniLimbT@ *_mp_d;
+    @omniLimbT@ _omLimb[@omniQRealPrecInLimb@];
+} _omQReal_t;
+#endif /* ENABLE_QREAL */
+
+#endif /* _OMNIQREAL_H */
+

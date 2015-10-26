@@ -1,0 +1,27 @@
+mutex_pthread_OBJS= ompc_thread._mutex_pthread_o ompc_lock._mutex_pthread_o ompc_lib._mutex_pthread_o ompc_runtime._mutex_pthread_o timer._mutex_pthread_o ompf_runtime._mutex_pthread_o ompf_thread._mutex_pthread_o
+
+.c._mutex_pthread_o:
+	@rm -f $@ $*.tmp.o
+	$(CC) $(CFLAGS) -D_REENTRANT  -DUSE_PTHREAD -c $< -o $*.tmp.o
+	mv $*.tmp.o $@
+
+.s._mutex_pthread_o:
+	@rm -f $@ $*.tmp.o
+	$(CC) $(CFLAGS) -D_REENTRANT  -DUSE_PTHREAD -c $< -o $*.tmp.o
+	mv $*.tmp.o $@
+
+libompc_mutex_pthread.a:	$(mutex_pthread_OBJS)
+	@rm -f $@
+	$(AR) libompc_mutex_pthread.a *._mutex_pthread_o
+	$(RANLIB) $@
+
+.F90.o:
+	$(FC) $(FCFLAGS) -c $<
+
+.SUFFIXES:	.c .h .o .a .s .F90  ._mutex_pthread_o
+
+DEFAULT_LIB=libompc_mutex_pthread.a
+
+LIB_TARGET= libompc_mutex_pthread.a
+doAllLib:	$(LIB_TARGET)
+

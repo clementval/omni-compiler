@@ -1,0 +1,109 @@
+static char rcsid[] = "$Id$";
+/* 
+ * $TSUKUBA_Release: Omni Compiler Version 0.9.1 $
+ * $TSUKUBA_Copyright:
+ *  Copyright (C) 2010-2014 University of Tsukuba, 
+ *  	      2012-2014  University of Tsukuba and Riken AICS
+ *  
+ *  This software is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU Lesser General Public License version
+ *  2.1 published by the Free Software Foundation.
+ *  
+ *  Please check the Copyright and License information in the files named
+ *  COPYRIGHT and LICENSE under the top  directory of the Omni Compiler
+ *  Software release kit.
+ *  
+ *  * The specification of XcalableMP has been designed by the XcalableMP
+ *    Specification Working Group (http://www.xcalablemp.org/).
+ *  
+ *  * The development of this software was partially supported by "Seamless and
+ *    Highly-productive Parallel Programming Environment for
+ *    High-performance computing" project funded by Ministry of Education,
+ *    Culture, Sports, Science and Technology, Japan.
+ *  $
+ */
+/* parallel structure 003:
+ * "parallel if(false)" test
+ */
+
+#include <omp.h>
+#include "omni.h"
+
+
+int	thds;
+int	errors = 0;
+
+
+int
+sameas (int v)
+{
+  return v;
+}
+
+
+void
+check_parallel ()
+{
+  if (omp_in_parallel () != 0) {
+    #pragma omp critical
+    {
+      ERROR (errors);
+    }
+  }
+  if (omp_get_num_threads () != 1) {
+    #pragma omp critical
+    {
+      ERROR (errors);
+    }
+  }
+}
+
+
+
+main ()
+{
+  double dfail = 0.0;
+  int    fail = 0;
+
+
+  thds = omp_get_max_threads ();
+  if (thds == 1) {
+    printf ("should be run this program on multi threads.\n");
+    exit (0);
+  }
+  omp_set_dynamic (0);
+
+
+  check_parallel ();		      /* not parallel */
+
+  #pragma omp parallel if (0)
+  check_parallel ();		      /* here is not parallel */
+
+  check_parallel ();		      /* not parallel */
+
+  #pragma omp parallel if (dfail)
+  {				      /* this block is not parallel */
+    check_parallel();
+  }
+
+  check_parallel ();		      /* not parallel */
+
+  #pragma omp parallel if (fail == 1)
+  if (!fail) {			      /* this if-block is not parallel */
+    check_parallel ();
+  }
+
+  check_parallel ();		      /* not parallel */
+
+  #pragma omp parallel if (sameas(fail))
+  check_parallel ();		      /* here is not parallel */
+
+
+  if (errors == 0) {
+    printf ("parallel 003 : SUCCESS\n");
+    return 0;
+  } else {
+    printf ("parallel 003 : FAILED\n");
+    return 1;
+  }
+}
