@@ -1,30 +1,14 @@
 /* 
- * $TSUKUBA_Release: Omni Compiler Version 0.9.1 $
+ * $TSUKUBA_Release: Omni OpenMP Compiler 3 $
  * $TSUKUBA_Copyright:
- *  Copyright (C) 2010-2014 University of Tsukuba, 
- *  	      2012-2014  University of Tsukuba and Riken AICS
- *  
- *  This software is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU Lesser General Public License version
- *  2.1 published by the Free Software Foundation.
- *  
- *  Please check the Copyright and License information in the files named
- *  COPYRIGHT and LICENSE under the top  directory of the Omni Compiler
- *  Software release kit.
- *  
- *  * The specification of XcalableMP has been designed by the XcalableMP
- *    Specification Working Group (http://www.xcalablemp.org/).
- *  
- *  * The development of this software was partially supported by "Seamless and
- *    Highly-productive Parallel Programming Environment for
- *    High-performance computing" project funded by Ministry of Education,
- *    Culture, Sports, Science and Technology, Japan.
+ *  PLEASE DESCRIBE LICENSE AGREEMENT HERE
  *  $
  */
 package exc.openmp;
 
 import exc.object.*;
 import exc.util.MachineDep;
+import exc.xcodeml.XcodeMLtools;
 import exc.block.*;
 
 import java.io.File;
@@ -47,7 +31,9 @@ public class OMPtransPragma
     public String currentThreadBarrierFunc;
     public String doParallelFunc;
     public String doParallelIfFunc;
-
+    public String parallelTaskFunc;
+    public String parallelTaskIfFunc;
+    	
     public String defaultShedFunc;
     public String blockShedFunc;
     public String cyclicShedFunc;
@@ -111,6 +97,7 @@ public class OMPtransPragma
     public final String FlboundFunc = "lbound";
     public final String FuboundFunc = "ubound";
     public final String FdoParallelWrapperPrefix = "ompf_dop";
+    public final String FParallelTaskWrapperPrefix = "ompf_ptask";
     public final String FdummyFunc = "ompf_func";
     public final String FgetThdprvFuncPrefix = "ompf_getthdprv_";
     
@@ -204,6 +191,9 @@ public class OMPtransPragma
             currentThreadBarrierFunc = "ompf_current_thread_barrier";
             doParallelFunc = "ompf_do_parallel";
             doParallelIfFunc = "ompf_do_parallel_if";
+
+            parallelTaskFunc = "ompf_parallel_task";
+            parallelTaskIfFunc = "ompf_parallel_task_if";
     
             defaultShedFunc = "ompf_default_sched";
             blockShedFunc = "ompf_static_bsched";
@@ -338,7 +328,7 @@ public class OMPtransPragma
     Block transPragma(PragmaBlock pb)
     {
         OMPinfo i = (OMPinfo)pb.getProp(OMP.prop);
-
+        OMP.debug("Pragma:"+i.pragma);
         switch(i.pragma) {
         case BARRIER: /* barrier */
             return transBarrier(pb, i);
@@ -347,6 +337,8 @@ public class OMPtransPragma
             return transParallelRegion(pb, i);
 
         case FOR: /* for <clause_list> */
+	    if(pb.getBody().getHead().Opcode() == Xcode.OMP_PRAGMA)
+		return null;
             return transFor(pb, i);
 
         case SECTIONS: /* sections <clause_list> */
@@ -369,10 +361,15 @@ public class OMPtransPragma
 
         case ORDERED:
             return transOrdered(pb, i);
-
+        
+        case TASK:
+        	return transTaskRegion(pb,i);
+	
+        case SIMD:
+        	return null;
         default:
-            // OMP.fatal("unknown pragma");
-            // ignore it
+             OMP.fatal("unknown pragma");
+//             ignore it
             return null;
         }
     }
@@ -387,6 +384,29 @@ public class OMPtransPragma
         if(XmOption.isLanguageC())
             return transCparallelRegion(b, i);
         return transFparallelRegion(b, i);
+    }
+    
+    public Block transCparallelRegion(PragmaBlock b, OMPinfo i)
+    {
+        Ident func_id = current_def.declStaticIdent(
+            env.genSym(OMPfuncPrefix), Xtype.Function(Xtype.voidType));
+        Block bp;
+
+        // move blocks to body
+        BlockList body = Bcons.emptyBody(i.getIdList(), null);
+        addDataSetupBlock(body, i);
+        threadprivateCSetup(body, i);
+        body.add(Bcons.COMPOUND(b.getBody()));
+        bp = dataUpdateBlock(i);
+        if(bp != null)
+            body.add(bp);
+        addCcalleeBlock(body, func_id, i);
+        
+        // new block to be replaced
+        BlockList ret_body = Bcons.emptyBody();
+        addCcallerBlock(ret_body, func_id, i);
+        
+        return Bcons.COMPOUND(ret_body);
     }
     
     private void addCcallerBlock(BlockList ret_body, Ident func_id, OMPinfo i)
@@ -448,29 +468,6 @@ public class OMPtransPragma
             param_id_list, null, body.toXobject()));
     }
 
-    public Block transCparallelRegion(PragmaBlock b, OMPinfo i)
-    {
-        Ident func_id = current_def.declStaticIdent(
-            env.genSym(OMPfuncPrefix), Xtype.Function(Xtype.voidType));
-        Block bp;
-
-        // move blocks to body
-        BlockList body = Bcons.emptyBody(i.getIdList(), null);
-        addDataSetupBlock(body, i);
-        threadprivateCSetup(body, i);
-        body.add(Bcons.COMPOUND(b.getBody()));
-        bp = dataUpdateBlock(i);
-        if(bp != null)
-            body.add(bp);
-        addCcalleeBlock(body, func_id, i);
-        
-        // new block to be replaced
-        BlockList ret_body = Bcons.emptyBody();
-        addCcallerBlock(ret_body, func_id, i);
-        
-        return Bcons.COMPOUND(ret_body);
-    }
-
     private void addFcallerBlock(BlockList ret_body, Ident func_id, Ident dop_func_id, OMPinfo i)
     {
         List<Xobject> region_args = i.getRegionArgs();
@@ -490,6 +487,30 @@ public class OMPtransPragma
         
         ret_body.add(bblock);
     }
+    
+    private void addFtaskCallerBlock(BlockList ret_body, Ident func_id, Ident dop_func_id, OMPinfo i)
+    {
+        List<Xobject> region_args = i.getRegionArgs();
+        BasicBlock bblock = new BasicBlock();
+        XobjList funcArgs = Xcons.List(func_id.getAddr());
+        
+        for(Xobject a : region_args) {
+            funcArgs.add(a);
+        }
+
+        if(i.getNumThreads() != null)
+            bblock.add(OMPfuncIdent(setNumThreadsFunc).Call(Xcons.List(i.getNumThreads())));
+        
+        if(i.hasFinalExpr())
+    		funcArgs.insert(i.getFinalExpr());
+        if(i.hasIfExpr())
+            funcArgs.insert(i.getIfExpr());
+        
+        bblock.add(dop_func_id.Call(funcArgs));
+        
+        ret_body.add(bblock);
+    }
+
     
     private void addFcalleeBlock(Ident func_id, Ident dop_func_id, BlockList body,
         XobjList id_list, XobjList decls, BlockList orgBody, OMPinfo i)
@@ -585,110 +606,239 @@ public class OMPtransPragma
     }
     
     private void addFdoParallelWrapperBlock(Ident dop_func_id, XobjList func_params,
-        BlockList orgBody, OMPinfo i)
-    {
-        XobjList funcArgs = Xcons.List();
-        int nargs = func_params.Nargs();
-        
-        for(Xobject a : func_params) {
-            //argument of character type passed with character length to runtime function
-            if(a.Type().isFcharacter())
-                ++nargs;
-            funcArgs.add(a);
-        }
-        
-        if(XmOption.isLanguageF() && nargs > OMPtransPragma.F_MAX_PARALLEL_PARAMS) {
-            XmLog.fatal(orgBody.getHeadLineNo(), "too many variables in parallel region.");
-        }
-        
-        Ident fid = Ident.FidentNotExternal(FdummyFunc, Xtype.FsubroutineType);
-        func_params.insert(fid);
-        funcArgs.insert(fid);
-
-        Xobject cond = null;
-        if(i.hasIfExpr()) {
-            cond = Ident.Fident(COND_VAR, Xtype.FlogicalType);
-            func_params.insert(cond);
-        } else {
-            cond = Xcons.FlogicalConstant(true);
-        }
-        funcArgs.insert(cond);
-        
-        XobjList body_id_list = Xcons.List();
-        HashMap<String, Ident> nameMap = new HashMap<String, Ident>();
-        FidentCollector ic = new FidentCollector(orgBody, nameMap);
-        for(Xobject a : func_params) {
-            if(a == fid) {
-                a = a.copy();
-                a.setType(Xtype.FexternalSubroutineType);
+            BlockList orgBody, OMPinfo i)
+        {
+            XobjList funcArgs = Xcons.List();
+            int nargs = func_params.Nargs();
+            OMP.debug("nargs 0=" + nargs);
+            
+            for(Xobject a : func_params) {
+                //argument of character type passed with character length to runtime function
+                OMP.debug("func_params =" + a.Type().toString());
+                if(a.Type().isFcharacter())
+                    ++nargs;
+                funcArgs.add(a);
             }
-            body_id_list.add(a);
-            ic.collectIdentInIdent((Ident)a); 
-        }
-        for(Ident id : nameMap.values())
-            body_id_list.add(id);
-        
-        completeFstructTypeSymbol(orgBody.getIdentList(), body_id_list);
+            OMP.debug("nargs=" + nargs);
 
-        //funcArgs.insert(Xcons.IntConstant(nargs));
-        BlockList body = new BlockList();
+            if(XmOption.isLanguageF() && nargs > OMPtransPragma.F_MAX_PARALLEL_PARAMS) {
+                XmLog.fatal(orgBody.getHeadLineNo(), "too many variables in parallel region.");
+            }
+            
+            Ident fid = Ident.FidentNotExternal(FdummyFunc, Xtype.FsubroutineType);
+            func_params.insert(fid);
+            funcArgs.insert(fid);
 
-        // There are two kind of do_parallel functions.
-        // 1. ompf_do_parallel_(int nargs, cfunc f, ...)
-        //
-        // 2. ompf_do_parallel_1_(cfunc f, void *a1)
-        //    ompf_do_parallel_2_(cfunc f, void *a1, void *a2)
-        //    ...
-        //    ompf_do_parallel_64_(cfunc f, void *a1, void *a2, ... , void *a64)
-        //
-        // va_list is used in ompf_do_parallel_ and is not used in ompf_do_parallel_N_.
-        // In x86-64 with gfortran, it is likely to fail to call function in which va_list is used.
-        // So we call ompf_do_parallel_N_ instead of ompf_do_parallel_.
-        
-        Ident idDoParallel = Ident.FidentNotExternal(
-            doParallelFunc + "_" + nargs,
-            Xtype.FsubroutineType);
-        body.add(idDoParallel.Call(funcArgs));
-        
-        ((FunctionType)dop_func_id.Type()).setFuncParamIdList(func_params);
-        XobjList decls = Xcons.List();
-        nameMap.clear();
-        ic.copyDecls(body_id_list, decls, body, i, true);
-        
-        XobjectDef def = XobjectDef.Func(dop_func_id,
-            body_id_list, decls, body.toXobject());
-        
-        current_def.insertBeforeThis(def);
+            Xobject cond = null;
+            if(i.hasIfExpr()) {
+                cond = Ident.Fident(COND_VAR, Xtype.FlogicalType);
+                func_params.insert(cond);
+            } else {
+                cond = Xcons.FlogicalConstant(true);
+            }
+            funcArgs.insert(cond);
 
-        // add interface of runtime function
-        XobjList dopar_params = (XobjList)idDoParallel.Type().getFuncParam();
-        if(dopar_params == null) {
-            dopar_params = Xcons.List();
-            ((FunctionType)idDoParallel.Type()).setFuncParam(dopar_params);
-        }
-        XobjList paramDecls = Xcons.List();
-        //Ident dummyNarg = Ident.Fident(NARG_VAR, Xtype.FintType);
-        Ident dummyFunc = Ident.FidentNotExternal(FdummyFunc, Xtype.FsubroutineType);
-        //paramDecls.add(Xcons.List(Xcode.VAR_DECL, dummyNarg));
-        //dopar_params.add(dummyNarg);
-        if(!i.hasIfExpr()) {
-            Ident c = Ident.Fident("cond", Xtype.FlogicalType);
-            paramDecls.add(Xcons.List(Xcode.VAR_DECL, c));
-            dopar_params.add(c);
-        }
-        paramDecls.add(Xcons.FinterfaceFunctionDecl(dummyFunc, null));
-        for(Xobject a : func_params) {
-            a = convertFidentTypeForParamDecl((Ident)a, i);
-            paramDecls.add(Xcons.List(Xcode.VAR_DECL, a));
-            dopar_params.add(a);
+            
+            XobjList body_id_list = Xcons.List();
+            HashMap<String, Ident> nameMap = new HashMap<String, Ident>();
+            FidentCollector ic = new FidentCollector(orgBody, nameMap);
+            for(Xobject a : func_params) {
+                if(a == fid) {
+                    a = a.copy();
+                    a.setType(Xtype.FexternalSubroutineType);
+                }
+                body_id_list.add(a);
+                ic.collectIdentInIdent((Ident)a); 
+            }
+            for(Ident id : nameMap.values())
+                body_id_list.add(id);
+            
+            completeFstructTypeSymbol(orgBody.getIdentList(), body_id_list);
+
+            //funcArgs.insert(Xcons.IntConstant(nargs));
+            BlockList body = new BlockList();
+
+            // There are two kind of do_parallel functions.
+            // 1. ompf_do_parallel_(int nargs, cfunc f, ...)
+            //
+            // 2. ompf_do_parallel_1_(cfunc f, void *a1)
+            //    ompf_do_parallel_2_(cfunc f, void *a1, void *a2)
+            //    ...
+            //    ompf_do_parallel_64_(cfunc f, void *a1, void *a2, ... , void *a64)
+            //
+            // va_list is used in ompf_do_parallel_ and is not used in ompf_do_parallel_N_.
+            // In x86-64 with gfortran, it is likely to fail to call function in which va_list is used.
+            // So we call ompf_do_parallel_N_ instead of ompf_do_parallel_.
+            
+            Ident idDoParallel = Ident.FidentNotExternal(
+                doParallelFunc + "_" + nargs,
+                Xtype.FsubroutineType);
+            body.add(idDoParallel.Call(funcArgs));
+            
+            ((FunctionType)dop_func_id.Type()).setFuncParamIdList(func_params);
+            XobjList decls = Xcons.List();
+            nameMap.clear();
+            ic.copyDecls(body_id_list, decls, body, i, true);
+            
+            XobjectDef def = XobjectDef.Func(dop_func_id,
+                body_id_list, decls, body.toXobject());
+            
+            current_def.insertBeforeThis(def);
+
+            // add interface of runtime function
+            XobjList dopar_params = (XobjList)idDoParallel.Type().getFuncParam();
+            if(dopar_params == null) {
+                dopar_params = Xcons.List();
+                ((FunctionType)idDoParallel.Type()).setFuncParam(dopar_params);
+            }
+            XobjList paramDecls = Xcons.List();
+            //Ident dummyNarg = Ident.Fident(NARG_VAR, Xtype.FintType);
+            Ident dummyFunc = Ident.FidentNotExternal(FdummyFunc, Xtype.FsubroutineType);
+            //paramDecls.add(Xcons.List(Xcode.VAR_DECL, dummyNarg));
+            //dopar_params.add(dummyNarg);
+            if(!i.hasIfExpr()) {
+                Ident c = Ident.Fident("cond", Xtype.FlogicalType);
+                paramDecls.add(Xcons.List(Xcode.VAR_DECL, c));
+                dopar_params.add(c);
+            }
+            
+            paramDecls.add(Xcons.FinterfaceFunctionDecl(dummyFunc, null));
+            for(Xobject a : func_params) {
+                a = convertFidentTypeForParamDecl((Ident)a, i);
+                paramDecls.add(Xcons.List(Xcode.VAR_DECL, a));
+                dopar_params.add(a);
+            }
+            
+            copyFuseDecl(orgBody.getDecls(), paramDecls);
+            
+            def.getFuncDecls().add(
+                Xcons.FinterfaceFunctionDecl(idDoParallel, paramDecls));
         }
         
-        copyFuseDecl(orgBody.getDecls(), paramDecls);
+    private void addFtaskWrapperBlock(Ident dop_func_id, XobjList func_params,
+            BlockList orgBody, OMPinfo i)
+        {
+            XobjList funcArgs = Xcons.List();
+            int nargs = func_params.Nargs();
+            OMP.debug("nargs 0="+nargs);
+
+            for(Xobject a : func_params) {
+                //argument of character type passed with character length to runtime function
+                OMP.debug("func_params =" + a.Type().toString());
+                if(a.Type().isFcharacter())
+                    ++nargs;
+                funcArgs.add(a);
+            }
+            OMP.debug("nargs ="+nargs);
+            if(XmOption.isLanguageF() && nargs > OMPtransPragma.F_MAX_PARALLEL_PARAMS) {
+                XmLog.fatal(orgBody.getHeadLineNo(), "too many variables in parallel region.");
+            }
+            
+            Ident fid = Ident.FidentNotExternal(FdummyFunc, Xtype.FsubroutineType);
+            func_params.insert(fid);
+            funcArgs.insert(fid);
+
+            Xobject cond = null;
+            
+            if(i.hasFinalExpr()) {
+                cond = Ident.Fident("TASK_"+COND_VAR+"_F", Xtype.FlogicalType);
+                func_params.insert(cond);
+            } else {
+                cond = Xcons.FlogicalConstant(false);
+            }            
+            funcArgs.insert(cond);
+            
+            if(i.hasIfExpr()) {
+                cond = Ident.Fident("TASK_"+COND_VAR, Xtype.FlogicalType);
+                func_params.insert(cond);
+            } else {
+                cond = Xcons.FlogicalConstant(true);
+            }
+            funcArgs.insert(cond);
+            
+            XobjList body_id_list = Xcons.List();
+            HashMap<String, Ident> nameMap = new HashMap<String, Ident>();
+            FidentCollector ic = new FidentCollector(orgBody, nameMap);
+            for(Xobject a : func_params) {
+                if(a == fid) {
+                    a = a.copy();
+                    a.setType(Xtype.FexternalSubroutineType);
+                }
+                body_id_list.add(a);
+                ic.collectIdentInIdent((Ident)a); 
+            }
+            for(Ident id : nameMap.values())
+                body_id_list.add(id);
+            
+            completeFstructTypeSymbol(orgBody.getIdentList(), body_id_list);
+            //funcArgs.insert(Xcons.IntConstant(nargs));
+            BlockList body = new BlockList();
+
+            // There are two kind of do_parallel functions.
+            // 1. ompf_do_parallel_(int nargs, cfunc f, ...)
+            //
+            // 2. ompf_do_parallel_1_(cfunc f, void *a1)
+            //    ompf_do_parallel_2_(cfunc f, void *a1, void *a2)
+            //    ...
+            //    ompf_do_parallel_64_(cfunc f, void *a1, void *a2, ... , void *a64)
+            //
+            // va_list is used in ompf_do_parallel_ and is not used in ompf_do_parallel_N_.
+            // In x86-64 with gfortran, it is likely to fail to call function in which va_list is used.
+            // So we call ompf_do_parallel_N_ instead of ompf_do_parallel_.
+            
+            Ident idDoParallel = Ident.FidentNotExternal(
+                parallelTaskFunc + "_" + nargs,
+                Xtype.FsubroutineType);
+            body.add(idDoParallel.Call(funcArgs));
+
+            ((FunctionType)dop_func_id.Type()).setFuncParamIdList(func_params);
+            XobjList decls = Xcons.List();
+            nameMap.clear();
+            ic.copyDecls(body_id_list, decls, body, i, true);
+            
+            XobjectDef def = XobjectDef.Func(dop_func_id,
+                body_id_list, decls, body.toXobject());
+            
+            current_def.insertBeforeThis(def);
+
+            // add interface of runtime function
+            XobjList dopar_params = (XobjList)idDoParallel.Type().getFuncParam();
+            if(dopar_params == null) {
+                dopar_params = Xcons.List();
+                ((FunctionType)idDoParallel.Type()).setFuncParam(dopar_params);
+            }
+            XobjList paramDecls = Xcons.List();
+            //Ident dummyNarg = Ident.Fident(NARG_VAR, Xtype.FintType);
+            Ident dummyFunc = Ident.FidentNotExternal(FdummyFunc, Xtype.FsubroutineType);
+            //paramDecls.add(Xcons.List(Xcode.VAR_DECL, dummyNarg));
+            //dopar_params.add(dummyNarg);
+
+            if(!i.hasFinalExpr()) {
+                Ident c = Ident.Fident("cond_F", Xtype.FlogicalType);
+                paramDecls.add(Xcons.List(Xcode.VAR_DECL, c));
+                dopar_params.add(c);
+            }            
+            
+            if(!i.hasIfExpr()) {
+                Ident c = Ident.Fident("cond", Xtype.FlogicalType);
+                paramDecls.add(Xcons.List(Xcode.VAR_DECL, c));
+                dopar_params.add(c);
+            }
+            
+
+            paramDecls.add(Xcons.FinterfaceFunctionDecl(dummyFunc, null));
+            for(Xobject a : func_params) {
+                a = convertFidentTypeForParamDecl((Ident)a, i);
+                paramDecls.add(Xcons.List(Xcode.VAR_DECL, a));
+                dopar_params.add(a);
+            }
+            
+            copyFuseDecl(orgBody.getDecls(), paramDecls);
+            
+            def.getFuncDecls().add(
+                Xcons.FinterfaceFunctionDecl(idDoParallel, paramDecls));
+        }
         
-        def.getFuncDecls().add(
-            Xcons.FinterfaceFunctionDecl(idDoParallel, paramDecls));
-    }
-    
     private void copyFuseDecl(Xobject src_decls, Xobject dst_decls)
     {
         if(src_decls == null)
@@ -761,6 +911,81 @@ public class OMPtransPragma
 
         XobjList calleeDelcls = Xcons.List();
         BlockList fbBody = fb.getBody();
+
+        OMP.debug("transParallelRegion"+fbBody.getDecls().toString());
+        
+        threadprivateFSetup(calleeDelcls, fbBody.getDecls(), body, i, true);
+        OMP.debug("fbBody:"+fbBody.getDecls().toString());
+        XobjList id_list = Xcons.List();
+        for(Ident x : i.getRegionParams())
+            id_list.add(x);
+        
+        XobjList dop_id_list = Xcons.List();
+        for(Xobject a : id_list)
+            dop_id_list.add(a);
+        
+        transFioStatements(fbBody);
+        
+        // rewrite array index range if needed.
+        OMPrewriteExpr r = new OMPrewriteExpr();
+        for(Xobject a: (XobjList)i.getIdList()){
+            r.run(a, b, i.env);}
+        
+        addFcalleeBlock(func_id, dop_func_id, body, id_list, calleeDelcls, fbBody, i);
+        
+        addFdoParallelWrapperBlock(dop_func_id, dop_id_list, fbBody, i);
+        
+        BlockList ret_body = Bcons.emptyBody();
+        addFcallerBlock(ret_body, func_id, dop_func_id, i);
+        
+        // add interface of ompf_dop_#
+        XobjList dop_params = Xcons.List();
+        Ident dummyFunc = Ident.FidentNotExternal(FdummyFunc, Xtype.FsubroutineType);
+        dop_params.add(Xcons.FinterfaceFunctionDecl(dummyFunc, null));
+        
+        for(Xobject a : dop_id_list) {
+            a = convertFidentTypeForParamDecl((Ident)a, i);
+            // rewrite array index range if needed.
+            r.run(a, b, i.env);
+            dop_params.add(Xcons.List(Xcode.VAR_DECL, a));
+        }
+        Xobject fbDecls = fbBody.getDecls();
+        copyFuseDecl(fbDecls, dop_params);
+        
+        if(fbDecls == null) {
+            fbDecls = Xcons.List();
+            fbBody.setDecls(fbDecls);
+        }
+        
+        fbDecls.add(Xcons.FinterfaceFunctionDecl(dop_func_id, dop_params));
+
+        return Bcons.COMPOUND(ret_body);
+    }
+
+    public Block transFtaskRegion(PragmaBlock b, OMPinfo i)
+    {
+        Ident func_id = current_def.declExternIdent(
+            env.genExportSym(OMPfuncPrefix, current_def.getName()), Xtype.FsubroutineType);
+        Ident dop_func_id = Ident.FidentNotExternal(
+            env.genExportSym(FParallelTaskWrapperPrefix, current_def.getName()), Xtype.FsubroutineType);
+        Block bp;
+        // move blocks to body
+        BlockList body = Bcons.emptyBody(i.getIdList(), null);
+        addDataSetupBlock(body, i);
+        body.add(Bcons.COMPOUND(b.getBody()));
+      
+        bp = dataUpdateBlock(i);
+        if(bp != null)
+        	body.add(bp);
+
+        FunctionBlock fb = getParentFuncBlock(b);
+        if(fb == null)
+            throw new IllegalStateException("parent is not FunctionBlock");
+
+        XobjList calleeDelcls = Xcons.List();
+        BlockList fbBody = fb.getBody();
+        
+        OMP.debug("transFtaskRegion"+fbBody.getDecls().toString());
         
         threadprivateFSetup(calleeDelcls, fbBody.getDecls(), body, i, true);
         
@@ -776,15 +1001,16 @@ public class OMPtransPragma
         
         // rewrite array index range if needed.
         OMPrewriteExpr r = new OMPrewriteExpr();
-        for(Xobject a: (XobjList)i.getIdList())
-            r.run(a, b, i.env);
+        for(Xobject a: (XobjList)i.getIdList()){
+        	OMP.debug("Task"+a.toString()+" "+b.toXobject().toString()+" "+i.pragma);
+            r.run(a, b, i.env);}
         
         addFcalleeBlock(func_id, dop_func_id, body, id_list, calleeDelcls, fbBody, i);
         
-        addFdoParallelWrapperBlock(dop_func_id, dop_id_list, fbBody, i);
+        addFtaskWrapperBlock(dop_func_id, dop_id_list, fbBody, i);
         
         BlockList ret_body = Bcons.emptyBody();
-        addFcallerBlock(ret_body, func_id, dop_func_id, i);
+        addFtaskCallerBlock(ret_body, func_id, dop_func_id, i);
         
         // add interface of ompf_dop_#
         XobjList dop_params = Xcons.List();
@@ -987,7 +1213,7 @@ public class OMPtransPragma
             /* otherwise, block scheduling */
             bb.add(OMPfuncIdent(staticShedInitFunc).Call(
                 Xcons.List(vlb, vub, step_ref, i.sched_chunk)));
-            ret_body.add(Bcons.WHILE(OMPfuncIdent(staticShedNextFunc).Call(
+            ret_body.add(Bcons.DO_WHILE(OMPfuncIdent(staticShedNextFunc).Call(
                 Xcons.List(vlb_addr, vub_addr)), comp_block));
             break;
 
@@ -998,7 +1224,7 @@ public class OMPtransPragma
             arg.add(i.sched_chunk.getArg(2));
             arg.add(i.sched_chunk.getArg(3));
             bb.add(OMPfuncIdent(affinityShedInitFunc).Call(arg));
-            ret_body.add(Bcons.WHILE(OMPfuncIdent(affinityShedNextFunc).Call(
+            ret_body.add(Bcons.DO_WHILE(OMPfuncIdent(affinityShedNextFunc).Call(
                 Xcons.List(vlb_addr, vub_addr)), comp_block));
             break;
 
@@ -1007,7 +1233,7 @@ public class OMPtransPragma
                 i.sched_chunk = Xcons.IntConstant(1);
             bb.add(OMPfuncIdent(dynamicShedInitFunc).Call(
                 Xcons.List(vlb, vub, step_ref, i.sched_chunk)));
-            ret_body.add(Bcons.WHILE(OMPfuncIdent(dynamicShedNextFunc).Call(
+            ret_body.add(Bcons.DO_WHILE(OMPfuncIdent(dynamicShedNextFunc).Call(
                 Xcons.List(vlb_addr, vub_addr)), comp_block));
             break;
         case SCHED_GUIDED:
@@ -1015,13 +1241,13 @@ public class OMPtransPragma
                 i.sched_chunk = Xcons.IntConstant(1);
             bb.add(OMPfuncIdent(guidedShedInitFunc).Call(
                 Xcons.List(vlb, vub, step_ref, i.sched_chunk)));
-            ret_body.add(Bcons.WHILE(OMPfuncIdent(guidedShedNextFunc).Call(
+            ret_body.add(Bcons.DO_WHILE(OMPfuncIdent(guidedShedNextFunc).Call(
                 Xcons.List(vlb_addr, vub_addr)), comp_block));
             break;
         case SCHED_RUNTIME:
             bb.add(OMPfuncIdent(runtimeShedInitFunc).Call(
                 Xcons.List(vlb, vub, step_ref)));
-            ret_body.add(Bcons.WHILE(OMPfuncIdent(runtimeShedNextFunc).Call(
+            ret_body.add(Bcons.DO_WHILE(OMPfuncIdent(runtimeShedNextFunc).Call(
                 Xcons.List(vlb_addr, vub_addr)), comp_block));
             break;
         default:
@@ -1080,8 +1306,9 @@ public class OMPtransPragma
                 body.add(bp);
                 body.add(Bcons.GOTO(label));
             } else {
+		BlockList bpp = new BlockList(bp);
                 body.add(Bcons.FcaseLabel(Xcons.List(
-                    Xcons.List(Xcode.F_VALUE, Xcons.IntConstant(n))), bp.getBody(), null));
+                    Xcons.List(Xcode.F_VALUE, Xcons.IntConstant(n))), bpp, null));
             }
             ++n;
         }
@@ -1171,8 +1398,11 @@ public class OMPtransPragma
         if(x.isVarRef())
             return x;
         
-        Xtype t = x.Type();
-        
+        Xtype t = x.Type().copy();
+        t.setIsFintentIN(false);
+        t.setIsFintentOUT(false);
+        t.setIsFintentINOUT(false);
+      
         if(t.isBasic() && (t.getBasicType() == BasicType.F_NUMERIC ||
             t.getBasicType() == BasicType.F_NUMERIC_ALL)) {
             return x;
@@ -1258,6 +1488,20 @@ public class OMPtransPragma
         return Bcons.COMPOUND(body);
     }
     
+    public Block transTaskRegion(PragmaBlock b, OMPinfo i)
+    {
+        if(XmOption.isLanguageC())
+            return transCtaskRegion(b, i);
+        return transFtaskRegion(b, i);
+    }
+    public Block transCtaskRegion(PragmaBlock b,OMPinfo i){return null;}
+    
+    public Block transSimd(PragmaBlock b, OMPinfo i)
+    {
+        BlockList body = b.getBody();
+        return Bcons.COMPOUND(body);
+    }
+
     private Xobject getFallocateLocalArray(Xobject varAry, Xobject varShare, Xtype t, Xobject lastDimSize)
     {
         Xobject[] indices = new Xobject[t.getNumDimensions() + 1];
@@ -1280,7 +1524,8 @@ public class OMPtransPragma
 
     protected void addDataSetupBlock(BlockList bl, OMPinfo i)
     {
-        boolean flag = false;
+    	OMP.debug("addDataSetUPBlock");
+    	boolean flag = false;
         for(OMPvar v : i.getVarList()) {
             if(v.is_first_private || v.is_reduction || v.is_copyin || v.isVariableArray()) {
                 flag = true;
@@ -1289,6 +1534,7 @@ public class OMPtransPragma
         }
         if(!flag)
             return;
+    	OMP.debug("addDataSetUPBlock 2");
 
         BasicBlock bb = new BasicBlock();
         BlockList tmpbl = new BlockList();
@@ -1389,6 +1635,8 @@ public class OMPtransPragma
                 bl.add(b);
             }
         }
+    	OMP.debug("addDataSetUPBlock End");
+        
     }
     
     private void addCreductionUpdateBlock(BlockList body, OMPinfo i)
@@ -1413,7 +1661,7 @@ public class OMPtransPragma
                 Xcons.List(v.getPrivateAddr(), v.getSharedAddr(), Xcons.IntConstant(bt),
                     Xcons.IntConstant(v.reduction_op.getId()))));
         }
-        
+
         body.add(bb);
     }
     
@@ -1786,7 +2034,7 @@ public class OMPtransPragma
     private void threadprivateFSetup(Xobject funcBlockDecls,
         Xobject orgBodyDecls, BlockList body, OMPinfo i, boolean inParallel)
     {
-        if(i.getThdPrvVarList().isEmpty())
+        if(i.getThdPrvVarList()==null || i.getThdPrvVarList().isEmpty())
             return;
         
         FmoduleBlock mod = getFinternalModule(orgBodyDecls);

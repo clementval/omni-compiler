@@ -2,15 +2,19 @@ SUBDIRS=XcodeML-Common C-FrontEnd/src C-BackEnd F-FrontEnd/src F-BackEnd \
 	XcodeML-Exc-Tools Driver/src libtlog/src_threads libtlog/src_mpi \
         libxmp/include libxmp/src libxmp/src_threads libxmpf/include libxmpf/src
 
-if !IS_SUPERUX
+if MOD2XMOD
+    SUBDIRS+=F-FrontEnd/gnu_module
+endif
+
+if !SUPERUX
     SUBDIRS+=libompc/src libompf/src
 endif
 
-if ENABLE_ACC
+if ACC
     SUBDIRS+=libacc/src libacc/include
 endif
 
-if ENABLE_ATOOL
+if ATOOL
     SUBDIRS+=Driver/atool
 endif
 
@@ -22,16 +26,16 @@ RH_REL_FILE=/etc/redhat-release
 
 release-rpm:
 	if test -f $(RH_REL_FILE) ; then \
-		mkdir -p $(XMPPKG_TMPDIR_TOP); \
-		bash release/make_rpm.sh $(CURDIR) $(XMPPKG_TMPDIR_TOP); \
-		rm -rf $(XMPPKG_TMPDIR_TOP); \
+	  $(MKDIR_P) $(XMPPKG_TMPDIR_TOP); \
+	  bash release/make_rpm.sh $(CURDIR) $(XMPPKG_TMPDIR_TOP); \
+	  rm -rf $(XMPPKG_TMPDIR_TOP); \
 	fi
 
 release-deb:
 	if test -f $(DEB_VER_FILE) ; then \
-		mkdir -p $(XMPPKG_TMPDIR); \
-		bash release/make_deb.sh $(CURDIR) $(XMPPKG_TMPDIR); \
-		rm -rf $(XMPPKG_TMPDIR_TOP); \
+	  $(MKDIR_P) $(XMPPKG_TMPDIR); \
+	  bash release/make_deb.sh $(CURDIR) $(XMPPKG_TMPDIR); \
+	  rm -rf $(XMPPKG_TMPDIR_TOP); \
 	fi
 
 release: release-rpm release-deb
@@ -48,11 +52,15 @@ BASE_LARGE_TESTDIR = "tests/xcalablemp/LARGE-SIZE-TESTS/"
 LARGE_TESTDIRS = "others/C"
 
 if GASNET
-   TESTDIRS += "local-view/post-wait/C" "local-view/coarray/C" "local-view/other/C"  "local-view/coarray/F"
+   TESTDIRS += "local-view/post-wait/C" "local-view/coarray/C" "local-view/other/C"  "local-view/coarray/F" \
+	       "local-view/coarray/F_alloc" "local-view/coarray/F_get" "local-view/coarray/F_put" "local-view/coarray/F_scope" \
+	       "local-view/coarray/F_cfold" "local-view/lock-unlock/C"
    LARGE_TESTDIRS += "local-view/coarray/C/"
 endif
 if FJRDMA
-   TESTDIRS += "local-view/post-wait/C" "local-view/coarray/C" "local-view/other/C" "local-view/coarray/F"
+   TESTDIRS += "local-view/post-wait/C" "local-view/coarray/C" "local-view/other/C" "local-view/coarray/F" \
+	       "local-view/coarray/F_alloc" "local-view/coarray/F_get" "local-view/coarray/F_put" "local-view/coarray/F_scope" \
+	       "local-view/coarray/F_cfold"
    LARGE_TESTDIRS += "local-view/coarray/C/"
 endif
 if MPI3
@@ -63,37 +71,50 @@ endif
 
 tests: 
 	@for subdir in $(TESTDIRS) ; do \
-	$(MAKE) -C $(BASE_TESTDIR)/$$subdir ; \
-	if test $$? -ne 0; then exit 1; fi ;\
+	  $(MAKE) -C $(BASE_TESTDIR)/$$subdir ; \
+	  if test $$? -ne 0; then exit 1; fi ;\
 	done
 
 clean-tests:
 	@for subdir in $(TESTDIRS) ; do \
-	(cd $(BASE_TESTDIR)/$$subdir && $(MAKE) clean ) ;\
+	  (cd $(BASE_TESTDIR)/$$subdir && $(MAKE) clean ) ;\
 	done
 
 run-tests:
 	@for subdir in $(TESTDIRS); do \
-	$(MAKE) run -C $(BASE_TESTDIR)$$subdir; \
-	if test $$? -ne 0; then exit 1; fi ;\
+	  $(MAKE) run -C $(BASE_TESTDIR)$$subdir; \
+	  if test $$? -ne 0; then exit 1; fi ;\
 	done
 
 large-tests:
 	@for subdir in $(LARGE_TESTDIRS) ; do \
-	$(MAKE) -C $(BASE_LARGE_TESTDIR)/$$subdir ; \
-	if test $$? -ne 0; then exit 1; fi ;\
+	  $(MAKE) -C $(BASE_LARGE_TESTDIR)/$$subdir ; \
+	  if test $$? -ne 0; then exit 1; fi ;\
 	done
 
 clean-large-tests:
 	@for subdir in $(LARGE_TESTDIRS) ; do \
-	(cd $(BASE_LARGE_TESTDIR)/$$subdir && $(MAKE) clean ) ;\
+	  (cd $(BASE_LARGE_TESTDIR)/$$subdir && $(MAKE) clean ) ;\
 	done
 
 run-large-tests:
 	@for subdir in $(LARGE_TESTDIRS); do \
-	$(MAKE) run -C $(BASE_LARGE_TESTDIR)$$subdir; \
-	if test $$? -ne 0; then exit 1; fi ;\
+	  $(MAKE) run -C $(BASE_LARGE_TESTDIR)$$subdir; \
+	  if test $$? -ne 0; then exit 1; fi ;\
 	done
+
+slurm:
+	bash ./tests/xcalablemp/scripts/create_sorted_list.sh $(BASE_TESTDIR) $(TESTDIRS) > $(SORTED_LIST); \
+	bash ./tests/xcalablemp/scripts/make_slurm.sh $(XMP_PATH) $(SORTED_LIST) $(BASE_TESTDIR)
+
+slurm-check:
+	@bash ./tests/xcalablemp/scripts/check_error_code.sh $(BASE_TESTDIR) $(TESTDIRS)
+
+slurm-timeline:
+	@bash ./tests/xcalablemp/scripts/create_timeline.sh /home/mnakao/public_html/timeline $(JOB_NUM) $(ELAPSE_TIME_SEC) $(BASE_TESTDIR) $(SORTED_LIST) $(TESTDIRS)
+
+remote-tests:
+	@bash ./tests/xcalablemp/scripts/remote-tests.sh $(USER)
 
 clean-local:
 	rm -rf autom4te.cache
@@ -110,7 +131,6 @@ DELETABLES = Driver/bin/ompcc \
 	Driver/etc/xmpf90.conf \
 	Driver/etc/ompcc.conf \
 	Driver/etc/ompf90.conf \
-	Driver/libexec/omni_traverse \
         C-FrontEnd/src/c-exprcode.c \
         C-FrontEnd/src/c-exprcode.h \
         C-FrontEnd/src/c-parser.c \

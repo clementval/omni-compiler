@@ -1,13 +1,15 @@
 !-------------------------------
 !  sync all
 !-------------------------------
-      interface xmpf_sync_all
-         subroutine xmpf_sync_all_nostat()
-         end subroutine xmpf_sync_all_nostat
-         subroutine xmpf_sync_all_stat_wrap(stat, errmsg)
+      interface
+!!         subroutine xmpf_sync_all(arg1, ...)
+!!           class(*) :: arg1
+!!         end subroutine xmpf_sync_all
+
+         subroutine xmpf_sync_all_stat(stat, errmsg)
            integer, intent(out) :: stat
            character(len=*), intent(out), optional :: errmsg
-         end subroutine xmpf_sync_all_stat_wrap
+         end subroutine xmpf_sync_all_stat
       end interface
 
 !-------------------------------
@@ -100,7 +102,7 @@
 ! logical(kind=atomic_logical_kind), whose kind is defined in the 
 ! intrinsic module iso_fortran_env [J.Reid, N1824:15.3].
 
-      interface atmic_define
+      interface atomic_define
          subroutine atomic_define_i2(atom, value)
          integer, intent(out) :: atom
          integer(2), intent(in) :: value
@@ -127,7 +129,7 @@
          end subroutine
       end interface
 
-      interface atmic_ref
+      interface atomic_ref
          subroutine atomic_ref_i2(value, atom)
          integer(2), intent(out) :: value
          integer, intent(in) :: atom

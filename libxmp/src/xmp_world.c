@@ -1,24 +1,6 @@
 /*
- * $TSUKUBA_Release: Omni Compiler Version 0.9.1 $
+ * $TSUKUBA_Release: $
  * $TSUKUBA_Copyright:
- *  Copyright (C) 2010-2014 University of Tsukuba, 
- *  	      2012-2014  University of Tsukuba and Riken AICS
- *  
- *  This software is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU Lesser General Public License version
- *  2.1 published by the Free Software Foundation.
- *  
- *  Please check the Copyright and License information in the files named
- *  COPYRIGHT and LICENSE under the top  directory of the Omni Compiler
- *  Software release kit.
- *  
- *  * The specification of XcalableMP has been designed by the XcalableMP
- *    Specification Working Group (http://www.xcalablemp.org/).
- *  
- *  * The development of this software was partially supported by "Seamless and
- *    Highly-productive Parallel Programming Environment for
- *    High-performance computing" project funded by Ministry of Education,
- *    Culture, Sports, Science and Technology, Japan.
  *  $
  */
 #ifndef MPI_PORTABLE_PLATFORM_H
@@ -40,6 +22,7 @@ void _XMP_init_world(int *argc, char ***argv) {
   MPI_Comm *comm = _XMP_alloc(sizeof(MPI_Comm));
   MPI_Comm_dup(MPI_COMM_WORLD, comm);
   _XMP_nodes_t *n = _XMP_create_nodes_by_comm(_XMP_N_INT_TRUE, comm);
+  n->attr = _XMP_ENTIRE_NODES;
   _XMP_world_size = n->comm_size;
   _XMP_world_rank = n->comm_rank;
   _XMP_world_nodes = n;

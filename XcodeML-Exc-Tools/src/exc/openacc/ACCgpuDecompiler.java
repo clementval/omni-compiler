@@ -3,26 +3,20 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.*;
 
 import xcodeml.util.XmOption;
 
 import exc.object.*;
 
 
-public class ACCgpuDecompiler {
-  private static ACCgpuDecompileWriter out = null;
+class ACCgpuDecompiler {
   private static final int BUFFER_SIZE = 4096;
   private static final String GPU_SRC_EXTENSION = ".cu";
   public static final String GPU_FUNC_CONF = "OEPNACC_GPU_FUNC_CONF_PROP";
   public static final String GPU_FUNC_CONF_ASYNC = "OEPNACC_GPU_FUNC_CONF_ASYNC_PROP";
   public static final String GPU_FUNC_CONF_SHAREDMEMORY = "OEPNACC_GPU_FUNC_CONF_SHAREDMEMORY_PROP";
   public static final String GPU_STRAGE_SHARED = "OPENACC_GPU_SHARED";
-  
-  
-  public static final String GPU_INDEX_TABLE = "OPENACC_GPU_INDEX_TABLE_PROP";
 
-  
   public void decompile(ACCglobalDecl decl){
     XobjectFile env = decl.getEnv();
     XobjectFile envDevice = decl.getEnvDevice();
@@ -49,6 +43,8 @@ public class ACCgpuDecompiler {
       Writer w = new BufferedWriter(new FileWriter(ACCutil.removeExtension(env.getSourceFileName()) + GPU_SRC_EXTENSION), BUFFER_SIZE);
       ACCgpuDecompileWriter writer = new ACCgpuDecompileWriter(w, envDevice);
       
+      writer.println("#include \"acc.h\"");
+      writer.println("#include \"acc_gpu.h\"");
       writer.println("#include \"acc_gpu_func.hpp\"");
       if(XmOption.isXcalableMP()){
         writer.println("#include \"xmp_index_macro.h\"");

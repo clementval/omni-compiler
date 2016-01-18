@@ -1,26 +1,3 @@
-/* 
- * $TSUKUBA_Release: Omni Compiler Version 0.9.1 $
- * $TSUKUBA_Copyright:
- *  Copyright (C) 2010-2014 University of Tsukuba, 
- *  	      2012-2014  University of Tsukuba and Riken AICS
- *  
- *  This software is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU Lesser General Public License version
- *  2.1 published by the Free Software Foundation.
- *  
- *  Please check the Copyright and License information in the files named
- *  COPYRIGHT and LICENSE under the top  directory of the Omni Compiler
- *  Software release kit.
- *  
- *  * The specification of XcalableMP has been designed by the XcalableMP
- *    Specification Working Group (http://www.xcalablemp.org/).
- *  
- *  * The development of this software was partially supported by "Seamless and
- *    Highly-productive Parallel Programming Environment for
- *    High-performance computing" project funded by Ministry of Education,
- *    Culture, Sports, Science and Technology, Japan.
- *  $
- */
 /**
  * \file F95-main.c
  */
@@ -29,6 +6,7 @@
 
 #include "F-front.h"
 #include "F-output-xcodeml.h"
+#include "F-second-pass.h"
 #include <math.h>
 
 /* for debug */
@@ -189,7 +167,7 @@ int
 main(argc, argv) 
 int argc; 
 char *argv[]; 
-{ 
+{
     extern int fixed_format_flag;
     extern int max_line_len;
     extern int max_cont_line;
@@ -470,6 +448,9 @@ char *argv[];
     initialize_compile();
 
     /* start processing */
+/* FEAST add start */
+    second_pass_init();
+/* FEAST add  end  */
     parseError = yyparse();
     if (nerrors != 0 ||
         parseError != 0) {
@@ -477,6 +458,16 @@ char *argv[];
     }
     nerrors = 0;
 
+/* FEAST add start */
+    /* second pass */
+    parseError = second_pass();
+    /* printf("parseError = %d, nerrors = %d\n", parseError, nerrors); */
+    if (nerrors != 0 ||
+        parseError != 0) {
+        goto Done;
+    }
+/* FEAST add  end  */
+    
     /* end compile */
     if (unit_ctl_level != 0) {
         error("contains stack is not closed properly");

@@ -4,6 +4,7 @@
  * array APIs
  */
 
+void _XMP_setup_reduce_type(MPI_Datatype *mpi_datatype, size_t *datatype_size, int datatype);
 
 void xmpf_array_alloc__(_XMP_array_t **a_desc, int *n_dim, int *type,
 			_XMP_template_t **t_desc)
@@ -17,11 +18,18 @@ void xmpf_array_alloc__(_XMP_array_t **a_desc, int *n_dim, int *type,
   a->dim = *n_dim;
   a->type = *type;
   a->type_size = _XMP_get_datatype_size(a->type);
+  size_t dummy;
+  _XMP_setup_reduce_type(&a->mpi_type, &dummy, *type);
+  a->order = MPI_ORDER_FORTRAN;
   a->total_elmts = 0;
+
+  a->async_reflect = NULL;
 
   a->align_comm = NULL;
   a->align_comm_size = 1;
   a->align_comm_rank = _XMP_N_INVALID_RANK;
+
+  a->array_nodes = NULL;
 
   //a->num_reqs = -1;
   //a->mpi_req_shadow = _XMP_alloc(sizeof(MPI_Request) * 4 * (*n_dim));
@@ -279,7 +287,9 @@ void xmpf_array_get_local_size_off__(_XMP_array_t **a_desc, int *i_dim,
 /*       *off = ai->par_lower - tchunk->par_lower - ai->shadow_size_lo; */
     }
     else {
-      *size = ai->ser_upper - ai->ser_lower + 1;
+      //*size = ai->ser_upper - ai->ser_lower + 1;
+      *size = ai->ser_upper; // in this case, the lower bound is not zero.
+      //xmpf_dbg_printf("size = %d\n", *size);
       *off = ai->ser_lower; // dummy
       if (blk_off) *blk_off = ai->ser_lower; // dummy
     }
@@ -290,7 +300,6 @@ void xmpf_array_get_local_size_off__(_XMP_array_t **a_desc, int *i_dim,
     if (blk_off) *blk_off = 0;
   }    
 
-  //xmpf_dbg_printf("array_get_size = (%d:%d)\n", *lb, *ub);
 }
 
 #if defined(OMNI_TARGET_CPU_KCOMPUTER) && defined(K_RDMA_REFLECT)

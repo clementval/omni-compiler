@@ -1647,11 +1647,12 @@ void
 outxBody(FILE *fp, int indent, CExpr *stmts)
 {
     const char *bodyTag = "body";
-    if(hasSymbols(stmts)) {
-        outxContextWithTag(fp, indent, stmts, bodyTag);
-    } else {
-        outxChildrenWithTag(fp, indent, stmts, bodyTag);
-    }
+    outxContextWithTag(fp, indent, stmts, bodyTag);
+    /* if(hasSymbols(stmts)) { */
+    /*     outxContextWithTag(fp, indent, stmts, bodyTag); */
+    /* } else { */
+    /*     outxChildrenWithTag(fp, indent, stmts, bodyTag); */
+    /* } */
 }
 
 
@@ -1838,7 +1839,8 @@ outx_IDENT(FILE *fp, int indent, CExprOfSymbol *sym)
         switch(td->e_tdKind) {
         case TD_ARRAY:
 	  //            tag = (isAddr ? "arrayAddr" : "arrayRef"); break;
-            tag = "arrayAddr"; break;
+	  //tag = "arrayAddr"; break;
+	  tag = (sym->e_symType == ST_PARAM && isAddr) ? "varAddr" : "arrayAddr"; break;
         case TD_COARRAY:
             tag = "name"; scope = NULL; break;
         default:

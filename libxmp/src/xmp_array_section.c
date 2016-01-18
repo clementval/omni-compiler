@@ -1,24 +1,6 @@
 /*
- * $TSUKUBA_Release: Omni Compiler Version 0.9.1 $
+ * $TSUKUBA_Release: $
  * $TSUKUBA_Copyright:
- *  Copyright (C) 2010-2014 University of Tsukuba, 
- *  	      2012-2014  University of Tsukuba and Riken AICS
- *  
- *  This software is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU Lesser General Public License version
- *  2.1 published by the Free Software Foundation.
- *  
- *  Please check the Copyright and License information in the files named
- *  COPYRIGHT and LICENSE under the top  directory of the Omni Compiler
- *  Software release kit.
- *  
- *  * The specification of XcalableMP has been designed by the XcalableMP
- *    Specification Working Group (http://www.xcalablemp.org/).
- *  
- *  * The development of this software was partially supported by "Seamless and
- *    Highly-productive Parallel Programming Environment for
- *    High-performance computing" project funded by Ministry of Education,
- *    Culture, Sports, Science and Technology, Japan.
  *  $
  */
 
@@ -917,7 +899,7 @@ static void _XMP_unpack_array_7_GENERAL(void *dst_addr, void *buf_addr, size_t t
 void _XMP_normalize_array_section(_XMP_gmv_desc_t *gmv_desc, int idim, int *lower, int *upper, int *stride) {
   // setup temporary variables
 
-  _XMP_array_t *array = gmv_desc->a_desc;
+  //_XMP_array_t *array = gmv_desc->a_desc;
   int l, u;
   int s = *(stride);
   if (s > 0) {
@@ -928,24 +910,25 @@ void _XMP_normalize_array_section(_XMP_gmv_desc_t *gmv_desc, int idim, int *lowe
     l = *upper;
     u = *lower;
   }
-  else {
-    if (*lower==0 && *upper==0){
-      if (gmv_desc->is_global == true){
-         l = array->info[idim].ser_lower;
-         u = array->info[idim].ser_upper;
-         s = 1;
-      }else{
-         l = gmv_desc->a_lb[idim];
-         u = gmv_desc->a_ub[idim];
-         s = 1;
-      }
-    }else{
-      l = *lower;
-      u = *lower;
-      s = 1;
-    }
-   // _XMP_fatal("the stride of <array-section> is 0");
-   // l = 0; u = 0; // XXX dummy
+  else { // s == 0 (scalar), do nothing
+    return;
+   /*  if (*lower==0 && *upper==0){ */
+   /*    if (gmv_desc->is_global == true){ */
+   /*       l = array->info[idim].ser_lower; */
+   /*       u = array->info[idim].ser_upper; */
+   /*       s = 1; */
+   /*    }else{ */
+   /*       l = gmv_desc->a_lb[idim]; */
+   /*       u = gmv_desc->a_ub[idim]; */
+   /*       s = 1; */
+   /*    } */
+   /*  }else{ */
+   /*    l = *lower; */
+   /*    u = *lower; */
+   /*    s = 1; */
+   /*  } */
+   /* // _XMP_fatal("the stride of <array-section> is 0"); */
+   /* // l = 0; u = 0; // XXX dummy */
   }
 
   // normalize values

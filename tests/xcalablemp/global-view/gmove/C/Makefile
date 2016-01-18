@@ -1,4 +1,4 @@
-XCC     = xmpcc -O2
+XCC     = xmpcc
 XRUN    = mpiexec
 TESTS = $(wildcard *.c)
 EXES  = $(TESTS:.c=.x)
@@ -36,6 +36,7 @@ run: $(EXES)
 	$(XRUN) -n 8 ./gmove_G2L_8.x
 	$(XRUN) -n 16 ./gmove_G2L_16.x
 	$(XRUN) -n 4 ./337_gmove.x
+	$(XRUN) -n 2 ./417_gmove.x
 
 clean:
 	rm -f $(EXES) $(OBJS) chk.o

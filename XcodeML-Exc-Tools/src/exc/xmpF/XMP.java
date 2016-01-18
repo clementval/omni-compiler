@@ -1,24 +1,6 @@
 /*
- * $TSUKUBA_Release: Omni Compiler Version 0.9.1 $
+ * $TSUKUBA_Release: $
  * $TSUKUBA_Copyright:
- *  Copyright (C) 2010-2014 University of Tsukuba, 
- *  	      2012-2014  University of Tsukuba and Riken AICS
- *  
- *  This software is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU Lesser General Public License version
- *  2.1 published by the Free Software Foundation.
- *  
- *  Please check the Copyright and License information in the files named
- *  COPYRIGHT and LICENSE under the top  directory of the Omni Compiler
- *  Software release kit.
- *  
- *  * The specification of XcalableMP has been designed by the XcalableMP
- *    Specification Working Group (http://www.xcalablemp.org/).
- *  
- *  * The development of this software was partially supported by "Seamless and
- *    Highly-productive Parallel Programming Environment for
- *    High-performance computing" project funded by Ministry of Education,
- *    Culture, Sports, Science and Technology, Japan.
  *  $
  */
 
@@ -70,6 +52,7 @@ public class XMP {
 
   public final static String PREFIX_			= "XMP__";
   public final static String DESC_PREFIX_		= "XMP_DESC_";
+  public final static String SAVE_DESC_PREFIX_		= "XMP_SAVE_";    
 
   public final static String ASTERISK			= "* @{ASTERISK}@";
   public final static String COLON			= ": @{COLON}@";
@@ -100,6 +83,7 @@ public class XMP {
 
   public final static String ref_templ_alloc_f = "xmpf_ref_templ_alloc_";
   public final static String ref_nodes_alloc_f = "xmpf_ref_nodes_alloc_";
+  public final static String ref_dealloc_f = "xmpf_ref_dealloc_";
   public final static String ref_set_loop_info_f = "xmpf_ref_set_loop_info_";
   public final static String ref_set_dim_info_f = "xmpf_ref_set_dim_info_";
   public final static String ref_init_f = "xmpf_ref_init_";
@@ -119,14 +103,18 @@ public class XMP {
   public final static String reduction_f = "xmpf_reduction_";
   public final static String reduction_loc_f = "xmpf_reduction_loc_";
   public final static String bcast_f = "xmpf_bcast_";
-  public final static String test_task_on_f = "xmpf_test_task_on_";
+
+  public final static String create_task_nodes_f = "xmpf_create_task_nodes_";
+  public final static String test_task_on_f = "xmpf_test_task_on_nodes_";
   public final static String end_task_f = "xmpf_end_task_";
+  public final static String test_task_nocomm_f = "xmpf_test_task_nocomm_";
 
   public final static String gmove_g_alloc_f = "xmpf_gmv_g_alloc_";
   public final static String gmove_l_alloc_f = "xmpf_gmv_l_alloc_";
   public final static String gmove_g_dim_info_f = "xmpf_gmv_g_dim_info_";
   public final static String gmove_l_dim_info_f = "xmpf_gmv_l_dim_info_";
   public final static String gmove_do_f = "xmpf_gmv_do_";
+  public final static String gmove_dealloc_f = "xmpf_gmv_dealloc_";
   
   public final static String finalize_all_f = "xmpf_finalize_all_";
 
@@ -204,11 +192,14 @@ public class XMP {
       Fkind = type.getFkind();
       if(Fkind != null && Fkind.isIntConstant()){
 	switch(Fkind.getInt()){
-	case 8:
+	case 4:
 	  t = BasicType.FLOAT_COMPLEX;
 	  break;
-	case 16:
+	case 8:
 	  t = BasicType.DOUBLE_COMPLEX;
+	  break;
+	case 16:
+	  t = BasicType.LONG_DOUBLE_COMPLEX;
 	  break;
 	}
       }

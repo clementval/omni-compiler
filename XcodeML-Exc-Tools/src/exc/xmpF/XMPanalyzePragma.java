@@ -1,24 +1,7 @@
 /* 
- * $TSUKUBA_Release: Omni Compiler Version 0.9.1 $
+ * $TSUKUBA_Release: Omni XcalableMP Compiler 3 $
  * $TSUKUBA_Copyright:
- *  Copyright (C) 2010-2014 University of Tsukuba, 
- *  	      2012-2014  University of Tsukuba and Riken AICS
- *  
- *  This software is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU Lesser General Public License version
- *  2.1 published by the Free Software Foundation.
- *  
- *  Please check the Copyright and License information in the files named
- *  COPYRIGHT and LICENSE under the top  directory of the Omni Compiler
- *  Software release kit.
- *  
- *  * The specification of XcalableMP has been designed by the XcalableMP
- *    Specification Working Group (http://www.xcalablemp.org/).
- *  
- *  * The development of this software was partially supported by "Seamless and
- *    Highly-productive Parallel Programming Environment for
- *    High-performance computing" project funded by Ministry of Education,
- *    Culture, Sports, Science and Technology, Japan.
+ *  PLEASE DESCRIBE LICENSE AGREEMENT HERE
  *  $
  */
 package exc.xmpF;
@@ -169,6 +152,33 @@ public class XMPanalyzePragma
       analyzeLocalAlias(pb.getClauses(), env, pb);
       break;
 
+    case SAVE_DESC:
+      {
+	XobjList xmpObjList = (XobjList)pb.getClauses();
+
+	for (Xobject xx: xmpObjList){
+	  String objName = xx.getString();
+	  XMPobject xmpObject = env.findXMPobject(objName, pb);
+	  if (xmpObject != null){
+	    xmpObject.setSaveDesc(true);
+	    continue;
+	  }
+	  Ident id = env.findVarIdent(objName, pb);
+	  if (id != null){
+	    XMParray array =  XMParray.getArray(id);
+	    if (array != null){
+	      array.setSaveDesc(true);
+	    }
+	    else {
+	      XMP.errorAt(pb, "object '" + objName + "' is not an aligned array");
+	    }
+	    continue;
+	  }
+	  XMP.errorAt(pb, "object '" + objName + "' is not declared");
+ 	}
+      }
+      break;
+
     case TEMPLATE_FIX:
       analyzeTemplateFix(pb.getClauses(), info, pb);
       break;
@@ -202,7 +212,8 @@ public class XMPanalyzePragma
       break;
 
     case TASKS:
-      { analyzeTasks(pb);			break; }
+      analyzeTasks(pb.getClauses(), pb.getBody(), info, pb);
+      break;
 
     case GMOVE:
       analyzeGmove(pb.getClauses(),pb.getBody(), info, pb);
@@ -295,8 +306,6 @@ public class XMPanalyzePragma
     newLocalId.setValue(Xcons.Symbol(Xcode.VAR, localType, lName));
 
     gObject.setLocalId(newLocalId);
-
-    
 
   }
 
@@ -699,23 +708,31 @@ public class XMPanalyzePragma
   void analyzeTask(Xobject taskDecl, BlockList taskBody,
 		   XMPinfo info, PragmaBlock pb) {
     Xobject onRef = taskDecl.getArg(0);
-    Xobject taskOpt = taskDecl.getArg(1);
+    Xobject nocomm = taskDecl.getArg(1);
+    // Xobject taskOpt = taskDecl.getArg(1);
     
-    if(taskOpt != null){
-      XMP.fatal("task opt is not supported yet, sorry!");
-      return;
-    }
+    // if(taskOpt != null){
+    //   XMP.fatal("task opt is not supported yet, sorry!");
+    //   return;
+    // }
     info.setOnRef(XMPobjectsRef.parseDecl(onRef,env,pb));
+    info.setNocomm(nocomm);
   }
 
-  private void analyzeTasks(PragmaBlock pb) {
-    XMP.fatal("analyzeTasks");
+  private void analyzeTasks(Xobject tasksDecl, BlockList taskList,
+			    XMPinfo info, PragmaBlock pb){
+    //XMP.fatal("analyzeTasks");
   }
+
+  // private void analyzeTasks(PragmaBlock pb) {
+  //   XMP.fatal("analyzeTasks");
+  // }
 
   private void analyzeGmove(Xobject gmoveDecl, BlockList body, 
 			    XMPinfo info, PragmaBlock pb) {
-    Xobject gmoveOpt = gmoveDecl.getArg(0);
-    Xobject Opt = gmoveDecl.getArg(1);
+    Xobject gmoveOpt = gmoveDecl.getArg(0); // NORMAL | IN | OUT
+    Xobject asyncOpt = gmoveDecl.getArg(1);
+    //Xobject Opt = gmoveDecl.getArg(2);
 
     // check body is single statement.
     Block b = body.getHead();
@@ -739,6 +756,12 @@ public class XMPanalyzePragma
     if(XMP.hasError()) return;
     
     info.setGmoveOperands(left,right);
+
+    if (asyncOpt != null && !XmOption.isAsync()){
+      XMP.errorAt(pb, "MPI-3 is required to use the async clause on a gmove directive");
+    }
+
+    info.setAsyncId(asyncOpt);
   }
 
   private boolean checkGmoveOperand(Xobject x, PragmaBlock pb){

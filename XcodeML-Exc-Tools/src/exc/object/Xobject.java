@@ -1,24 +1,7 @@
 /* 
- * $TSUKUBA_Release: Omni Compiler Version 0.9.1 $
+ * $TSUKUBA_Release: Omni OpenMP Compiler 3 $
  * $TSUKUBA_Copyright:
- *  Copyright (C) 2010-2014 University of Tsukuba, 
- *  	      2012-2014  University of Tsukuba and Riken AICS
- *  
- *  This software is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU Lesser General Public License version
- *  2.1 published by the Free Software Foundation.
- *  
- *  Please check the Copyright and License information in the files named
- *  COPYRIGHT and LICENSE under the top  directory of the Omni Compiler
- *  Software release kit.
- *  
- *  * The specification of XcalableMP has been designed by the XcalableMP
- *    Specification Working Group (http://www.xcalablemp.org/).
- *  
- *  * The development of this software was partially supported by "Seamless and
- *    Highly-productive Parallel Programming Environment for
- *    High-performance computing" project funded by Ministry of Education,
- *    Culture, Sports, Science and Technology, Japan.
+ *  PLEASE DESCRIBE LICENSE AGREEMENT HERE
  *  $
  */
 package exc.object;
@@ -268,6 +251,11 @@ public class Xobject extends PropObject implements IXobject, XobjectVisitable, I
         throw new UnsupportedOperationException(toString());
     }
     
+    public boolean canGetInt()
+    {
+        return false;
+    }
+
     /**
      * Returns string in XobjString.
      * Dummy method at base class, it causes exception.
@@ -886,13 +874,90 @@ public class Xobject extends PropObject implements IXobject, XobjectVisitable, I
       return this.copy();
     }
 
+    public Xobject lbound(int dim)
+    {
+      Fshape shape = new Fshape(this);
+      return shape.lbound(dim);
+    }
+    public Xobject lbound(int dim, Block block)
+    {
+      Fshape shape = new Fshape(this, block);
+      return shape.lbound(dim);
+    }
+  
+    public Xobject[] lbounds()
+    {
+      Fshape shape = new Fshape(this);
+      return shape.lbounds();
+    }
+    public Xobject[] lbounds(Block block)
+    {
+      Fshape shape = new Fshape(this, block);
+      return shape.lbounds();
+    }
+
+    public Xobject ubound(int dim)
+    {
+      Fshape shape = new Fshape(this);
+      return shape.ubound(dim);
+    }
+    public Xobject ubound(int dim, Block block)
+    {
+      Fshape shape = new Fshape(this, block);
+      return shape.ubound(dim);
+    }
+
+    public Xobject[] ubounds()
+    {
+      Fshape shape = new Fshape(this);
+      return shape.ubounds();
+    }
+    public Xobject[] ubounds(Block block)
+    {
+      Fshape shape = new Fshape(this, block);
+      return shape.ubounds();
+    }
+
+    public Xobject extent(int dim)
+    {
+      Fshape shape = new Fshape(this);
+      return shape.extent(dim);
+    }
+    public Xobject extent(int dim, Block block)
+    {
+      Fshape shape = new Fshape(this, block);
+      return shape.extent(dim);
+    }
+    public Xobject[] extents()
+
+    {
+      Fshape shape = new Fshape(this);
+      return shape.extents();
+    }
+    public Xobject[] extents(Block block)
+    {
+      Fshape shape = new Fshape(this, block);
+      return shape.extents();
+    }
+
     public Ident findVarIdent(String name)
     {
         return find(name, IXobject.FINDKIND_VAR);
+    }
+    public Ident findCommonIdent(String name)
+    {
+	return find(name, IXobject.FINDKIND_COMMON);
     }
 
     public boolean isEmptyList()
     {
 	return (this instanceof XobjList && ((XobjList)this).Nargs() == 0);
+    }
+
+    public boolean hasNullArg()
+    {
+      if (this instanceof XobjList)
+        return ((XobjList)this).hasNullArg();
+      return false;
     }
 }

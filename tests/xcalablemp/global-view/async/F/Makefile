@@ -1,4 +1,4 @@
-XCC     = xmpf90 -O2
+XCC     = xmpf90
 XRUN    = mpiexec
 TESTS = $(wildcard *.f90)
 EXES  = $(TESTS:.f90=.x)
@@ -16,6 +16,7 @@ all default: $(EXES)
 run: $(EXES)
 	$(XRUN) -n 8 ./bcast_async.x
 	$(XRUN) -n 8 ./plus2_async.x
+	$(XRUN) -n 4 ./gmove_async.x
 
 clean:
 	rm -f $(EXES) $(OBJS)

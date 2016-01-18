@@ -1,24 +1,6 @@
 /*
- * $TSUKUBA_Release: Omni Compiler Version 0.9.1 $
+ * $TSUKUBA_Release: $
  * $TSUKUBA_Copyright:
- *  Copyright (C) 2010-2014 University of Tsukuba, 
- *  	      2012-2014  University of Tsukuba and Riken AICS
- *  
- *  This software is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU Lesser General Public License version
- *  2.1 published by the Free Software Foundation.
- *  
- *  Please check the Copyright and License information in the files named
- *  COPYRIGHT and LICENSE under the top  directory of the Omni Compiler
- *  Software release kit.
- *  
- *  * The specification of XcalableMP has been designed by the XcalableMP
- *    Specification Working Group (http://www.xcalablemp.org/).
- *  
- *  * The development of this software was partially supported by "Seamless and
- *    Highly-productive Parallel Programming Environment for
- *    High-performance computing" project funded by Ministry of Education,
- *    Culture, Sports, Science and Technology, Japan.
  *  $
  */
 
@@ -79,6 +61,10 @@ public class XMPnodes extends XMPobject {
       globalDecl.checkObjectNameCollision(nodesName);
     }
 
+    // check static_desc
+    boolean is_static_desc = false;
+    if (isLocalPragma) is_static_desc = localXMPsymbolTable.isStaticDesc(nodesName);
+
     // declare nodes desciptor
     Ident nodesDescId = null;
     if (isLocalPragma) {
@@ -87,6 +73,8 @@ public class XMPnodes extends XMPobject {
     } else {
       nodesDescId = globalDecl.declStaticIdent(XMP.DESC_PREFIX_ + nodesName, Xtype.voidPtrType);
     }
+
+    if (is_static_desc) nodesDescId.setStorageClass(StorageClass.STATIC);
 
     // declare nodes object
     int nodesDim = 0;
@@ -157,8 +145,21 @@ public class XMPnodes extends XMPobject {
     if (isLocalPragma) {
       //XMPlocalDecl.addConstructorCall(initFuncName, nodesArgs, globalDecl, pb);
       //XMPlocalDecl.insertDestructorCall("_XMP_finalize_nodes", Xcons.List(nodesDescId.Ref()), globalDecl, pb);
-      XMPlocalDecl.addConstructorCall2(initFuncName, nodesArgs, globalDecl, parentBlock);
-      XMPlocalDecl.insertDestructorCall2("_XMP_finalize_nodes", Xcons.List(nodesDescId.Ref()), globalDecl, parentBlock);
+
+      if (is_static_desc){
+	//Ident flagId = XMPlocalDecl.addObjectId2(XMP.STATIC_DESC_PREFIX_ + nodesName, Xtype.intType, parentBlock,
+	//					 Xcons.IntConstant(0));
+	//flagId.setStorageClass(StorageClass.STATIC);
+	Ident flagId = parentBlock.getBody().declLocalIdent(XMP.STATIC_DESC_PREFIX_ + nodesName, Xtype.intType,
+							    StorageClass.STATIC, Xcons.IntConstant(0));
+	XMPlocalDecl.addConstructorCall2_staticDesc(initFuncName, nodesArgs, globalDecl, parentBlock, flagId, true);
+      }
+      else {
+	XMPlocalDecl.addConstructorCall2(initFuncName, nodesArgs, globalDecl, parentBlock);
+      }
+
+      if (!is_static_desc)
+	XMPlocalDecl.insertDestructorCall2("_XMP_finalize_nodes", Xcons.List(nodesDescId.Ref()), globalDecl, parentBlock);
     }
     else {
       globalDecl.addGlobalInitFuncCall(initFuncName, nodesArgs);

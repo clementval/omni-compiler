@@ -1,4 +1,4 @@
-XCC     = xmpcc -O2
+XCC     = xmpcc
 XRUN    = mpiexec
 TESTS = $(wildcard *.c)
 EXES  = $(TESTS:.c=.x)
@@ -16,6 +16,7 @@ all default: $(EXES)
 run: $(EXES)
 	$(XRUN) -n 16 ./bcast_async.x
 	$(XRUN) -n 8 ./plus2_async.x
+	$(XRUN) -n 4 ./gmove_async.x
 
 clean:
 	rm -f $(EXES) $(OBJS)

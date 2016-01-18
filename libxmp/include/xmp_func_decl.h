@@ -1,27 +1,3 @@
-/*
- * $TSUKUBA_Release: Omni Compiler Version 0.9.1 $
- * $TSUKUBA_Copyright:
- *  Copyright (C) 2010-2014 University of Tsukuba, 
- *  	      2012-2014  University of Tsukuba and Riken AICS
- *  
- *  This software is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU Lesser General Public License version
- *  2.1 published by the Free Software Foundation.
- *  
- *  Please check the Copyright and License information in the files named
- *  COPYRIGHT and LICENSE under the top  directory of the Omni Compiler
- *  Software release kit.
- *  
- *  * The specification of XcalableMP has been designed by the XcalableMP
- *    Specification Working Group (http://www.xcalablemp.org/).
- *  
- *  * The development of this software was partially supported by "Seamless and
- *    Highly-productive Parallel Programming Environment for
- *    High-performance computing" project funded by Ministry of Education,
- *    Culture, Sports, Science and Technology, Japan.
- *  $
- */
-
 #ifndef _XMP_RUNTIME_FUNC_DECL
 #define _XMP_RUNTIME_FUNC_DECL
 
@@ -79,18 +55,28 @@ extern void _XMP_bcast_NODES_ENTIRE_GLOBAL(void *bcast_nodes, void *addr, int co
                                            int from_lower, int from_upper, int from_stride);
 extern void _XMP_bcast_NODES_ENTIRE_NODES(void *bcast_nodes, void *addr, int count, size_t datatype_size, void *from_nodes, ...);
 
+// xmp_bcast_acc.c
+extern void _XMP_bcast_acc_NODES_ENTIRE_OMITTED(void *bcast_nodes, void *addr, int count, size_t datatype_size);
+extern void _XMP_bcast_acc_NODES_ENTIRE_GLOBAL(void *bcast_nodes, void *addr, int count, size_t datatype_size,
+                                           int from_lower, int from_upper, int from_stride);
+extern void _XMP_bcast_acc_NODES_ENTIRE_NODES(void *bcast_nodes, void *addr, int count, size_t datatype_size, void *from_nodes, ...);
+
 // xmp_coarray.c
 extern void _XMP_gasnet_not_continuous_put();
 extern void _XMP_gasnet_continuous_put();
 extern void _XMP_gasnet_not_continuous_get();
 extern void _XMP_gasnet_continuous_get();
-extern void _XMP_coarray_malloc_info_1(const int, const size_t);
-extern void _XMP_coarray_malloc_info_2(const int, const int, const size_t);
-extern void _XMP_coarray_malloc_info_3(const int, const int, const int, const size_t);
-extern void _XMP_coarray_malloc_info_4(const int, const int, const int, const int, const size_t);
-extern void _XMP_coarray_malloc_info_5(const int, const int, const int, const int, const int, const size_t);
-extern void _XMP_coarray_malloc_info_6(const int, const int, const int, const int, const int, const int, const size_t);
-extern void _XMP_coarray_malloc_info_7(const int, const int, const int, const int, const int, const int, const int, const size_t);
+extern void _XMP_coarray_malloc_info_1(const unsigned int, const size_t);
+extern void _XMP_coarray_malloc_info_2(const unsigned int, const unsigned int, const size_t);
+extern void _XMP_coarray_malloc_info_3(const unsigned int, const unsigned int, const unsigned int, const size_t);
+extern void _XMP_coarray_malloc_info_4(const unsigned int, const unsigned int, const unsigned int, const unsigned int, 
+				       const size_t);
+extern void _XMP_coarray_malloc_info_5(const unsigned int, const unsigned int, const unsigned int, const unsigned int, 
+				       const unsigned int, const size_t);
+extern void _XMP_coarray_malloc_info_6(const unsigned int, const unsigned int, const unsigned int, const unsigned int, 
+				       const unsigned int, const unsigned int, const size_t);
+extern void _XMP_coarray_malloc_info_7(const unsigned int, const unsigned int, const unsigned int, const unsigned int, 
+				       const unsigned int, const unsigned int, const unsigned int, const size_t);
 
 extern void _XMP_coarray_malloc_image_info_1();
 extern void _XMP_coarray_malloc_image_info_2(const int);
@@ -102,6 +88,8 @@ extern void _XMP_coarray_malloc_image_info_7(const int, const int, const int, co
 
 extern void _XMP_coarray_malloc_do_f(void **, void *);
 extern void _XMP_coarray_malloc_do(void **, void *);
+extern void _XMP_coarray_attach(void **, void *, const size_t);
+extern void _XMP_coarray_detach(void **);
 extern void _XMP_coarray_lastly_deallocate();
 
 extern void _XMP_coarray_rdma_coarray_set_1(const int, const int, const int);
@@ -166,13 +154,26 @@ extern void xmp_sync_memory(const int* status);
 extern void xmp_sync_all(const int* status);
 extern void xmp_sync_image(int image, int* status);
 extern void xmp_sync_image_f(int *image, int* status);
-extern void xmp_sync_images(int num, int* image_set, int* status);
-extern void xmp_sync_images_f(int *num, int* image_set, int* status);
+extern void xmp_sync_images(const int num, int* image_set, int* status);
+extern void xmp_sync_images_f(const int *num, int* image_set, int* status);
 extern void xmp_sync_images_all(int* status);
-extern void _XMP_coarray_shortcut_put(const int, const void*, const void*, const size_t, const size_t, const size_t);
-extern void _XMP_coarray_shortcut_put_f(const int*, const void*, const void*, const size_t*, const size_t*, const size_t*);
-extern void _XMP_coarray_shortcut_get(const int, const void*, const void*, const size_t, const size_t, const size_t);
-extern void _XMP_coarray_shortcut_get_f(const int*, const void*, const void*, const size_t*, const size_t*, const size_t*);
+extern void _XMP_coarray_shortcut_put(const int, void*, const void*, const size_t, const size_t, const size_t, const size_t);
+extern void _XMP_coarray_shortcut_put_f(const int*, void*, const void*, const size_t*, const size_t*, const size_t*, const size_t*);
+extern void _XMP_coarray_shortcut_get(const int, void*, const void*, const size_t, const size_t, const size_t, const size_t);
+extern void _XMP_coarray_shortcut_get_f(const int*, void*, const void*, const size_t*, const size_t*, const size_t*, const size_t*);
+
+// xmp_coarray_acc.c
+int _XMP_coarray_get_total_elmts(void *coarray_desc);
+void _XMP_coarray_malloc_do_acc(void **coarray_desc, void *addr);
+void _XMP_coarray_shortcut_put_acc(const int target_image, const void *dst_desc, const void *src_desc, 
+				   const size_t dst_offset, const size_t src_offset, 
+				   const size_t dst_elmts, const size_t src_elmts,
+				   const int is_dst_on_acc, const int is_src_on_acc);
+void _XMP_coarray_shortcut_get_acc(const int target_image, const void *dst_desc, const void *src_desc, 
+				   const size_t dst_offset, const size_t src_offset, 
+				   const size_t dst_elmts, const size_t src_elmts,
+				   const int is_dst_on_acc, const int is_src_on_acc);
+extern void _XMP_coarray_rdma_do_acc(const int, void*, void*, void *, const int, const int);
 
 // xmp_reflect_acc.c
 extern void _XMP_reflect_init_acc(void *, void *);
@@ -197,6 +198,16 @@ extern void _XMP_gmove_BCAST_ARRAY(void *src_array, int type, size_t type_size, 
 extern void _XMP_gmove_HOMECOPY_ARRAY(void *dst_array, int type, size_t type_size, ...);
 extern void _XMP_gmove_SENDRECV_ARRAY(void *dst_array, void *src_array, int type, size_t type_size, ...);
 extern void _XMP_gmove_BCAST_TO_NOTALIGNED_ARRAY(void *dst_array, void *src_array, int type, size_t type_size, ...);
+
+// xmp_gmove_acc.c
+extern void _XMP_gmove_acc_BCAST_SCALAR(void *dst_addr, void *src_addr, void *array, ...);
+extern int _XMP_gmove_acc_HOMECOPY_SCALAR(void *array, ...);
+extern void _XMP_gmove_acc_SENDRECV_SCALAR(void *dst_addr, void *src_addr, void *dst_array, void *src_array, ...);
+extern void _XMP_gmove_acc_LOCALCOPY_ARRAY(int type, size_t type_size, ...);
+extern void _XMP_gmove_acc_BCAST_ARRAY(void *src_array, int type, size_t type_size, ...);
+extern void _XMP_gmove_acc_HOMECOPY_ARRAY(void *dst_array, int type, size_t type_size, ...);
+extern void _XMP_gmove_acc_SENDRECV_ARRAY(void *dst_array, void *src_array, void *dst_array_dev, void *src_array_dev, int type, size_t type_size, ...);
+extern void _XMP_gmove_acc_BCAST_TO_NOTALIGNED_ARRAY(void *dst_array, void *src_array, int type, size_t type_size, ...);
 
 // xmp_loop.c
 extern void _XMP_sched_loop_template_DUPLICATION(int ser_init, int ser_cond, int ser_step,
@@ -234,9 +245,11 @@ extern void _XMP_init_nodes_DYNAMIC_NODES_NUMBER(void **nodes, int dim,
 extern void _XMP_init_nodes_STATIC_NODES_NAMED(void **nodes, int dim, void *ref_nodes, ...);
 extern void _XMP_init_nodes_DYNAMIC_NODES_NAMED(void **nodes, int dim, void *ref_nodes, ...);
 extern void _XMP_finalize_nodes(void *nodes);
-extern int _XMP_exec_task_GLOBAL_PART(void **task_desc, int ref_lower, int ref_upper, int ref_stride);
+//extern int _XMP_exec_task_GLOBAL_PART(void **task_desc, int ref_lower, int ref_upper, int ref_stride);
 extern int _XMP_exec_task_NODES_ENTIRE(void **task_desc, void *ref_nodes);
+extern int _XMP_exec_task_NODES_ENTIRE_nocomm(void **task_desc, void *ref_nodes);
 extern int _XMP_exec_task_NODES_PART(void **task_desc, void *ref_nodes, ...);
+extern int _XMP_exec_task_NODES_PART_nocomm(void **task_desc, void *ref_nodes, ...);
 extern void _XMP_exec_task_NODES_FINALIZE(void *task_desc);
 
 // xmp_nodes_stack.c
@@ -302,6 +315,7 @@ extern void _XMP_dist_template_GBLOCK(void *template, int template_index, int no
 				      int *mapping_array, int *temp0);
 
 extern int _XMP_exec_task_TEMPLATE_PART(void **task_desc, void *ref_template, ...);
+extern int _XMP_exec_task_TEMPLATE_PART_nocomm(void **task_desc, void *ref_template, ...);
 extern long long int _XMP_L2G_GBLOCK(int local_idx, void *template, int template_index);
 
 // xmp_util.c
@@ -315,30 +329,49 @@ extern void _XMP_init_world(int *argc, char ***argv);
 extern void _XMP_finalize_world(void);
 
 // xmp_post.c
-extern void _XMP_post_1(const void*, const int n1, const int t);
-extern void _XMP_post_2(const void*, const int n1, const int n2, const int t);
-extern void _XMP_post_3(const void*, const int n1, const int n2, const int n3, const int t);
-extern void _XMP_post_4(const void*, const int n1, const int n2, const int n3, const int n4, const int t);
-extern void _XMP_post_5(const void*, const int n1, const int n2, const int n3, const int n4, const int n5, const int t);
-extern void _XMP_post_6(const void*, const int n1, const int n2, const int n3, const int n4, const int n5, const int n6, const int t);
-extern void _XMP_post_7(const void*, const int n1, const int n2, const int n3, const int n4, const int n5, const int n6, const int n7, const int t);
+extern void _XMP_post_1(const void*, const int, const int);
+extern void _XMP_post_2(const void*, const int, const int, const int);
+extern void _XMP_post_3(const void*, const int, const int, const int, const int);
+extern void _XMP_post_4(const void*, const int, const int, const int, const int, const int);
+extern void _XMP_post_5(const void*, const int, const int, const int, const int, const int, const int);
+extern void _XMP_post_6(const void*, const int, const int, const int, const int, const int, const int, const int);
+extern void _XMP_post_7(const void*, const int, const int, const int, const int, const int, const int, const int, const int);
 
 extern void _XMP_wait_noargs();
-extern void _XMP_wait_1(const void*, const int n1, const int t);
-extern void _XMP_wait_2(const void*, const int n1, const int n2, const int t);
-extern void _XMP_wait_3(const void*, const int n1, const int n2, const int n3, const int t);
-extern void _XMP_wait_4(const void*, const int n1, const int n2, const int n3, const int n4, const int t);
-extern void _XMP_wait_5(const void*, const int n1, const int n2, const int n3, const int n4, const int n5, const int t);
-extern void _XMP_wait_6(const void*, const int n1, const int n2, const int n3, const int n4, const int n5, const int n6, const int t);
-extern void _XMP_wait_7(const void*, const int n1, const int n2, const int n3, const int n4, const int n5, const int n6, const int n7, const int t);
+extern void _XMP_wait_1(const void*, const int, const int);
+extern void _XMP_wait_2(const void*, const int, const int, const int);
+extern void _XMP_wait_3(const void*, const int, const int, const int, const int);
+extern void _XMP_wait_4(const void*, const int, const int, const int, const int, const int);
+extern void _XMP_wait_5(const void*, const int, const int, const int, const int, const int, const int);
+extern void _XMP_wait_6(const void*, const int, const int, const int, const int, const int, const int, const int);
+extern void _XMP_wait_7(const void*, const int, const int, const int, const int, const int, const int, const int, const int);
 
-extern void _XMP_wait_node_1(const void*, const int n1);
-extern void _XMP_wait_node_2(const void*, const int n1, const int n2);
-extern void _XMP_wait_node_3(const void*, const int n1, const int n2, const int n3);
-extern void _XMP_wait_node_4(const void*, const int n1, const int n2, const int n3, const int n4);
-extern void _XMP_wait_node_5(const void*, const int n1, const int n2, const int n3, const int n4, const int n5);
-extern void _XMP_wait_node_6(const void*, const int n1, const int n2, const int n3, const int n4, const int n5, const int n6);
-extern void _XMP_wait_node_7(const void*, const int n1, const int n2, const int n3, const int n4, const int n5, const int n6, const int n7);
+extern void _XMP_wait_node_1(const void*, const int);
+extern void _XMP_wait_node_2(const void*, const int, const int);
+extern void _XMP_wait_node_3(const void*, const int, const int, const int);
+extern void _XMP_wait_node_4(const void*, const int, const int, const int, const int);
+extern void _XMP_wait_node_5(const void*, const int, const int, const int, const int, const int);
+extern void _XMP_wait_node_6(const void*, const int, const int, const int, const int, const int, const int);
+extern void _XMP_wait_node_7(const void*, const int, const int, const int, const int, const int, const int, const int);
+
+// xmp_lock.c
+extern void _XMP_lock_0(const void*, const unsigned int);
+extern void _XMP_lock_1(const void*, const unsigned int, const int);
+extern void _XMP_lock_2(const void*, const unsigned int, const int, const int);
+extern void _XMP_lock_3(const void*, const unsigned int, const int, const int, const int);
+extern void _XMP_lock_4(const void*, const unsigned int, const int, const int, const int, const int);
+extern void _XMP_lock_5(const void*, const unsigned int, const int, const int, const int, const int, const int);
+extern void _XMP_lock_6(const void*, const unsigned int, const int, const int, const int, const int, const int, const int);
+extern void _XMP_lock_7(const void*, const unsigned int, const int, const int, const int, const int, const int, const int, const int);
+
+extern void _XMP_unlock_0(const void*, const unsigned int);
+extern void _XMP_unlock_1(const void*, const unsigned int, const int);
+extern void _XMP_unlock_2(const void*, const unsigned int, const int, const int);
+extern void _XMP_unlock_3(const void*, const unsigned int, const int, const int, const int);
+extern void _XMP_unlock_4(const void*, const unsigned int, const int, const int, const int, const int);
+extern void _XMP_unlock_5(const void*, const unsigned int, const int, const int, const int, const int, const int);
+extern void _XMP_unlock_6(const void*, const unsigned int, const int, const int, const int, const int, const int, const int);
+extern void _XMP_unlock_7(const void*, const unsigned int, const int, const int, const int, const int, const int, const int, const int);
 
 // ----- libxmp_threads
 // xmp_threads_runtime.c
@@ -375,4 +408,17 @@ extern void xmp_unpack(void *a_p, void *v_p, void *m_p);
 extern void xmp_gather(void *, void *, ...);
 extern void xmp_scatter(void *, void *, ...);
 
+// xmp_lock_unlock.c
+extern void _XMP_lock_initialize_1(void*, const unsigned int);
+extern void _XMP_lock_initialize_2(void*, const unsigned int, const unsigned int);
+extern void _XMP_lock_initialize_3(void*, const unsigned int, const unsigned int, const unsigned int);
+extern void _XMP_lock_initialize_4(void*, const unsigned int, const unsigned int, const unsigned int,
+				   const unsigned int);
+extern void _XMP_lock_initialize_5(void*, const unsigned int, const unsigned int, const unsigned int,
+				   const unsigned int, const unsigned int);
+extern void _XMP_lock_initialize_6(void*, const unsigned int, const unsigned int, const unsigned int,
+				   const unsigned int, const unsigned int, const unsigned int);
+extern void _XMP_lock_initialize_7(void*, const unsigned int, const unsigned int, const unsigned int,
+				   const unsigned int, const unsigned int, const unsigned int,
+				   const unsigned int);
 #endif // _XMP_RUNTIME_FUNC_DECL

@@ -1,24 +1,6 @@
 /*
- * $TSUKUBA_Release: Omni Compiler Version 0.9.1 $
+ * $TSUKUBA_Release: $
  * $TSUKUBA_Copyright:
- *  Copyright (C) 2010-2014 University of Tsukuba, 
- *  	      2012-2014  University of Tsukuba and Riken AICS
- *  
- *  This software is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU Lesser General Public License version
- *  2.1 published by the Free Software Foundation.
- *  
- *  Please check the Copyright and License information in the files named
- *  COPYRIGHT and LICENSE under the top  directory of the Omni Compiler
- *  Software release kit.
- *  
- *  * The specification of XcalableMP has been designed by the XcalableMP
- *    Specification Working Group (http://www.xcalablemp.org/).
- *  
- *  * The development of this software was partially supported by "Seamless and
- *    Highly-productive Parallel Programming Environment for
- *    High-performance computing" project funded by Ministry of Education,
- *    Culture, Sports, Science and Technology, Japan.
  *  $
  */
 #ifndef MPI_PORTABLE_PLATFORM_H
@@ -591,6 +573,71 @@ int _XMP_exec_task_TEMPLATE_PART(_XMP_task_desc_t **task_desc, _XMP_template_t *
   } else {
     return _XMP_N_INT_FALSE;
   }
+}
+
+_Bool union_triplet(int lb0, int ub0, int st0, int lb1, int ub1, int st1);
+
+int _XMP_exec_task_TEMPLATE_PART_nocomm(_XMP_template_t *ref_template, ...) {
+
+  if (!ref_template->is_owner) return _XMP_N_INT_FALSE;
+
+  int ref_dim = ref_template->dim;
+
+  int shrink[ref_dim];
+  long long lower[ref_dim], upper[ref_dim], stride[ref_dim];
+
+  va_list args;
+  va_start(args, ref_template);
+
+  for (int i = 0; i < ref_dim; i++) {
+    shrink[i] = va_arg(args, int);
+    if (!shrink[i]) {
+      lower[i] = va_arg(args, long long);
+      upper[i] = va_arg(args, long long);
+      stride[i] = va_arg(args, long long);
+    }
+  }
+
+  va_end(args);
+
+  for (int i = 0; i < ref_dim; i++){
+
+    if (shrink[i]) continue;
+
+    _XMP_template_chunk_t *chunk = &ref_template->chunk[i];
+    long long plb = chunk->par_lower;
+    long long pub = chunk->par_upper;
+    int pst = chunk->par_stride;
+
+    switch (chunk->dist_manner){
+
+    case _XMP_N_DIST_DUPLICATION:
+      break;
+
+    case _XMP_N_DIST_BLOCK:
+    case _XMP_N_DIST_GBLOCK:
+      if (pub < lower[i] || upper[i] < plb) return _XMP_N_INT_FALSE;
+      break;
+
+    case _XMP_N_DIST_CYCLIC:
+      if (union_triplet(lower[i], upper[i], stride[i], plb, pub, pst)) break;
+      return _XMP_N_INT_FALSE;
+
+    case _XMP_N_DIST_BLOCK_CYCLIC:
+      for (int i = 0; i < chunk->par_width; i++){
+	if (union_triplet(lower[i], upper[i], stride[i], plb+i, pub, pst)) goto next;
+      }
+      return _XMP_N_INT_FALSE;
+    next:
+      break;
+    default:
+      _XMP_fatal("_XMP_exec_task_TEMPLATE_PART_nocomm: unknown dist_manner");
+    }
+
+  }
+
+  return _XMP_N_INT_TRUE;
+
 }
 
 // 0-origin

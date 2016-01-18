@@ -1,4 +1,4 @@
-XCC     = xmpcc -O2
+XCC     = xmpcc
 XRUN    = mpiexec
 TESTS = $(wildcard *.c)
 EXES  = $(TESTS:.c=.x)
@@ -37,12 +37,12 @@ run: $(EXES)
 	$(XRUN) -n 8 ./reduction_raise2.x
 	$(XRUN) -n 8 ./reduction_max2.x
 	$(XRUN) -n 8 ./reduction_min2.x
-	$(XRUN) -n 8 ./reduction_mult2.x
 	$(XRUN) -n 8 ./reduction_or2.x
 	$(XRUN) -n 8 ./reduction_plus.x
 	$(XRUN) -n 16 ./reduction_plus3.x
 	$(XRUN) -n 2 ./different_template.x
 	$(XRUN) -n 2 ./158_idx.x
+	$(XRUN) -n 2 ./105_loop.x
 
 clean:
 	rm -f $(EXES) $(OBJS)

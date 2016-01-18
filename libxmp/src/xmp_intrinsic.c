@@ -1774,6 +1774,7 @@ static void var_mul(_XMP_array_t *x_d, char *x_p, char *a_p, char *b_p)
          *x_var += *a_var * *b_var;
       }
       break;
+#ifdef __STD_IEC_559_COMPLEX__
    case _XMP_N_TYPE_FLOAT_IMAGINARY:
       {
          float *x_var = (float*)x_p;
@@ -1798,6 +1799,7 @@ static void var_mul(_XMP_array_t *x_d, char *x_p, char *a_p, char *b_p)
          *x_var -= *a_var * *b_var;
       }
       break;
+#endif
    case _XMP_N_TYPE_FLOAT_COMPLEX:
       {
          float _Complex *x_var = (float _Complex*)x_p;
@@ -3964,6 +3966,7 @@ static void xmp_gather_get_mpi_type(int type, MPI_Datatype *mpi_type)
    case _XMP_N_TYPE_LONG_DOUBLE:
       *mpi_type = MPI_DOUBLE;
       break;
+#ifdef __STD_IEC_559_COMPLEX__
    case _XMP_N_TYPE_FLOAT_IMAGINARY:
       *mpi_type = MPI_COMPLEX;
       break;
@@ -3971,6 +3974,7 @@ static void xmp_gather_get_mpi_type(int type, MPI_Datatype *mpi_type)
       break;
    case _XMP_N_TYPE_LONG_DOUBLE_IMAGINARY:
       break;
+#endif
    case _XMP_N_TYPE_FLOAT_COMPLEX:
       *mpi_type = MPI_COMPLEX;
       break;
@@ -4498,7 +4502,7 @@ static void xmp_gather_alla2x(_XMP_array_t *x_d,
 static void xmp_gather_all_array(_XMP_array_t *array, char **all)
 {
    MPI_Comm      *exec_comm;
-   MPI_Datatype  mpi_type = NULL;
+   MPI_Datatype  mpi_type = MPI_INT; // "MPI_INT" is used to initialize
    int   i,j;
    int   total_size;
    int   l_offset;
@@ -4767,7 +4771,7 @@ static void xmp_scatter_kernel(void *x_p, void *a_p, _XMP_array_t **idx_array)
    _XMP_array_t *x_d = NULL;
    _XMP_array_t *a_d = NULL;
    MPI_Comm     *exec_comm;
-   MPI_Datatype mpi_type = NULL;
+   MPI_Datatype mpi_type = MPI_INT; // "MPI_INT" is used to initialize
    int   duplicate;
    int   i,j;
    int   x_total_size;

@@ -4,7 +4,7 @@
   initialization
 \*****************************************/
 
-static int _this_image, _num_images;
+int XMPF_this_image, XMPF_num_images;
 
 void _XMPF_set_this_image()
 {
@@ -15,9 +15,16 @@ void _XMPF_set_this_image()
   if (MPI_Comm_rank(MPI_COMM_WORLD, &rank) != 0)
     _XMPF_coarrayFatal("INTERNAL ERROR: illegal node rank of mine");
 
-  _num_images = size;
-  _this_image = rank + 1;
+  XMPF_num_images = size;
+  XMPF_this_image = rank + 1;
 }
+
+
+/*****************************************\
+  inquire functions
+\*****************************************/
+
+/* see in xmpf_coarray_alloc.c */
 
 
 /*****************************************\
@@ -30,7 +37,7 @@ int num_images_(void)
 {
   _XMPF_checkIfInTask("NUM_IMAGES");
 
-  return _num_images;
+  return XMPF_num_images;
 }
 
 
@@ -40,31 +47,47 @@ int this_image_(void)
 {
   _XMPF_checkIfInTask("THIS_IMAGE");
 
-  return _this_image;
+  return XMPF_this_image;
 }
 
 
 /*****************************************\
   sync all
+  All arguments, which are described to prohibit overoptimization 
+  of compiler, are ignored in this library.
 \*****************************************/
 
-void xmpf_sync_all_nostat_(void)
-{
-  static unsigned int id = 0;
+static unsigned int _count_syncall = 0;
 
+void xmpf_sync_all_(void)
+{
   _XMPF_checkIfInTask("syncall nostat");
 
-  id += 1;
+  _count_syncall += 1;
 
-  int status;
+  int status = 0;
   xmp_sync_all(&status);
-  //  if (status != 0)
-  //    _XMPF_coarrayFatal("SYNC ALL failed (xmpf_sync_all_nostat_)");
 
-  _XMPF_coarrayDebugPrint("SYNCALL out (id=%d)\n", id);
+  _XMPF_coarrayDebugPrint("SYNCALL done (count:%d, stat:%d)\n",
+                          _count_syncall, status);
 }
 
-void xmpf_sync_all_stat_(int *stat, char *msg, int *msglen)
+/* entry for automatic syncall at the end of procedures
+ */
+void xmpf_sync_all_auto_(void)
+{
+  _XMPF_checkIfInTask("syncall nostat");
+
+  _count_syncall += 1;
+
+  int status = 0;
+  xmp_sync_all(&status);
+
+  _XMPF_coarrayDebugPrint("SYNCALL_AUTO done (count:%d, stat:%d)\n",
+                          _count_syncall, status);
+}
+
+void xmpf_sync_all_stat_core_(int *stat, char *msg, int *msglen)
 {
   _XMPF_checkIfInTask("syncall with stat");
 
@@ -78,8 +101,6 @@ void xmpf_sync_all_stat_(int *stat, char *msg, int *msglen)
 
   int status;
   xmp_sync_all(&status);
-  //  if (status != 0)
-  //    _XMPF_coarrayFatal("SYNC ALL failed (xmpf_sync_all_stat_)");
 }
 
 
@@ -113,6 +134,15 @@ void xmpf_sync_memory_stat_(int *stat, char *msg, int *msglen)
   xmp_sync_memory(&status);
   //  if (status != 0)
   //    _XMPF_coarrayFatal("SYNC MEMORY failed (xmpf_sync_memory_stat_)");
+}
+
+
+/* dummy function to supress compiler optimization
+ * usage: in a Fortran program:
+ *  call xmpf_touch(<any_variable_name> ...)
+ */
+void xmpf_touch_(void)
+{
 }
 
 

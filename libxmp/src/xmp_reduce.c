@@ -1,24 +1,6 @@
 /*
- * $TSUKUBA_Release: Omni Compiler Version 0.9.1 $
+ * $TSUKUBA_Release: $
  * $TSUKUBA_Copyright:
- *  Copyright (C) 2010-2014 University of Tsukuba, 
- *  	      2012-2014  University of Tsukuba and Riken AICS
- *  
- *  This software is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU Lesser General Public License version
- *  2.1 published by the Free Software Foundation.
- *  
- *  Please check the Copyright and License information in the files named
- *  COPYRIGHT and LICENSE under the top  directory of the Omni Compiler
- *  Software release kit.
- *  
- *  * The specification of XcalableMP has been designed by the XcalableMP
- *    Specification Working Group (http://www.xcalablemp.org/).
- *  
- *  * The development of this software was partially supported by "Seamless and
- *    Highly-productive Parallel Programming Environment for
- *    High-performance computing" project funded by Ministry of Education,
- *    Culture, Sports, Science and Technology, Japan.
  *  $
  */
 #ifndef MPI_PORTABLE_PLATFORM_H
@@ -37,7 +19,7 @@ extern _Bool is_async;
 extern int _async_id;
 #endif
 
-static void _XMP_setup_reduce_type(MPI_Datatype *mpi_datatype, size_t *datatype_size, int datatype) {
+void _XMP_setup_reduce_type(MPI_Datatype *mpi_datatype, size_t *datatype_size, int datatype) {
   switch (datatype) {
     case _XMP_N_TYPE_BOOL:
       //{ *mpi_datatype = MPI_C_BOOL;			*datatype_size = sizeof(_Bool); 			break; }
@@ -68,18 +50,24 @@ static void _XMP_setup_reduce_type(MPI_Datatype *mpi_datatype, size_t *datatype_
       { *mpi_datatype = MPI_DOUBLE;			*datatype_size = sizeof(double); 			break; }
     case _XMP_N_TYPE_LONG_DOUBLE:
       { *mpi_datatype = MPI_LONG_DOUBLE;		*datatype_size = sizeof(long double); 			break; }
-//  case _XMP_N_TYPE_FLOAT_IMAGINARY:
-//    { *mpi_datatype = MPI_FLOAT;			*datatype_size = sizeof(float _Imaginary); 		break; }
-//  case _XMP_N_TYPE_DOUBLE_IMAGINARY:
-//    { *mpi_datatype = MPI_DOUBLE;			*datatype_size = sizeof(double _Imaginary); 		break; }
-//  case _XMP_N_TYPE_LONG_DOUBLE_IMAGINARY:
-//    { *mpi_datatype = MPI_LONG_DOUBLE;		*datatype_size = sizeof(long double _Imaginary);	break; }
-//  case _XMP_N_TYPE_FLOAT_COMPLEX:
-//    { *mpi_datatype = MPI_C_FLOAT_COMPLEX;		*datatype_size = sizeof(float _Complex); 		break; }
-//  case _XMP_N_TYPE_DOUBLE_COMPLEX:
-//    { *mpi_datatype = MPI_C_DOUBLE_COMPLEX;		*datatype_size = sizeof(double _Complex); 		break; }
-//  case _XMP_N_TYPE_LONG_DOUBLE_COMPLEX:
-//    { *mpi_datatype = MPI_C_LONG_DOUBLE_COMPLEX;	*datatype_size = sizeof(long double _Complex); 		break; }
+#ifdef __STD_IEC_559_COMPLEX__
+    case _XMP_N_TYPE_FLOAT_IMAGINARY:
+      { *mpi_datatype = MPI_FLOAT;			*datatype_size = sizeof(float _Imaginary); 		break; }
+    case _XMP_N_TYPE_DOUBLE_IMAGINARY:
+      { *mpi_datatype = MPI_DOUBLE;			*datatype_size = sizeof(double _Imaginary); 		break; }
+    case _XMP_N_TYPE_LONG_DOUBLE_IMAGINARY:
+      { *mpi_datatype = MPI_LONG_DOUBLE;		*datatype_size = sizeof(long double _Imaginary);	break; }
+#endif
+
+#if ((MPI_VERSION >= 3) || (MPI_VERSION == 2 && MPI_SUBVERSION >= 2))
+    case _XMP_N_TYPE_FLOAT_COMPLEX:
+      { *mpi_datatype = MPI_C_FLOAT_COMPLEX;		*datatype_size = sizeof(float _Complex); 		break; }
+    case _XMP_N_TYPE_DOUBLE_COMPLEX:
+      { *mpi_datatype = MPI_C_DOUBLE_COMPLEX;		*datatype_size = sizeof(double _Complex); 		break; }
+    case _XMP_N_TYPE_LONG_DOUBLE_COMPLEX:
+      { *mpi_datatype = MPI_C_LONG_DOUBLE_COMPLEX;	*datatype_size = sizeof(long double _Complex); 		break; }
+#endif
+
     default:
       _XMP_fatal("unknown data type for reduction");
   }
@@ -180,9 +168,11 @@ static void _XMP_compare_reduce_results(int *cmp_buffer, void *temp_buffer, void
     case _XMP_N_TYPE_FLOAT:			_XMP_M_COMPARE_REDUCE_RESULTS_MAIN(float);
     case _XMP_N_TYPE_DOUBLE:			_XMP_M_COMPARE_REDUCE_RESULTS_MAIN(double);
     case _XMP_N_TYPE_LONG_DOUBLE:		_XMP_M_COMPARE_REDUCE_RESULTS_MAIN(long double);
+#ifdef __STD_IEC_559_COMPLEX__
     case _XMP_N_TYPE_FLOAT_IMAGINARY:
     case _XMP_N_TYPE_DOUBLE_IMAGINARY:
     case _XMP_N_TYPE_LONG_DOUBLE_IMAGINARY:
+#endif
     case _XMP_N_TYPE_FLOAT_COMPLEX:
     case _XMP_N_TYPE_DOUBLE_COMPLEX:
     case _XMP_N_TYPE_LONG_DOUBLE_COMPLEX:

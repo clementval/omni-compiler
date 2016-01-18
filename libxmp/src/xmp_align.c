@@ -1,24 +1,6 @@
 /*
- * $TSUKUBA_Release: Omni Compiler Version 0.9.1 $
+ * $TSUKUBA_Release: $
  * $TSUKUBA_Copyright:
- *  Copyright (C) 2010-2014 University of Tsukuba, 
- *  	      2012-2014  University of Tsukuba and Riken AICS
- *  
- *  This software is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU Lesser General Public License version
- *  2.1 published by the Free Software Foundation.
- *  
- *  Please check the Copyright and License information in the files named
- *  COPYRIGHT and LICENSE under the top  directory of the Omni Compiler
- *  Software release kit.
- *  
- *  * The specification of XcalableMP has been designed by the XcalableMP
- *    Specification Working Group (http://www.xcalablemp.org/).
- *  
- *  * The development of this software was partially supported by "Seamless and
- *    Highly-productive Parallel Programming Environment for
- *    High-performance computing" project funded by Ministry of Education,
- *    Culture, Sports, Science and Technology, Japan.
  *  $
  */
 #ifndef MPI_PORTABLE_PLATFORM_H
@@ -47,6 +29,8 @@ void _XMP_calc_array_dim_elmts(_XMP_array_t *array, int array_index) {
   array->info[array_index].dim_elmts = dim_elmts;
 }
 
+void _XMP_setup_reduce_type(MPI_Datatype *mpi_datatype, size_t *datatype_size, int datatype);
+
 void _XMP_init_array_desc(_XMP_array_t **array, _XMP_template_t *template, int dim,
                           int type, size_t type_size, ...) {
   _XMP_array_t *a = _XMP_alloc(sizeof(_XMP_array_t) + sizeof(_XMP_array_info_t) * (dim - 1));
@@ -56,9 +40,14 @@ void _XMP_init_array_desc(_XMP_array_t **array, _XMP_template_t *template, int d
   a->dim = dim;
   a->type = type;
   a->type_size = type_size;
+  size_t dummy;
+  _XMP_setup_reduce_type(&a->mpi_type, &dummy, type);
+  a->order = MPI_ORDER_C;
   a->array_addr_p = NULL;
 
   a->total_elmts = 0;
+
+  a->async_reflect = NULL;
 
   a->align_comm = NULL;
   a->align_comm_size = 1;
@@ -101,6 +90,79 @@ void _XMP_init_array_desc(_XMP_array_t **array, _XMP_template_t *template, int d
   *array = a;
 }
 
+// NOTE: adesc created by this function is NOT complete. For use only in gmove_1to1.
+void _XMP_init_array_desc_NOT_ALIGNED(_XMP_array_t **adesc, _XMP_template_t *template, int ndims,
+				      int type, size_t type_size, unsigned long long *dim_acc, void *ap){
+
+  _XMP_array_t *a = _XMP_alloc(sizeof(_XMP_array_t) + sizeof(_XMP_array_info_t) * (ndims - 1));
+
+  a->is_allocated = template->is_owner;
+  a->is_align_comm_member = false;
+  a->dim = ndims;
+  a->type = type;
+  a->type_size = type_size;
+  size_t dummy;
+  _XMP_setup_reduce_type(&a->mpi_type, &dummy, type);
+  a->order = MPI_ORDER_C;
+  a->array_addr_p = ap;
+
+  a->total_elmts = -1; // local (non-aligned) data
+
+  a->async_reflect = NULL;
+
+  a->align_comm = NULL;
+  a->align_comm_size = 1;
+  a->align_comm_rank = _XMP_N_INVALID_RANK;
+
+  a->is_shrunk_template = false;
+
+  a->align_template = template;
+
+  for (int i = 0; i < ndims; i++) {
+
+    _XMP_array_info_t *ai = &(a->info[i]);
+
+    ai->is_shadow_comm_member = false;
+    ai->is_regular_chunk = true;
+    ai->align_manner = _XMP_N_ALIGN_NOT_ALIGNED;
+
+    ai->ser_lower = 0;
+    /* ai->ser_upper = 0; */
+    /* ai->ser_size = 0; */
+
+    /* ai->par_lower = 0 */
+    /* ai->par_upper = 0 */
+    /* ai->par_stride = 0; */
+    /* ai->par_size = 0; */
+
+    /* ai->local_lower = 0; */
+    /* ai->local_upper = 0; */
+    /* ai->local_stride = 0; */
+    /* ai->alloc_size = 0; */
+
+    ai->dim_acc = dim_acc[i];
+    //ai->dim_elmts = 0;
+
+    ai->align_subscript = 0;
+
+    ai->shadow_type = _XMP_N_SHADOW_NONE;
+    //ai->shadow_size_lo  = 0;
+    //ai->shadow_size_hi  = 0;
+
+    ai->reflect_sched = NULL;
+    ai->shadow_comm = NULL;
+    ai->shadow_comm_size = 1;
+    ai->shadow_comm_rank = _XMP_N_INVALID_RANK;
+
+    ai->align_template_index = _XMP_N_NO_ALIGN_TEMPLATE;
+
+  }
+
+  *adesc = a;
+
+}
+
+
 void _XMP_finalize_array_desc(_XMP_array_t *array) {
   int dim = array->dim;
 
@@ -138,6 +200,19 @@ void _XMP_finalize_array_desc(_XMP_array_t *array) {
       _XMP_free(reflect_sched);
     }
 
+  }
+
+  _XMP_async_reflect_t *async_reflect = array->async_reflect;
+  if (async_reflect){
+    for (int i = 0; i < async_reflect->nreqs; i++){
+      if (async_reflect->datatype[i] != MPI_DATATYPE_NULL)
+	MPI_Type_free(&async_reflect->datatype[i]);
+      if (async_reflect->reqs[i] != MPI_REQUEST_NULL)
+	MPI_Request_free(&async_reflect->reqs[i]);
+    }
+    _XMP_free(async_reflect->datatype);
+    _XMP_free(async_reflect->reqs);
+    _XMP_free(async_reflect);
   }
 
 /*   for (int i = 0; i < array->num_reqs; i++){ */

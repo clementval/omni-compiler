@@ -1,24 +1,7 @@
 /* 
- * $TSUKUBA_Release: Omni Compiler Version 0.9.1 $
+ * $TSUKUBA_Release: Omni XcalableMP Compiler 3 $
  * $TSUKUBA_Copyright:
- *  Copyright (C) 2010-2014 University of Tsukuba, 
- *  	      2012-2014  University of Tsukuba and Riken AICS
- *  
- *  This software is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU Lesser General Public License version
- *  2.1 published by the Free Software Foundation.
- *  
- *  Please check the Copyright and License information in the files named
- *  COPYRIGHT and LICENSE under the top  directory of the Omni Compiler
- *  Software release kit.
- *  
- *  * The specification of XcalableMP has been designed by the XcalableMP
- *    Specification Working Group (http://www.xcalablemp.org/).
- *  
- *  * The development of this software was partially supported by "Seamless and
- *    Highly-productive Parallel Programming Environment for
- *    High-performance computing" project funded by Ministry of Education,
- *    Culture, Sports, Science and Technology, Japan.
+ *  PLEASE DESCRIBE LICENSE AGREEMENT HERE
  *  $
  */
 package exc.xmpF;
@@ -173,6 +156,7 @@ public class XMPtransPragma
     case SHADOW:
     case LOCAL_ALIAS:
     case COARRAY:
+    case SAVE_DESC:
       /* declaration directives, do nothing */
       return Bcons.emptyBlock();
 
@@ -322,6 +306,9 @@ public class XMPtransPragma
 
     ret_body.add(pb.getBody().getHead()); // loop
 
+    Ident f = env.declInternIdent(XMP.ref_dealloc_f, Xtype.FsubroutineType);
+    ret_body.add(f.callSubroutine(Xcons.List(on_ref.getDescId())));
+
     if(info.getReductionOp() != XMP.REDUCE_NONE){
       ret_body.add(translateReduction(pb,info));
     }
@@ -411,6 +398,11 @@ public class XMPtransPragma
     Ident f = env.declInternIdent(XMP.barrier_f,
 				  Xtype.FsubroutineType);
     ret_body.add(f.callSubroutine(Xcons.List(on_ref_arg)));
+
+    if (on_ref != null){
+      Ident g = env.declInternIdent(XMP.ref_dealloc_f, Xtype.FsubroutineType);
+      ret_body.add(g.callSubroutine(Xcons.List(on_ref.getDescId())));
+    }
 
     return Bcons.COMPOUND(ret_body);
   }
@@ -506,6 +498,11 @@ public class XMPtransPragma
       Xobject arg = Xcons.List(info.getAsyncId());
       Ident g = env.declInternIdent(XMP.start_async_f, Xtype.FsubroutineType);
       ret_body.add(g.callSubroutine(arg));
+    }
+
+    if (on_ref != null){
+      Ident g = env.declInternIdent(XMP.ref_dealloc_f, Xtype.FsubroutineType);
+      ret_body.add(g.callSubroutine(Xcons.List(on_ref.getDescId())));
     }
 
     return Bcons.COMPOUND(ret_body);
@@ -604,6 +601,16 @@ public class XMPtransPragma
       ret_body.add(g.callSubroutine(arg));
     }
 
+    if (on_ref != null){
+      Ident g = env.declInternIdent(XMP.ref_dealloc_f, Xtype.FsubroutineType);
+      ret_body.add(g.callSubroutine(Xcons.List(on_ref.getDescId())));
+    }
+
+    if (from_ref != null){
+      Ident g = env.declInternIdent(XMP.ref_dealloc_f, Xtype.FsubroutineType);
+      ret_body.add(g.callSubroutine(Xcons.List(from_ref.getDescId())));
+    }
+
     return Bcons.COMPOUND(ret_body);
   }
 
@@ -637,21 +644,69 @@ public class XMPtransPragma
     // when '*' = the executing node set is specified
     if (on_ref == null) return Bcons.COMPOUND(pb.getBody());
 
-    ret_body.add(on_ref.buildConstructor(env));
-    Ident f = env.declInternIdent(XMP.test_task_on_f,
-				  Xtype.FlogicalFunctionType);
-    Xobject cond = f.Call(Xcons.List(on_ref.getDescId().Ref()));
+    Block parentBlock = pb.getParentBlock();
+    boolean tasksFlag = false;
+    if (parentBlock != null && parentBlock instanceof PragmaBlock){
+      XMPinfo parentInfo = (XMPinfo)parentBlock.getProp(XMP.prop);
+      if (parentInfo != null && parentInfo.pragma == XMPpragma.TASKS) tasksFlag = true;
+    }
+
+    Block b = on_ref.buildConstructor(env);
+    BasicBlock bb = b.getBasicBlock();
+
+    Ident taskNodesDescId = env.declObjectId(XMP.genSym("XMP_TASK_NODES"), pb);
+
+    Ident f;
+    if (!info.isNocomm()){
+      f = env.declInternIdent(XMP.create_task_nodes_f, Xtype.FsubroutineType);
+      bb.add(f.callSubroutine(Xcons.List(taskNodesDescId, on_ref.getDescId().Ref())));
+    }
+
+    Ident g1 = env.declInternIdent(XMP.nodes_dealloc_f, Xtype.FsubroutineType);
+    Ident g2 = env.declInternIdent(XMP.ref_dealloc_f, Xtype.FsubroutineType);
+
+    if (tasksFlag){
+      //parentBlock.insert(on_ref.buildConstructor(env));
+      parentBlock.insert(b);
+      parentBlock.add(g1.callSubroutine(Xcons.List(taskNodesDescId)));
+      parentBlock.add(g2.callSubroutine(Xcons.List(on_ref.getDescId())));
+    }
+    else {
+      //ret_body.add(on_ref.buildConstructor(env));
+      ret_body.add(b);
+    }
+
+    Xobject cond = null;
+    if (!info.isNocomm()){
+      f = env.declInternIdent(XMP.test_task_on_f,
+			      Xtype.FlogicalFunctionType);
+      //Xobject cond = f.Call(Xcons.List(on_ref.getDescId().Ref()));
+      cond = f.Call(Xcons.List(taskNodesDescId.Ref()));
+    }
+    else {
+      f = env.declInternIdent(XMP.test_task_nocomm_f, Xtype.FlogicalFunctionType);
+      cond = f.Call(Xcons.List(on_ref.getDescId()));
+    }
+
     ret_body.add(Bcons.IF(cond,Bcons.COMPOUND(pb.getBody()),null));
       
-    f = env.declInternIdent(XMP.end_task_f,Xtype.FsubroutineType);
-    pb.getBody().add(f.Call(Xcons.List()));
+    if (!info.isNocomm()){
+      f = env.declInternIdent(XMP.end_task_f,Xtype.FsubroutineType);
+      pb.getBody().add(f.Call(Xcons.List()));
+    }
+
+    if (!tasksFlag){
+      if (!info.isNocomm()) ret_body.add(g1.callSubroutine(Xcons.List(taskNodesDescId)));
+      ret_body.add(g2.callSubroutine(Xcons.List(on_ref.getDescId())));
+    }
 
     return Bcons.COMPOUND(ret_body);
   }
 
   private Block translateTasks(PragmaBlock pb, XMPinfo i) {
-    XMP.fatal("translateTasks");
-    return null;
+    //XMP.fatal("translateTasks");
+    //return null;
+    return Bcons.COMPOUND(pb.getBody());
   }
 
   /* gmove sequence:
@@ -679,6 +734,7 @@ public class XMPtransPragma
   private final static int GMOVE_OUT = 2;
 
   private Block translateGmove(PragmaBlock pb, XMPinfo i) {
+
     Block b = Bcons.emptyBlock();
     BasicBlock bb = b.getBasicBlock();
 
@@ -688,11 +744,29 @@ public class XMPtransPragma
     Ident left_desc = buildGmoveDesc(left, bb, pb);
     Ident right_desc = buildGmoveDesc(right, bb, pb);
 
+    if (i.getAsyncId() != null){
+      Xobject arg = Xcons.List(i.getAsyncId());
+      Ident g = env.declInternIdent(XMP.init_async_f, Xtype.FsubroutineType);
+      bb.add(g.callSubroutine(arg));
+    }
+
     Ident f = env.declInternIdent(XMP.gmove_do_f, Xtype.FsubroutineType);
     Xobject args = Xcons.List(left_desc.Ref(), right_desc.Ref(),
 			      Xcons.IntConstant(GMOVE_COLL));
     bb.add(f.callSubroutine(args));
+
+    Ident d = env.declInternIdent(XMP.gmove_dealloc_f, Xtype.FsubroutineType);
+    Xobject args_l = Xcons.List(left_desc.Ref());
+    bb.add(d.callSubroutine(args_l));
+    Xobject args_r = Xcons.List(right_desc.Ref());
+    bb.add(d.callSubroutine(args_r));
 	    
+    if (i.getAsyncId() != null){
+      Xobject arg = Xcons.List(i.getAsyncId());
+      Ident g = env.declInternIdent(XMP.start_async_f, Xtype.FsubroutineType);
+      bb.add(g.callSubroutine(arg));
+    }
+
     return b;
   }
 

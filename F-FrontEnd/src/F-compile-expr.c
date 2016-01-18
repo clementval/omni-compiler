@@ -1,24 +1,7 @@
 /* 
- * $TSUKUBA_Release: Omni Compiler Version 0.9.1 $
+ * $TSUKUBA_Release: Omni OpenMP Compiler 3 $
  * $TSUKUBA_Copyright:
- *  Copyright (C) 2010-2014 University of Tsukuba, 
- *  	      2012-2014  University of Tsukuba and Riken AICS
- *  
- *  This software is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU Lesser General Public License version
- *  2.1 published by the Free Software Foundation.
- *  
- *  Please check the Copyright and License information in the files named
- *  COPYRIGHT and LICENSE under the top  directory of the Omni Compiler
- *  Software release kit.
- *  
- *  * The specification of XcalableMP has been designed by the XcalableMP
- *    Specification Working Group (http://www.xcalablemp.org/).
- *  
- *  * The development of this software was partially supported by "Seamless and
- *    Highly-productive Parallel Programming Environment for
- *    High-performance computing" project funded by Ministry of Education,
- *    Culture, Sports, Science and Technology, Japan.
+ *  PLEASE DESCRIBE LICENSE AGREEMENT HERE
  *  $
  */
 /**
@@ -26,6 +9,7 @@
  */
 
 #include "F-front.h"
+#include "F-second-pass.h"
 #include <math.h>
 
 static expv compile_args _ANSI_ARGS_((expr args));
@@ -953,9 +937,15 @@ compile_expression(expr x)
                 }
                 EXPV_TYPE(v) = ID_TYPE(id);
             }
-            if(!expv_is_specification(v))
-                error_at_node(EXPR_ARG1(x),
-                    "character string length must be integer.");
+/* FEAST change start */
+            /* if(!expv_is_specification(v)) */
+            /*     error_at_node(EXPR_ARG1(x), */
+            /*         "character string length must be integer."); */
+            if(!expv_is_specification(v)){
+              EXPV_TYPE(v) = NULL;
+              sp_link_expr((expr)v, 2, current_line);
+            }
+/* FEAST change  end  */
             return v;
         }
         case PLUS_EXPR:
@@ -1121,7 +1111,12 @@ compile_ident_expression(expr x)
 
     done:
     if (ret == NULL) {
-        fatal("%s: invalid code", __func__);
+/* FEAST change start */
+        /* fatal("%s: invalid code", __func__); */
+      EXPV_TYPE(x) = NULL;
+      ret = (expv)x;
+      sp_link_expr((expr)x, 3, current_line);
+/* FEAST change  end  */
     }
 
     return ret;
@@ -2076,7 +2071,7 @@ compile_coarray_ref(expr coarrayRef){
   }
 
   if (tp->codims->corank != n){
-    error_at_node(image_selector, "wrong number of cosubscript on '%s'");
+    error_at_node(image_selector, "wrong number of cosubscript.");
     return NULL;
   }
 

@@ -1,24 +1,7 @@
 /* 
- * $TSUKUBA_Release: Omni Compiler Version 0.9.1 $
+ * $TSUKUBA_Release: Omni OpenMP Compiler 3 $
  * $TSUKUBA_Copyright:
- *  Copyright (C) 2010-2014 University of Tsukuba, 
- *  	      2012-2014  University of Tsukuba and Riken AICS
- *  
- *  This software is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU Lesser General Public License version
- *  2.1 published by the Free Software Foundation.
- *  
- *  Please check the Copyright and License information in the files named
- *  COPYRIGHT and LICENSE under the top  directory of the Omni Compiler
- *  Software release kit.
- *  
- *  * The specification of XcalableMP has been designed by the XcalableMP
- *    Specification Working Group (http://www.xcalablemp.org/).
- *  
- *  * The development of this software was partially supported by "Seamless and
- *    Highly-productive Parallel Programming Environment for
- *    High-performance computing" project funded by Ministry of Education,
- *    Culture, Sports, Science and Technology, Japan.
+ *  PLEASE DESCRIBE LICENSE AGREEMENT HERE
  *  $
  */
 /**
@@ -2389,6 +2372,8 @@ outx_OMP_pragma(int l, expv v)
             outx_varOrFunc(l1 + 1, lV);
         }
         outx_close(l1, "list");
+	if(EXPV_INT_VALUE(EXPR_ARG1(v)) == OMP_CRITICAL)
+	   outx_expv_withListTag(l1, EXPR_ARG3(v));
     }
 
     outx_expvClose(l, v);
@@ -2414,11 +2399,76 @@ outx_OMP_dir_string(int l,expv v)
   case OMP_FLUSH: s = "FLUSH"; break;
   case OMP_ORDERED: s = "ORDERED"; break;
   case OMP_THREADPRIVATE: s = "THREADPRIVATE"; break;
+  case OMP_TASK: s = "TASK";break;
+  case OMP_SIMD: s = "SIMD";break;
+  case OMP_DECLARE: s = "DECLARE";break;
   default:
     fatal("out_OMP_dir_string: unknown value=%d\n",EXPV_INT_VALUE(v));
   }
   outx_printi(l, "<string>%s</string>\n", s);
 }
+
+static void outx_OMP_DATA_DEFAULT_kind(int l,char *s ,expv v)
+{
+    outx_printi(l+2, "<string>%s</string>\n", s);
+    //printf("EXPV_INT_VALUE(%d)\n",EXPV_INT_VALUE(v));
+    //    outx_printi(l+3,"<list>\n");
+
+    switch(EXPV_INT_VALUE(v))
+       {
+       case OMP_DEFAULT_NONE:
+       outx_printi(l+4,"<string>DEFAULT_NONE</string>\n");
+       break;
+       case OMP_DEFAULT_SHARED:
+       outx_printi(l+4,"<string>DEFAULT_SHARED</string>\n");
+       break;
+       case OMP_DEFAULT_PRIVATE:
+       outx_printi(l+4,"<string>DEFAULT_PRIVATE</string>\n");
+       break;
+       }//outx_expv_withListTag(l+2, EXPR_ARG2(vv));
+//    outx_printi(l+3,"</list>\n");
+    outx_printi(l+1,"</list>\n");
+
+}
+
+static void outx_OMP_sched_kind(int l,char *s,expv v)
+{
+  expr vv = EXPR_ARG2(v);
+  outx_printi(l+2, "<string>%s</string>\n", s);
+  //printf("EXPV_INT_VALUE(%d)\n",EXPV_INT_VALUE(EXPR_ARG1(EXPR_ARG2(v))));
+//  printf("vv=%d\n",EXPV_INT_VALUE(expr_list_get_n(vv,0)));	  
+  outx_printi(l+3,"<list>\n");                                                                                                                                                                                 
+
+  switch(EXPV_INT_VALUE(EXPR_ARG1(EXPR_ARG2(v))))
+    {
+    case OMP_SCHED_NONE:
+      outx_printi(l+4,"<string>SCHED_NONE</string>\n");
+      break;
+    case OMP_SCHED_STATIC:
+      outx_printi(l+4,"<string>SCHED_STATIC</string>\n");
+      break;
+     case  OMP_SCHED_DYNAMIC:
+       outx_printi(l+4,"<string>SCHED_DYNAMIC</string>\n");
+       break;
+    case  OMP_SCHED_GUIDED:
+       outx_printi(l+4,"<string>SCHED_GUIDED</string>\n");
+       break;
+     case  OMP_SCHED_RUNTIME:
+       outx_printi(l+4,"<string>SCHED_RUNTIME</string>\n");
+       break;
+     case  OMP_SCHED_AFFINITY:
+       outx_printi(l+4,"<string>SCHED_AFFINITY</string>\n");
+       break;
+    default:
+      fatal("OMP Sched error");
+    }
+	//printf("ARG2=%d\n",EXPV_INT_VALUE(expr_list_get_n(vv,1)));
+	if(expr_list_get_n(vv,1)!=NULL) 
+ 	outx_expv(l+4,expr_list_get_n(vv,1));
+    outx_printi(l+3,"</list>\n");                                                                                                                                                                                
+  outx_printi(l+1,"</list>\n");
+}
+
 
 static void
 outx_OMP_dir_clause_list(int l,expv v)
@@ -2444,7 +2494,7 @@ outx_OMP_dir_clause_list(int l,expv v)
     if(EXPV_CODE(dir) != INT_CONSTANT) 
       fatal("outx_OMP_dir_clause_list: clause not INT_CONSTANT");
     switch(EXPV_INT_VALUE(dir)){
-    case OMP_DATA_DEFAULT: s = "DATA_DEFAULT"; break;
+    case OMP_DATA_DEFAULT: s = "DATA_DEFAULT"; outx_OMP_DATA_DEFAULT_kind(l,s,EXPR_ARG2(vv)); continue;
     case OMP_DATA_PRIVATE: s = "DATA_PRIVATE"; break;
     case OMP_DATA_SHARED: s = "DATA_SHARED"; break;
     case OMP_DATA_FIRSTPRIVATE: s = "DATA_FIRSTPRIVATE"; break;
@@ -2465,8 +2515,15 @@ outx_OMP_dir_clause_list(int l,expv v)
     case OMP_DATA_COPYPRIVATE: s = "DATA_COPYPRIVATE"; break;
     case OMP_DIR_ORDERED: s = "DIR_ORDERED"; break;
     case OMP_DIR_IF: s = "DIR_IF"; break;
+    case OMP_DIR_NUM_THREADS: s = "DIR_NUM_THREADS"; break;
     case OMP_DIR_NOWAIT: s = "DIR_NOWAIT"; break;
-    case OMP_DIR_SCHEDULE: s = "DIR_SCHEDULE"; break;
+    case OMP_DIR_SCHEDULE: s = "DIR_SCHEDULE";  outx_OMP_sched_kind(l,s,vv);continue;
+    case OMP_DATA_DEPEND_IN: s = "DATA_DEPEND_IN";break;
+    case OMP_DATA_DEPEND_OUT: s = "DATA_DEPEND_OUT";break;
+    case OMP_DATA_DEPEND_INOUT: s = "DATA_DEPEND_INOUT";break;
+    case OMP_DIR_UNTIED: s = "DIR_UNTIED";break;
+    case OMP_DIR_MERGEABLE: s = "DIR_MERGEABLE";break;
+    case OMP_DATA_FINAL: s = "DATA_FINAL";break;
     default:
       fatal("out_OMP_dir_clause: unknown value=%d\n",EXPV_INT_VALUE(v));
     }
@@ -2490,7 +2547,7 @@ outx_XMP_pragma(int l, expv v)
     const int l1 = l + 1;
     outx_tagOfStatement(l, v);
     outx_XMP_dir_string(l1,EXPR_ARG1(v));
-    outx_XMP_dir_clause_list(l1,EXPR_ARG2(v));
+    if (EXPR_ARG2(v)) outx_XMP_dir_clause_list(l1,EXPR_ARG2(v));
 
     /* output body */
     if(EXPR_HAS_ARG3(v))
@@ -2512,6 +2569,7 @@ outx_XMP_dir_string(int l,expv v)
   case XMP_ALIGN: s = "ALIGN"; break;
   case XMP_SHADOW: s = "SHADOW"; break;
   case XMP_LOCAL_ALIAS: s = "LOCAL_ALIAS"; break;
+  case XMP_SAVE_DESC: s = "SAVE_DESC"; break;
   case XMP_TASK: s = "TASK"; break;
   case XMP_TASKS: s = "TASKS"; break;
   case XMP_LOOP: s = "LOOP"; break;

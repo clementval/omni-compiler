@@ -1,24 +1,6 @@
 /*
- * $TSUKUBA_Release: Omni Compiler Version 0.9.1 $
+ * $TSUKUBA_Release: $
  * $TSUKUBA_Copyright:
- *  Copyright (C) 2010-2014 University of Tsukuba, 
- *  	      2012-2014  University of Tsukuba and Riken AICS
- *  
- *  This software is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU Lesser General Public License version
- *  2.1 published by the Free Software Foundation.
- *  
- *  Please check the Copyright and License information in the files named
- *  COPYRIGHT and LICENSE under the top  directory of the Omni Compiler
- *  Software release kit.
- *  
- *  * The specification of XcalableMP has been designed by the XcalableMP
- *    Specification Working Group (http://www.xcalablemp.org/).
- *  
- *  * The development of this software was partially supported by "Seamless and
- *    Highly-productive Parallel Programming Environment for
- *    High-performance computing" project funded by Ministry of Education,
- *    Culture, Sports, Science and Technology, Japan.
  *  $
  */
 
@@ -59,6 +41,9 @@ public class XMPalignedArray {
   private boolean               _isParameter;
   private boolean               _isLocal;
   private boolean               _isPointer;
+
+  private boolean               _isStaticDesc = false;
+  private Ident                 _flagId = null;
 
   public static int convertDistMannerToAlignManner(int distManner) throws XMPexception {
     switch (distManner) {
@@ -261,6 +246,22 @@ public class XMPalignedArray {
     return _alignTemplate;
   }
 
+  public void setIsStaticDesc(boolean flag){
+    _isStaticDesc = flag;
+  }
+
+  public boolean isStaticDesc(){
+    return _isStaticDesc;
+  }
+
+  public void setFlagId(Ident id){
+    _flagId = id;
+  }
+
+  public Ident getFlagId(){
+    return _flagId;
+  }
+
   public boolean checkRealloc() throws XMPexception {
     if (_reallocChecked) return _realloc;
 
@@ -357,6 +358,7 @@ public class XMPalignedArray {
 
     Boolean isParameter = isLocalPragma;
     Boolean isPointer = false;
+    boolean isStaticDesc = false;
 
     if (isLocalPragma) {
       arrayId = XMPlocalDecl.findLocalIdent(pb, arrayName);
@@ -370,6 +372,8 @@ public class XMPalignedArray {
       else {
 	localXMPsymbolTable = XMPlocalDecl.declXMPsymbolTable2(parentBlock);
       }
+      //isStaticDesc = localXMPsymbolTable.isStaticDesc(arrayName);
+      isStaticDesc = XMPlocalDecl.declXMPsymbolTable2(parentBlock).isStaticDesc(arrayName);
     }
     else {
       arrayId = globalDecl.findVarIdent(arrayName);
@@ -472,6 +476,8 @@ public class XMPalignedArray {
       arrayDescId = globalDecl.declStaticIdent(XMP.DESC_PREFIX_ + arrayName, Xtype.voidPtrType);
     }
 
+    if (isStaticDesc) arrayDescId.setStorageClass(StorageClass.STATIC);
+
     int arrayDim = arrayType.getNumDimensions();
     if (arrayDim > XMP.MAX_DIM) {
       throw new XMPexception("array dimension should be less than " + (XMP.MAX_DIM + 1));
@@ -489,6 +495,7 @@ public class XMPalignedArray {
       if (isLocalPragma) {
         accId = XMPlocalDecl.addObjectId2(XMP.GTOL_PREFIX_ + "acc_" + arrayName + "_" + i,
 					  Xtype.unsignedlonglongType, parentBlock);
+	if (isStaticDesc) accId.setStorageClass(StorageClass.STATIC);
       }
       else {
         accId = globalDecl.declStaticIdent(XMP.GTOL_PREFIX_ + "acc_" + arrayName + "_" + i,
@@ -503,13 +510,30 @@ public class XMPalignedArray {
                                        arrayId, arrayDescId, arrayAddrId,
                                        templateObj);
 
-    if (isLocalPragma) alignedArray.setIsLocal();
+    if (isLocalPragma){
+      alignedArray.setIsLocal();
+      alignedArray.setIsStaticDesc(isStaticDesc);
+    }
     if (isParameter) alignedArray.setIsParameter();
     if (isPointer) alignedArray.setIsPointer();
+    if (isStaticDesc && isPointer)
+      throw new XMPexception("a pointer cannot have the static_desc attribute.");
 
     if (isLocalPragma) {
-      XMPlocalDecl.addConstructorCall2("_XMP_init_array_desc", initArrayDescFuncArgs, globalDecl, parentBlock);
-      XMPlocalDecl.insertDestructorCall2("_XMP_finalize_array_desc", Xcons.List(arrayDescId.Ref()), globalDecl, parentBlock);
+
+      if (isStaticDesc){
+	Ident id = parentBlock.getBody().declLocalIdent(XMP.STATIC_DESC_PREFIX_ + arrayName, Xtype.intType,
+							StorageClass.STATIC, Xcons.IntConstant(0));
+	alignedArray.setFlagId(id);
+	XMPlocalDecl.addConstructorCall2_staticDesc("_XMP_init_array_desc", initArrayDescFuncArgs, globalDecl, parentBlock,
+						    id, false);
+      }
+      else {
+	XMPlocalDecl.addConstructorCall2("_XMP_init_array_desc", initArrayDescFuncArgs, globalDecl, parentBlock);
+      }
+
+      if (!isStaticDesc)
+	XMPlocalDecl.insertDestructorCall2("_XMP_finalize_array_desc", Xcons.List(arrayDescId.Ref()), globalDecl, parentBlock);
       localXMPsymbolTable.putXMPalignedArray(alignedArray);
     }
     else {
@@ -644,8 +668,17 @@ public class XMPalignedArray {
     }
 
     if (isLocalPragma) {
-      XMPlocalDecl.addConstructorCall2("_XMP_init_array_comm", initArrayCommFuncArgs, globalDecl, parentBlock);
-      XMPlocalDecl.addConstructorCall2("_XMP_init_array_nodes", Xcons.List(alignedArray.getDescId().Ref()), globalDecl, parentBlock);
+
+      if (isStaticDesc){
+	XMPlocalDecl.addConstructorCall2_staticDesc("_XMP_init_array_comm", initArrayCommFuncArgs, globalDecl, parentBlock,
+						    alignedArray.getFlagId(), false);
+	XMPlocalDecl.addConstructorCall2_staticDesc("_XMP_init_array_nodes", Xcons.List(alignedArray.getDescId().Ref()), globalDecl,
+						    parentBlock, alignedArray.getFlagId(), false);
+      }
+      else {
+	XMPlocalDecl.addConstructorCall2("_XMP_init_array_comm", initArrayCommFuncArgs, globalDecl, parentBlock);
+	XMPlocalDecl.addConstructorCall2("_XMP_init_array_nodes", Xcons.List(alignedArray.getDescId().Ref()), globalDecl, parentBlock);
+      }
 
       if (isParameter){
 
@@ -659,6 +692,9 @@ public class XMPalignedArray {
 	}
 
 	XMPlocalDecl.addAllocCall2("_XMP_init_array_addr", initArrayAddrFuncArgs, globalDecl, parentBlock);
+	XobjList bodyList = (XobjList)parentBlock.getProp("XCALABLEMP_PROP_LOCAL_ALLOC");
+	if (isStaticDesc)
+	  bodyList.add(Xcons.List(Xcode.EXPR_STATEMENT, Xcons.Set(alignedArray.getFlagId().Ref(), Xcons.IntConstant(1))));
       }
       else {
 
@@ -669,6 +705,9 @@ public class XMPalignedArray {
 	}
 
 	XMPlocalDecl.addAllocCall2("_XMP_alloc_array", allocFuncArgs, globalDecl, parentBlock);
+	XobjList bodyList = (XobjList)parentBlock.getProp("XCALABLEMP_PROP_LOCAL_ALLOC");
+	if (isStaticDesc)
+	  bodyList.add(Xcons.List(Xcode.EXPR_STATEMENT, Xcons.Set(alignedArray.getFlagId().Ref(), Xcons.IntConstant(1))));
 	XMPlocalDecl.insertDestructorCall2("_XMP_dealloc_array", Xcons.List(alignedArray.getDescId().Ref()),
 					   globalDecl, parentBlock);
 
@@ -693,7 +732,13 @@ public class XMPalignedArray {
 
     if (isLocalPragma) {
       Block parentBlock = pb.getParentBlock();
-      XMPlocalDecl.addConstructorCall2("_XMP_align_array_NOT_ALIGNED", alignFuncArgs, globalDecl, parentBlock);
+      if (alignedArray.isStaticDesc()){
+	XMPlocalDecl.addConstructorCall2_staticDesc("_XMP_align_array_NOT_ALIGNED", alignFuncArgs, globalDecl, parentBlock,
+						    alignedArray.getFlagId(), false);
+      }
+      else {
+	XMPlocalDecl.addConstructorCall2("_XMP_align_array_NOT_ALIGNED", alignFuncArgs, globalDecl, parentBlock);
+      }
     }
     else {
       globalDecl.addGlobalInitFuncCall("_XMP_align_array_NOT_ALIGNED", alignFuncArgs);
@@ -752,6 +797,7 @@ public class XMPalignedArray {
           if (isLocalPragma) {
             gtolTemp0Id = XMPlocalDecl.addObjectId2(XMP.GTOL_PREFIX_ + "temp0_" + alignedArray.getName() + "_" + alignSourceIndex,
 						    Xtype.intType, parentBlock);
+	    if (alignedArray.isStaticDesc()) gtolTemp0Id.setStorageClass(StorageClass.STATIC);
           }
           else {
             gtolTemp0Id = globalDecl.declStaticIdent(XMP.GTOL_PREFIX_ + "temp0_" + alignedArray.getName() + "_" + alignSourceIndex,
@@ -768,8 +814,14 @@ public class XMPalignedArray {
     }
 
     if (isLocalPragma) {
-      XMPlocalDecl.addConstructorCall2("_XMP_align_array_" + templateObj.getDistMannerStringAt(alignSubscriptIndex),
-				       alignFuncArgs, globalDecl, parentBlock);
+      if (alignedArray.isStaticDesc()){
+	XMPlocalDecl.addConstructorCall2_staticDesc("_XMP_align_array_" + templateObj.getDistMannerStringAt(alignSubscriptIndex),
+						    alignFuncArgs, globalDecl, parentBlock, alignedArray.getFlagId(), false);
+      }
+      else {
+	XMPlocalDecl.addConstructorCall2("_XMP_align_array_" + templateObj.getDistMannerStringAt(alignSubscriptIndex),
+					 alignFuncArgs, globalDecl, parentBlock);
+      }
     }
     else {
       globalDecl.addGlobalInitFuncCall("_XMP_align_array_" + templateObj.getDistMannerStringAt(alignSubscriptIndex),
@@ -805,6 +857,7 @@ public class XMPalignedArray {
     if (isLocalPragma) {
       gtolTemp0Id = XMPlocalDecl.addObjectId2(XMP.GTOL_PREFIX_ + "temp0_" + alignedArray.getName() + "_" + alignSourceIndex,
 					      Xtype.intType, parentBlock);
+      if (alignedArray.isStaticDesc()) gtolTemp0Id.setStorageClass(StorageClass.STATIC);
     }
     else {
       gtolTemp0Id = globalDecl.declStaticIdent(XMP.GTOL_PREFIX_ + "temp0_" + alignedArray.getName() + "_" + alignSourceIndex,
@@ -819,7 +872,13 @@ public class XMPalignedArray {
 				 alignedArray.getAccIdAt(alignSourceIndex).getAddr()));
 
     if (isLocalPragma) {
-      XMPlocalDecl.addConstructorCall2("_XMP_align_array_noalloc", alignFuncArgs, globalDecl, parentBlock);
+      if (alignedArray.isStaticDesc()){
+	XMPlocalDecl.addConstructorCall2_staticDesc("_XMP_align_array_noalloc", alignFuncArgs, globalDecl, parentBlock,
+						    alignedArray.getFlagId(), false);
+      }
+      else {
+	XMPlocalDecl.addConstructorCall2("_XMP_align_array_noalloc", alignFuncArgs, globalDecl, parentBlock);
+      }
     }
     else {
       globalDecl.addGlobalInitFuncCall("_XMP_align_array_noalloc", alignFuncArgs);

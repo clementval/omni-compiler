@@ -1,49 +1,31 @@
 /* 
- * $TSUKUBA_Release: Omni Compiler Version 0.9.1 $
+ * $TSUKUBA_Release: Omni OpenMP Compiler 3 $
  * $TSUKUBA_Copyright:
- *  Copyright (C) 2010-2014 University of Tsukuba, 
- *  	      2012-2014  University of Tsukuba and Riken AICS
- *  
- *  This software is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU Lesser General Public License version
- *  2.1 published by the Free Software Foundation.
- *  
- *  Please check the Copyright and License information in the files named
- *  COPYRIGHT and LICENSE under the top  directory of the Omni Compiler
- *  Software release kit.
- *  
- *  * The specification of XcalableMP has been designed by the XcalableMP
- *    Specification Working Group (http://www.xcalablemp.org/).
- *  
- *  * The development of this software was partially supported by "Seamless and
- *    Highly-productive Parallel Programming Environment for
- *    High-performance computing" project funded by Ministry of Education,
- *    Culture, Sports, Science and Technology, Japan.
+ *  PLEASE DESCRIBE LICENSE AGREEMENT HERE
  *  $
  */
 package exc.openmp;
 
 import exc.object.*;
 import exc.block.*;
-
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Vector;
 
 import xcodeml.util.XmOption;
 
 public class OMPanalyzeDecl implements OMPfileEnv
 {
-    private XobjectFile env;
-    
-    private Vector<Ident> thdprv_vars = new Vector<Ident>();
-    
-    private static final String PROP_KEY = "OMPanalyzeDecl";
-    
-    private OMPanalyzeDecl parent;
+  private XobjectFile env;
+  private Vector<Ident> thdprv_vars = new Vector<Ident>();
+  private static final String PROP_KEY = "OMPanalyzeDecl";
+  private OMPanalyzeDecl parent;
+  private List<String> list = new LinkedList<String>();
 
-    public OMPanalyzeDecl(XobjectFile env)
-    {
-        this.env = env;
-    }
+  public OMPanalyzeDecl(XobjectFile env)
+  {
+    this.env = env;
+  }
     
     @Override
     public XobjectFile getFile()
@@ -102,7 +84,8 @@ public class OMPanalyzeDecl implements OMPfileEnv
                                 "threadprivate for module variable is not supported");
                         } else
                             declThreadPrivate(x, def, x.getArg(1));
-                        ite.setXobject(Xcons.List(Xcode.NULL));
+                        ite.setXobject(null);
+			//                        ite.setXobject(Xcons.List(Xcode.NULL));
                     }
                     break;
                 }
@@ -117,7 +100,7 @@ public class OMPanalyzeDecl implements OMPfileEnv
         Xtype voidP_t = Xtype.Pointer(Xtype.voidType);
         for(XobjArgs a = args.getArgs(); a != null; a = a.nextArgs()) {
             String name = a.getArg().getName();
-            Ident id = (vc != null) ? vc.findVarIdent(name) : x.findVarIdent(name);
+	    Ident id = (vc != null) ? (vc.findCommonIdent(name)==null ? vc.findVarIdent(name):vc.findCommonIdent(name) ) : (x.findCommonIdent(name)==null ? x.findVarIdent(name):x.findCommonIdent(name));
             if(id == null) {
                 OMP.fatal("undefined variable '" + name
                     + "' in threadprivate directive");
@@ -134,6 +117,8 @@ public class OMPanalyzeDecl implements OMPfileEnv
                 continue;
 
             switch(id.getStorageClass()) {
+            case FCOMMON_NAME:
+              list.add(id.getName());
             case EXTDEF:
             case EXTERN:
             case STATIC:
@@ -171,10 +156,15 @@ public class OMPanalyzeDecl implements OMPfileEnv
         }
     }
 
+    public void addThdprvVars(Ident id)
+    {
+	thdprv_vars.addElement(id);
+    }
+    
     @Override
     public boolean isThreadPrivate(Ident id)
     {
-        if(thdprv_vars.contains(id))
+	if(thdprv_vars.contains(id)||OMP.isThreadPrivate(id))
             return true;
         return (parent != null) ? parent.isThreadPrivate(id) : false;
     }
@@ -189,4 +179,10 @@ public class OMPanalyzeDecl implements OMPfileEnv
         
         return (parent != null) ? parent.findThreadPrivate(b, name) : null;
     }
+    
+    public List getCommonName()
+    {
+     return list;      
+    }
+
 }

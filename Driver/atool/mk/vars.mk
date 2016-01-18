@@ -9,17 +9,17 @@ TOPDIR		= /home/mnakao/omni-compiler
 top_builddir	?= $(TOPDIR)
 MKRULESDIR	= /home/mnakao/omni-compiler/Driver/atool/mk
 
-PREFIX		= /usr/local
+PREFIX		= /home/mnakao/work/xmp-trunk
 DEST_EXEDIR	= $(PREFIX)/bin
 DEST_LIBDIR	= $(PREFIX)/lib
 DEST_HDRDIR_TOP	= $(PREFIX)/include
 
-LIBTOOL_DEPS	= ./buildutils/ltmain.sh
+LIBTOOL_DEPS	= @LIBTOOL_DEPS@
 
 MAKE		= LC_ALL=C make
 RM		= rm -f
 MKDIR		= @MKDIR@
-LIBTOOL		= LC_ALL=C $(SHELL) $(top_builddir)/libtool --quiet
+LIBTOOL		= LC_ALL=C @LIBTOOL@ --quiet
 
 CC		= gcc
 CXX		= g++

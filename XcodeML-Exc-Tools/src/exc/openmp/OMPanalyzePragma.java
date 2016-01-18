@@ -1,24 +1,7 @@
 /* 
- * $TSUKUBA_Release: Omni Compiler Version 0.9.1 $
+ * $TSUKUBA_Release: Omni OpenMP Compiler 3 $
  * $TSUKUBA_Copyright:
- *  Copyright (C) 2010-2014 University of Tsukuba, 
- *  	      2012-2014  University of Tsukuba and Riken AICS
- *  
- *  This software is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU Lesser General Public License version
- *  2.1 published by the Free Software Foundation.
- *  
- *  Please check the Copyright and License information in the files named
- *  COPYRIGHT and LICENSE under the top  directory of the Omni Compiler
- *  Software release kit.
- *  
- *  * The specification of XcalableMP has been designed by the XcalableMP
- *    Specification Working Group (http://www.xcalablemp.org/).
- *  
- *  * The development of this software was partially supported by "Seamless and
- *    Highly-productive Parallel Programming Environment for
- *    High-performance computing" project funded by Ministry of Education,
- *    Culture, Sports, Science and Technology, Japan.
+ *  PLEASE DESCRIBE LICENSE AGREEMENT HERE
  *  $
  */
 package exc.openmp;
@@ -28,6 +11,7 @@ import java.util.List;
 
 import xcodeml.util.XmOption;
 import exc.object.*;
+import exc.xcodeml.XcodeMLtools;
 import exc.block.*;
 
 /**
@@ -45,7 +29,7 @@ public class OMPanalyzePragma
         this.omp_env = omp_env;
         Block b;
         Block fblock = def.getBlock();
-
+        OMP.debug("run");
         // pass1: traverse to collect information about OMP pramga
         if(OMP.debugFlag)
             System.out.println("pass1:");
@@ -64,6 +48,7 @@ public class OMPanalyzePragma
 
     OMPinfo outerOMPinfo(Block b)
     {
+        OMP.debug("outerOMPinfo");
         for(Block bp = b.getParentBlock(); bp != null; bp = bp.getParentBlock()) {
             if(bp.Opcode() == Xcode.OMP_PRAGMA) {
                 return (OMPinfo)bp.getProp(OMP.prop);
@@ -77,25 +62,32 @@ public class OMPanalyzePragma
         OMPinfo outer = outerOMPinfo(pb);
         OMPinfo info = new OMPinfo(OMPpragma.valueOf(pb.getPragma()), outer, pb, omp_env);
         pb.setProp(OMP.prop, info);
+        OMP.debug("checkPragma");
 
         OMPpragma p = info.pragma;
         OMPpragma c;
         Xobject t;
-        Block b;
+       Block b;
         List<XobjList> idLists;
         topdownBlockIterator bitr;
 
         switch(p) {
+        case TASK:
+    	info.setIfExpr(Xcons.FlogicalConstant(true));
+        info.setFinalExpr(Xcons.FlogicalConstant(false));
         case PARALLEL: /* new parallel section */
         case FOR: /* loop <clause_list> */
         case SECTIONS: /* sections <clause_list> */
-            // Assume that the kinds of the cluases are already checked
+        	// Assume that the kinds of the cluases are already checked
             idLists = new ArrayList<XobjList>();
             for(Xobject a : (XobjList)pb.getClauses()) {
                 c = OMPpragma.valueOf(a.getArg(0));
                 switch(c) {
                 case DIR_IF:
                     info.setIfExpr(a.getArg(1));
+                    break;
+                case DATA_FINAL:
+                    info.setFinalExpr(a.getArg(1));
                     break;
                 case DIR_NOWAIT:
                     info.no_wait = true;
@@ -111,6 +103,20 @@ public class OMPanalyzePragma
                     break;
                 case DIR_NUM_THREADS:
                     info.num_threads = a.getArg(1);
+                    break;
+                case DIR_UNTIED:
+                    info.untied = true;
+                    OMP.debug("UNTIED");
+                    break;
+                case DIR_MERGEABLE:
+                    info.mergeable = true;
+                    OMP.debug("MERGEABLE");
+                    break;
+                case DATA_DEPEND_IN:
+                case DATA_DEPEND_OUT:
+                case DATA_DEPEND_INOUT:
+                    info.mergeable = true;
+                    OMP.debug("DEPEND");
                     break;
                 default: // DATA_*
                     for(Xobject aa : (XobjList)a.getArg(1))
@@ -134,31 +140,46 @@ public class OMPanalyzePragma
                         return;
                     }
                 } else {
+                    if(pb.getBody().getHead().Opcode() == Xcode.OMP_PRAGMA){
+                    	PragmaBlock pb2=(PragmaBlock)pb.getBody().getHead();
+                    	OMPinfo outer2 =outerOMPinfo(pb2);
+                    	OMPinfo info2 = new OMPinfo(OMPpragma.valueOf(pb2.getPragma()), outer2, pb2, omp_env);
+                    	OMPpragma pc=info2.pragma;
+                    	switch(pc)
+                    	{
+                    	case SIMD:
+                    		info.simd=true;
+                    		break;
+                    	}
+                    }else
                     if(pb.getBody().getHead().Opcode() != Xcode.F_DO_STATEMENT) {
                         OMP.error(pb.getLineNo(), "DO loop must follows DO directive");
                         return;
-                    }
+                    }	
                 }
-                ForBlock for_block = (ForBlock)pb.getBody().getHead();
-                for_block.Canonicalize();
-                if(!for_block.isCanonical()) {
-                    OMP.error(pb.getLineNo(), "not cannonical FOR/DO loop");
-                    return;
-                }
-                Xobject ind_var = for_block.getInductionVar();
-                if(!info.isPrivateOMPvar(ind_var.getName())) {
-                    OMPvar v = info.findOMPvar(ind_var.getName());
-                    if(v == null) {
-                        info.declOMPvar(ind_var.getName(), OMPpragma.DATA_PRIVATE);
-                    } else if(!v.is_last_private && v.is_shared) {
-                        /* loop variable may be lastprivate */
-                        OMP.error(pb.getLineNo(), "FOR/DO loop variable '" + v.id.getName()
-                            + "' is declared as shared");
-                        return;
-                    }
+                if(!info.simd)
+                {
+                	ForBlock for_block = (ForBlock)pb.getBody().getHead();
+                	for_block.Canonicalize();
+                	if(!for_block.isCanonical()) {
+                		OMP.error(pb.getLineNo(), "not cannonical FOR/DO loop");
+                		return;
+                	}	
+                	
+                	Xobject ind_var = for_block.getInductionVar();
+                	if(!info.isPrivateOMPvar(ind_var.getName())) {
+                		OMPvar v = info.findOMPvar(ind_var.getName());
+                		if(v == null) {
+                			info.declOMPvar(ind_var.getName(), OMPpragma.DATA_PRIVATE);
+                		} else if(!v.is_last_private && v.is_shared) {
+                			/* loop variable may be lastprivate */
+                			OMP.error(pb.getLineNo(), "FOR/DO loop variable '" + v.id.getName()
+                					+ "' is declared as shared");
+                			return;
+                		}	
+                	}	
                 }
             }
-
             if(p == OMPpragma.SECTIONS && outer != null && outer.pragma != OMPpragma.PARALLEL)
                 OMP.error(pb.getLineNo(), "'sections' directive is nested");
 
@@ -172,7 +193,9 @@ public class OMPanalyzePragma
                 }
             }
             break;
-
+        case SIMD:
+        case DECLARE:
+	    break;	
         case SINGLE: /* single <clause list> */
             for(XobjArgs a = pb.getClauses().getArgs(); a != null; a = a.nextArgs()) {
                 t = a.getArg();
@@ -257,6 +280,7 @@ public class OMPanalyzePragma
 
     boolean isAtomicExpr(Xobject x)
     {
+        OMP.debug("isAtomicExpr");
         switch(x.Opcode()) {
         case POST_INCR_EXPR:
         case POST_DECR_EXPR:
@@ -279,6 +303,7 @@ public class OMPanalyzePragma
     /** create atomic expression */
     private Xobject makeAtomicExpr(Xobject x)
     {
+        OMP.debug("makeAtomicExpr");
         return XmOption.isLanguageC() ? makeAtomicExprC(x) : makeAtomicExprF(x);
     }
     
@@ -287,6 +312,7 @@ public class OMPanalyzePragma
     {
         Xobject lv = x.left();
         Xobject rv = x.right();
+        OMP.debug("makeAtomicExprC");
         switch(rv.Opcode()) {
         case PLUS_EXPR:
             if(lv.equals(rv.left()))
@@ -335,6 +361,8 @@ public class OMPanalyzePragma
     /** Fortran: create atomic expression */
     private Xobject makeAtomicExprF(Xobject x)
     {
+        OMP.debug("makeAtomicExprF");
+
         if(x.Opcode() != Xcode.F_ASSIGN_STATEMENT)
             return null;
         

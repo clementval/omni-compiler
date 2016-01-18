@@ -1,26 +1,3 @@
-/*
- * $TSUKUBA_Release: Omni Compiler Version 0.9.1 $
- * $TSUKUBA_Copyright:
- *  Copyright (C) 2010-2014 University of Tsukuba, 
- *  	      2012-2014  University of Tsukuba and Riken AICS
- *  
- *  This software is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU Lesser General Public License version
- *  2.1 published by the Free Software Foundation.
- *  
- *  Please check the Copyright and License information in the files named
- *  COPYRIGHT and LICENSE under the top  directory of the Omni Compiler
- *  Software release kit.
- *  
- *  * The specification of XcalableMP has been designed by the XcalableMP
- *    Specification Working Group (http://www.xcalablemp.org/).
- *  
- *  * The development of this software was partially supported by "Seamless and
- *    Highly-productive Parallel Programming Environment for
- *    High-performance computing" project funded by Ministry of Education,
- *    Culture, Sports, Science and Technology, Japan.
- *  $
- */
 #ifndef MPI_PORTABLE_PLATFORM_H
 #define MPI_PORTABLE_PLATFORM_H
 #endif 
@@ -44,7 +21,11 @@
 #include <stddef.h>
 #include <mpi.h>
 
-typedef void *xmp_desc_t;
+// Typedef
+typedef void* xmp_desc_t;
+#ifdef _XMP_GASNET
+#include "xmp_lock.h"
+#endif
 
 // ----- libxmp
 extern MPI_Comm	xmp_get_mpi_comm(void);
@@ -106,16 +87,13 @@ extern void     xmp_sched_template_index(int* local_start_index, int* local_end_
 					 const xmp_desc_t template, const int template_dim);
 extern void     xmp_sync_memory(const int* status);
 extern void     xmp_sync_all(const int* status);
-extern void     xmp_sync_image(int image, int* status);
-extern void     xmp_sync_images(int num, int* image_set, int* status);
+extern void     xmp_sync_image(const int image, int* status);
+extern void     xmp_sync_images(const int num, int* image_set, int* status);
 extern void     xmp_sync_images_all(int* status);
-
 extern void     xmp_sort_up(xmp_desc_t a_desc, xmp_desc_t b_desc);
 extern void     xmp_sort_down(xmp_desc_t a_desc, xmp_desc_t b_desc);
-
 extern void    *xmp_malloc(xmp_desc_t d, ...);
 extern void     xmp_free(xmp_desc_t d);
-
 extern void     xmp_exit(int status);
 
 // ----- libxmp_gpu

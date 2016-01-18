@@ -1,26 +1,3 @@
-/*
- * $TSUKUBA_Release: Omni Compiler Version 0.9.1 $
- * $TSUKUBA_Copyright:
- *  Copyright (C) 2010-2014 University of Tsukuba, 
- *  	      2012-2014  University of Tsukuba and Riken AICS
- *  
- *  This software is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU Lesser General Public License version
- *  2.1 published by the Free Software Foundation.
- *  
- *  Please check the Copyright and License information in the files named
- *  COPYRIGHT and LICENSE under the top  directory of the Omni Compiler
- *  Software release kit.
- *  
- *  * The specification of XcalableMP has been designed by the XcalableMP
- *    Specification Working Group (http://www.xcalablemp.org/).
- *  
- *  * The development of this software was partially supported by "Seamless and
- *    Highly-productive Parallel Programming Environment for
- *    High-performance computing" project funded by Ministry of Education,
- *    Culture, Sports, Science and Technology, Japan.
- *  $
- */
 #ifndef _C_XMP_H
 #define _C_XMP_H
 
@@ -40,16 +17,17 @@ enum XMP_pragma {
     XMP_BCAST		= 113,
     XMP_COARRAY		= 114,
     XMP_TEMPLATE_FIX	= 115,
-    XMP_POST            = 116,
-    XMP_WAIT            = 117,
-    XMP_WAIT_ASYNC      = 118,
-    XMP_ARRAY		= 119,
-
-    XMP_END_TASK	= 120,
-    XMP_END_TASKS	= 121,
-
-    XMP_REFLECT_INIT    = 122,
-    XMP_REFLECT_DO      = 123,
+    XMP_LOCK            = 116,
+    XMP_UNLOCK          = 117,
+    XMP_POST            = 118,
+    XMP_WAIT            = 119,
+    XMP_WAIT_ASYNC      = 120,
+    XMP_ARRAY		= 121,
+    XMP_END_TASK	= 122,
+    XMP_END_TASKS	= 123,
+    XMP_REFLECT_INIT    = 124,
+    XMP_REFLECT_DO      = 125,
+    XMP_STATIC_DESC     = 126,
 
     XMP_MASTER_IO	= 130,
     XMP_MASTER_IO_BEGIN	= 131,

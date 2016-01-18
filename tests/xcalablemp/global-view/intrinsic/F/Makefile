@@ -1,4 +1,7 @@
-XFC     = xmpf90 -O2
+XMP_MPI_VERSION=$(shell xmpf90 --show-env | sed -n '/MPI_VERSION=/p' | sed 's/MPI_VERSION=//' | sed "s/\"//g")
+XMP_MPI_SUBVERSION=$(shell xmpf90 --show-env | sed -n '/MPI_SUBVERSION=/p' | sed 's/MPI_SUBVERSION=//' | sed "s/\"//g")
+
+XFC     = xmpf90
 XRUN    = mpiexec
 TESTS = $(wildcard *.f90)
 EXES  = $(TESTS:.f90=.x)
@@ -14,7 +17,7 @@ chk.o: ./chk/chk.f90
 	$(XFC) -c $^ -o $@
 
 %.x: %.f90 chk.o
-	$(XFC) -o $@ $< ./chk.o
+	$(XFC) -cpp -o $@ $< ./chk.o -DXMP_MPI_VERSION=$(XMP_MPI_VERSION) -DXMP_MPI_SUBVERSION=$(XMP_MPI_SUBVERSION)
 
 run: $(EXES)
 	$(XRUN) -n 4 ./intrinsic_transpose.x

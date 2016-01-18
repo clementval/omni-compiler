@@ -1,51 +1,61 @@
-nata_logger.lo: nata_logger.cpp \
+nata_logger.lo: nata_logger.cpp /usr/include/stdc-predef.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_rcsid.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/libnata.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_includes.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_config.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_platform.h \
  /usr/include/inttypes.h /usr/include/features.h \
- /usr/include/x86_64-linux-gnu/bits/predefs.h \
  /usr/include/x86_64-linux-gnu/sys/cdefs.h \
  /usr/include/x86_64-linux-gnu/bits/wordsize.h \
  /usr/include/x86_64-linux-gnu/gnu/stubs.h \
  /usr/include/x86_64-linux-gnu/gnu/stubs-64.h \
- /home/mnakao/work/gcc-4.8.4/lib/gcc/x86_64-unknown-linux-gnu/4.8.4/include/stdint.h \
- /usr/include/stdint.h /usr/include/x86_64-linux-gnu/bits/wchar.h \
- /home/mnakao/work/gcc-4.8.4/lib/gcc/x86_64-unknown-linux-gnu/4.8.4/include-fixed/limits.h \
- /home/mnakao/work/gcc-4.8.4/lib/gcc/x86_64-unknown-linux-gnu/4.8.4/include-fixed/syslimits.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.9/include/stdint.h /usr/include/stdint.h \
+ /usr/include/x86_64-linux-gnu/bits/wchar.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.9/include-fixed/limits.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.9/include-fixed/syslimits.h \
  /usr/include/limits.h /usr/include/x86_64-linux-gnu/bits/posix1_lim.h \
  /usr/include/x86_64-linux-gnu/bits/local_lim.h \
  /usr/include/linux/limits.h \
  /usr/include/x86_64-linux-gnu/bits/posix2_lim.h \
  /usr/include/x86_64-linux-gnu/bits/xopen_lim.h \
  /usr/include/x86_64-linux-gnu/bits/stdio_lim.h \
- /usr/include/x86_64-linux-gnu/sys/param.h /usr/include/linux/param.h \
- /usr/include/x86_64-linux-gnu/asm/param.h \
- /usr/include/asm-generic/param.h \
+ /usr/include/x86_64-linux-gnu/sys/param.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.9/include/stddef.h \
  /usr/include/x86_64-linux-gnu/sys/types.h \
  /usr/include/x86_64-linux-gnu/bits/types.h \
  /usr/include/x86_64-linux-gnu/bits/typesizes.h /usr/include/time.h \
- /home/mnakao/work/gcc-4.8.4/lib/gcc/x86_64-unknown-linux-gnu/4.8.4/include/stddef.h \
  /usr/include/endian.h /usr/include/x86_64-linux-gnu/bits/endian.h \
  /usr/include/x86_64-linux-gnu/bits/byteswap.h \
+ /usr/include/x86_64-linux-gnu/bits/byteswap-16.h \
  /usr/include/x86_64-linux-gnu/sys/select.h \
  /usr/include/x86_64-linux-gnu/bits/select.h \
  /usr/include/x86_64-linux-gnu/bits/sigset.h \
  /usr/include/x86_64-linux-gnu/bits/time.h \
  /usr/include/x86_64-linux-gnu/sys/sysmacros.h \
- /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h /usr/include/ctype.h \
+ /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h /usr/include/signal.h \
+ /usr/include/x86_64-linux-gnu/bits/signum.h \
+ /usr/include/x86_64-linux-gnu/bits/siginfo.h \
+ /usr/include/x86_64-linux-gnu/bits/sigaction.h \
+ /usr/include/x86_64-linux-gnu/bits/sigcontext.h \
+ /usr/include/x86_64-linux-gnu/bits/sigstack.h \
+ /usr/include/x86_64-linux-gnu/sys/ucontext.h \
+ /usr/include/x86_64-linux-gnu/bits/sigthread.h \
+ /usr/include/x86_64-linux-gnu/bits/param.h /usr/include/linux/param.h \
+ /usr/include/x86_64-linux-gnu/asm/param.h \
+ /usr/include/asm-generic/param.h /usr/include/ctype.h \
  /usr/include/xlocale.h /usr/include/stdio.h /usr/include/libio.h \
  /usr/include/_G_config.h /usr/include/wchar.h \
- /home/mnakao/work/gcc-4.8.4/lib/gcc/x86_64-unknown-linux-gnu/4.8.4/include/stdarg.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.9/include/stdarg.h \
  /usr/include/x86_64-linux-gnu/bits/sys_errlist.h /usr/include/stdlib.h \
  /usr/include/x86_64-linux-gnu/bits/waitflags.h \
  /usr/include/x86_64-linux-gnu/bits/waitstatus.h /usr/include/alloca.h \
- /usr/include/unistd.h /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
+ /usr/include/x86_64-linux-gnu/bits/stdlib-float.h /usr/include/unistd.h \
+ /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
  /usr/include/x86_64-linux-gnu/bits/environments.h \
  /usr/include/x86_64-linux-gnu/bits/confname.h /usr/include/getopt.h \
  /usr/include/memory.h /usr/include/string.h /usr/include/malloc.h \
  /usr/include/dirent.h /usr/include/x86_64-linux-gnu/bits/dirent.h \
+ /usr/include/x86_64-linux-gnu/bits/timex.h \
  /usr/include/x86_64-linux-gnu/sys/time.h \
  /usr/include/x86_64-linux-gnu/sys/termios.h /usr/include/termios.h \
  /usr/include/x86_64-linux-gnu/bits/termios.h \
@@ -53,20 +63,16 @@ nata_logger.lo: nata_logger.cpp \
  /usr/include/x86_64-linux-gnu/sys/stat.h \
  /usr/include/x86_64-linux-gnu/bits/stat.h /usr/include/fcntl.h \
  /usr/include/x86_64-linux-gnu/bits/fcntl.h \
+ /usr/include/x86_64-linux-gnu/bits/fcntl-linux.h \
  /usr/include/x86_64-linux-gnu/bits/uio.h /usr/include/errno.h \
  /usr/include/x86_64-linux-gnu/bits/errno.h /usr/include/linux/errno.h \
  /usr/include/x86_64-linux-gnu/asm/errno.h \
  /usr/include/asm-generic/errno.h /usr/include/asm-generic/errno-base.h \
- /usr/include/signal.h /usr/include/x86_64-linux-gnu/bits/signum.h \
- /usr/include/x86_64-linux-gnu/bits/siginfo.h \
- /usr/include/x86_64-linux-gnu/bits/sigaction.h \
- /usr/include/x86_64-linux-gnu/bits/sigcontext.h \
- /usr/include/x86_64-linux-gnu/bits/sigstack.h \
- /usr/include/x86_64-linux-gnu/sys/ucontext.h \
- /usr/include/x86_64-linux-gnu/bits/sigthread.h /usr/include/netdb.h \
- /usr/include/netinet/in.h /usr/include/x86_64-linux-gnu/sys/socket.h \
+ /usr/include/netdb.h /usr/include/netinet/in.h \
+ /usr/include/x86_64-linux-gnu/sys/socket.h \
  /usr/include/x86_64-linux-gnu/sys/uio.h \
  /usr/include/x86_64-linux-gnu/bits/socket.h \
+ /usr/include/x86_64-linux-gnu/bits/socket_type.h \
  /usr/include/x86_64-linux-gnu/bits/sockaddr.h \
  /usr/include/x86_64-linux-gnu/asm/socket.h \
  /usr/include/asm-generic/socket.h \
@@ -81,13 +87,12 @@ nata_logger.lo: nata_logger.cpp \
  /usr/include/x86_64-linux-gnu/asm/ioctl.h \
  /usr/include/asm-generic/ioctl.h \
  /usr/include/x86_64-linux-gnu/bits/ioctl-types.h \
- /usr/include/x86_64-linux-gnu/sys/wait.h \
- /usr/include/x86_64-linux-gnu/sys/resource.h \
- /usr/include/x86_64-linux-gnu/bits/resource.h /usr/include/pthread.h \
+ /usr/include/x86_64-linux-gnu/sys/wait.h /usr/include/pthread.h \
  /usr/include/sched.h /usr/include/x86_64-linux-gnu/bits/sched.h \
  /usr/include/x86_64-linux-gnu/bits/setjmp.h \
- /home/mnakao/work/gcc-4.8.4/lib/gcc/x86_64-unknown-linux-gnu/4.8.4/include/stdbool.h \
- /usr/include/regex.h /usr/include/x86_64-linux-gnu/gnu/option-groups.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.9/include/stdbool.h \
+ /usr/include/x86_64-linux-gnu/sys/resource.h \
+ /usr/include/x86_64-linux-gnu/bits/resource.h /usr/include/regex.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_types.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_macros.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_logger.h \
@@ -109,54 +114,64 @@ nata_logger.lo: nata_logger.cpp \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/Statistics.h \
  /usr/include/syslog.h /usr/include/x86_64-linux-gnu/sys/syslog.h \
  /usr/include/x86_64-linux-gnu/bits/syslog-path.h
-nata_util.lo: nata_util.cpp \
+nata_util.lo: nata_util.cpp /usr/include/stdc-predef.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_rcsid.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/libnata.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_includes.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_config.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_platform.h \
  /usr/include/inttypes.h /usr/include/features.h \
- /usr/include/x86_64-linux-gnu/bits/predefs.h \
  /usr/include/x86_64-linux-gnu/sys/cdefs.h \
  /usr/include/x86_64-linux-gnu/bits/wordsize.h \
  /usr/include/x86_64-linux-gnu/gnu/stubs.h \
  /usr/include/x86_64-linux-gnu/gnu/stubs-64.h \
- /home/mnakao/work/gcc-4.8.4/lib/gcc/x86_64-unknown-linux-gnu/4.8.4/include/stdint.h \
- /usr/include/stdint.h /usr/include/x86_64-linux-gnu/bits/wchar.h \
- /home/mnakao/work/gcc-4.8.4/lib/gcc/x86_64-unknown-linux-gnu/4.8.4/include-fixed/limits.h \
- /home/mnakao/work/gcc-4.8.4/lib/gcc/x86_64-unknown-linux-gnu/4.8.4/include-fixed/syslimits.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.9/include/stdint.h /usr/include/stdint.h \
+ /usr/include/x86_64-linux-gnu/bits/wchar.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.9/include-fixed/limits.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.9/include-fixed/syslimits.h \
  /usr/include/limits.h /usr/include/x86_64-linux-gnu/bits/posix1_lim.h \
  /usr/include/x86_64-linux-gnu/bits/local_lim.h \
  /usr/include/linux/limits.h \
  /usr/include/x86_64-linux-gnu/bits/posix2_lim.h \
  /usr/include/x86_64-linux-gnu/bits/xopen_lim.h \
  /usr/include/x86_64-linux-gnu/bits/stdio_lim.h \
- /usr/include/x86_64-linux-gnu/sys/param.h /usr/include/linux/param.h \
- /usr/include/x86_64-linux-gnu/asm/param.h \
- /usr/include/asm-generic/param.h \
+ /usr/include/x86_64-linux-gnu/sys/param.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.9/include/stddef.h \
  /usr/include/x86_64-linux-gnu/sys/types.h \
  /usr/include/x86_64-linux-gnu/bits/types.h \
  /usr/include/x86_64-linux-gnu/bits/typesizes.h /usr/include/time.h \
- /home/mnakao/work/gcc-4.8.4/lib/gcc/x86_64-unknown-linux-gnu/4.8.4/include/stddef.h \
  /usr/include/endian.h /usr/include/x86_64-linux-gnu/bits/endian.h \
  /usr/include/x86_64-linux-gnu/bits/byteswap.h \
+ /usr/include/x86_64-linux-gnu/bits/byteswap-16.h \
  /usr/include/x86_64-linux-gnu/sys/select.h \
  /usr/include/x86_64-linux-gnu/bits/select.h \
  /usr/include/x86_64-linux-gnu/bits/sigset.h \
  /usr/include/x86_64-linux-gnu/bits/time.h \
  /usr/include/x86_64-linux-gnu/sys/sysmacros.h \
- /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h /usr/include/ctype.h \
+ /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h /usr/include/signal.h \
+ /usr/include/x86_64-linux-gnu/bits/signum.h \
+ /usr/include/x86_64-linux-gnu/bits/siginfo.h \
+ /usr/include/x86_64-linux-gnu/bits/sigaction.h \
+ /usr/include/x86_64-linux-gnu/bits/sigcontext.h \
+ /usr/include/x86_64-linux-gnu/bits/sigstack.h \
+ /usr/include/x86_64-linux-gnu/sys/ucontext.h \
+ /usr/include/x86_64-linux-gnu/bits/sigthread.h \
+ /usr/include/x86_64-linux-gnu/bits/param.h /usr/include/linux/param.h \
+ /usr/include/x86_64-linux-gnu/asm/param.h \
+ /usr/include/asm-generic/param.h /usr/include/ctype.h \
  /usr/include/xlocale.h /usr/include/stdio.h /usr/include/libio.h \
  /usr/include/_G_config.h /usr/include/wchar.h \
- /home/mnakao/work/gcc-4.8.4/lib/gcc/x86_64-unknown-linux-gnu/4.8.4/include/stdarg.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.9/include/stdarg.h \
  /usr/include/x86_64-linux-gnu/bits/sys_errlist.h /usr/include/stdlib.h \
  /usr/include/x86_64-linux-gnu/bits/waitflags.h \
  /usr/include/x86_64-linux-gnu/bits/waitstatus.h /usr/include/alloca.h \
- /usr/include/unistd.h /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
+ /usr/include/x86_64-linux-gnu/bits/stdlib-float.h /usr/include/unistd.h \
+ /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
  /usr/include/x86_64-linux-gnu/bits/environments.h \
  /usr/include/x86_64-linux-gnu/bits/confname.h /usr/include/getopt.h \
  /usr/include/memory.h /usr/include/string.h /usr/include/malloc.h \
  /usr/include/dirent.h /usr/include/x86_64-linux-gnu/bits/dirent.h \
+ /usr/include/x86_64-linux-gnu/bits/timex.h \
  /usr/include/x86_64-linux-gnu/sys/time.h \
  /usr/include/x86_64-linux-gnu/sys/termios.h /usr/include/termios.h \
  /usr/include/x86_64-linux-gnu/bits/termios.h \
@@ -164,20 +179,16 @@ nata_util.lo: nata_util.cpp \
  /usr/include/x86_64-linux-gnu/sys/stat.h \
  /usr/include/x86_64-linux-gnu/bits/stat.h /usr/include/fcntl.h \
  /usr/include/x86_64-linux-gnu/bits/fcntl.h \
+ /usr/include/x86_64-linux-gnu/bits/fcntl-linux.h \
  /usr/include/x86_64-linux-gnu/bits/uio.h /usr/include/errno.h \
  /usr/include/x86_64-linux-gnu/bits/errno.h /usr/include/linux/errno.h \
  /usr/include/x86_64-linux-gnu/asm/errno.h \
  /usr/include/asm-generic/errno.h /usr/include/asm-generic/errno-base.h \
- /usr/include/signal.h /usr/include/x86_64-linux-gnu/bits/signum.h \
- /usr/include/x86_64-linux-gnu/bits/siginfo.h \
- /usr/include/x86_64-linux-gnu/bits/sigaction.h \
- /usr/include/x86_64-linux-gnu/bits/sigcontext.h \
- /usr/include/x86_64-linux-gnu/bits/sigstack.h \
- /usr/include/x86_64-linux-gnu/sys/ucontext.h \
- /usr/include/x86_64-linux-gnu/bits/sigthread.h /usr/include/netdb.h \
- /usr/include/netinet/in.h /usr/include/x86_64-linux-gnu/sys/socket.h \
+ /usr/include/netdb.h /usr/include/netinet/in.h \
+ /usr/include/x86_64-linux-gnu/sys/socket.h \
  /usr/include/x86_64-linux-gnu/sys/uio.h \
  /usr/include/x86_64-linux-gnu/bits/socket.h \
+ /usr/include/x86_64-linux-gnu/bits/socket_type.h \
  /usr/include/x86_64-linux-gnu/bits/sockaddr.h \
  /usr/include/x86_64-linux-gnu/asm/socket.h \
  /usr/include/asm-generic/socket.h \
@@ -192,13 +203,12 @@ nata_util.lo: nata_util.cpp \
  /usr/include/x86_64-linux-gnu/asm/ioctl.h \
  /usr/include/asm-generic/ioctl.h \
  /usr/include/x86_64-linux-gnu/bits/ioctl-types.h \
- /usr/include/x86_64-linux-gnu/sys/wait.h \
- /usr/include/x86_64-linux-gnu/sys/resource.h \
- /usr/include/x86_64-linux-gnu/bits/resource.h /usr/include/pthread.h \
+ /usr/include/x86_64-linux-gnu/sys/wait.h /usr/include/pthread.h \
  /usr/include/sched.h /usr/include/x86_64-linux-gnu/bits/sched.h \
  /usr/include/x86_64-linux-gnu/bits/setjmp.h \
- /home/mnakao/work/gcc-4.8.4/lib/gcc/x86_64-unknown-linux-gnu/4.8.4/include/stdbool.h \
- /usr/include/regex.h /usr/include/x86_64-linux-gnu/gnu/option-groups.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.9/include/stdbool.h \
+ /usr/include/x86_64-linux-gnu/sys/resource.h \
+ /usr/include/x86_64-linux-gnu/bits/resource.h /usr/include/regex.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_types.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_macros.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_logger.h \
@@ -207,54 +217,64 @@ nata_util.lo: nata_util.cpp \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_util.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_uid.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_sha1.h
-nata_uid.lo: nata_uid.cpp \
+nata_uid.lo: nata_uid.cpp /usr/include/stdc-predef.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_rcsid.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/libnata.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_includes.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_config.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_platform.h \
  /usr/include/inttypes.h /usr/include/features.h \
- /usr/include/x86_64-linux-gnu/bits/predefs.h \
  /usr/include/x86_64-linux-gnu/sys/cdefs.h \
  /usr/include/x86_64-linux-gnu/bits/wordsize.h \
  /usr/include/x86_64-linux-gnu/gnu/stubs.h \
  /usr/include/x86_64-linux-gnu/gnu/stubs-64.h \
- /home/mnakao/work/gcc-4.8.4/lib/gcc/x86_64-unknown-linux-gnu/4.8.4/include/stdint.h \
- /usr/include/stdint.h /usr/include/x86_64-linux-gnu/bits/wchar.h \
- /home/mnakao/work/gcc-4.8.4/lib/gcc/x86_64-unknown-linux-gnu/4.8.4/include-fixed/limits.h \
- /home/mnakao/work/gcc-4.8.4/lib/gcc/x86_64-unknown-linux-gnu/4.8.4/include-fixed/syslimits.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.9/include/stdint.h /usr/include/stdint.h \
+ /usr/include/x86_64-linux-gnu/bits/wchar.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.9/include-fixed/limits.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.9/include-fixed/syslimits.h \
  /usr/include/limits.h /usr/include/x86_64-linux-gnu/bits/posix1_lim.h \
  /usr/include/x86_64-linux-gnu/bits/local_lim.h \
  /usr/include/linux/limits.h \
  /usr/include/x86_64-linux-gnu/bits/posix2_lim.h \
  /usr/include/x86_64-linux-gnu/bits/xopen_lim.h \
  /usr/include/x86_64-linux-gnu/bits/stdio_lim.h \
- /usr/include/x86_64-linux-gnu/sys/param.h /usr/include/linux/param.h \
- /usr/include/x86_64-linux-gnu/asm/param.h \
- /usr/include/asm-generic/param.h \
+ /usr/include/x86_64-linux-gnu/sys/param.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.9/include/stddef.h \
  /usr/include/x86_64-linux-gnu/sys/types.h \
  /usr/include/x86_64-linux-gnu/bits/types.h \
  /usr/include/x86_64-linux-gnu/bits/typesizes.h /usr/include/time.h \
- /home/mnakao/work/gcc-4.8.4/lib/gcc/x86_64-unknown-linux-gnu/4.8.4/include/stddef.h \
  /usr/include/endian.h /usr/include/x86_64-linux-gnu/bits/endian.h \
  /usr/include/x86_64-linux-gnu/bits/byteswap.h \
+ /usr/include/x86_64-linux-gnu/bits/byteswap-16.h \
  /usr/include/x86_64-linux-gnu/sys/select.h \
  /usr/include/x86_64-linux-gnu/bits/select.h \
  /usr/include/x86_64-linux-gnu/bits/sigset.h \
  /usr/include/x86_64-linux-gnu/bits/time.h \
  /usr/include/x86_64-linux-gnu/sys/sysmacros.h \
- /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h /usr/include/ctype.h \
+ /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h /usr/include/signal.h \
+ /usr/include/x86_64-linux-gnu/bits/signum.h \
+ /usr/include/x86_64-linux-gnu/bits/siginfo.h \
+ /usr/include/x86_64-linux-gnu/bits/sigaction.h \
+ /usr/include/x86_64-linux-gnu/bits/sigcontext.h \
+ /usr/include/x86_64-linux-gnu/bits/sigstack.h \
+ /usr/include/x86_64-linux-gnu/sys/ucontext.h \
+ /usr/include/x86_64-linux-gnu/bits/sigthread.h \
+ /usr/include/x86_64-linux-gnu/bits/param.h /usr/include/linux/param.h \
+ /usr/include/x86_64-linux-gnu/asm/param.h \
+ /usr/include/asm-generic/param.h /usr/include/ctype.h \
  /usr/include/xlocale.h /usr/include/stdio.h /usr/include/libio.h \
  /usr/include/_G_config.h /usr/include/wchar.h \
- /home/mnakao/work/gcc-4.8.4/lib/gcc/x86_64-unknown-linux-gnu/4.8.4/include/stdarg.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.9/include/stdarg.h \
  /usr/include/x86_64-linux-gnu/bits/sys_errlist.h /usr/include/stdlib.h \
  /usr/include/x86_64-linux-gnu/bits/waitflags.h \
  /usr/include/x86_64-linux-gnu/bits/waitstatus.h /usr/include/alloca.h \
- /usr/include/unistd.h /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
+ /usr/include/x86_64-linux-gnu/bits/stdlib-float.h /usr/include/unistd.h \
+ /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
  /usr/include/x86_64-linux-gnu/bits/environments.h \
  /usr/include/x86_64-linux-gnu/bits/confname.h /usr/include/getopt.h \
  /usr/include/memory.h /usr/include/string.h /usr/include/malloc.h \
  /usr/include/dirent.h /usr/include/x86_64-linux-gnu/bits/dirent.h \
+ /usr/include/x86_64-linux-gnu/bits/timex.h \
  /usr/include/x86_64-linux-gnu/sys/time.h \
  /usr/include/x86_64-linux-gnu/sys/termios.h /usr/include/termios.h \
  /usr/include/x86_64-linux-gnu/bits/termios.h \
@@ -262,20 +282,16 @@ nata_uid.lo: nata_uid.cpp \
  /usr/include/x86_64-linux-gnu/sys/stat.h \
  /usr/include/x86_64-linux-gnu/bits/stat.h /usr/include/fcntl.h \
  /usr/include/x86_64-linux-gnu/bits/fcntl.h \
+ /usr/include/x86_64-linux-gnu/bits/fcntl-linux.h \
  /usr/include/x86_64-linux-gnu/bits/uio.h /usr/include/errno.h \
  /usr/include/x86_64-linux-gnu/bits/errno.h /usr/include/linux/errno.h \
  /usr/include/x86_64-linux-gnu/asm/errno.h \
  /usr/include/asm-generic/errno.h /usr/include/asm-generic/errno-base.h \
- /usr/include/signal.h /usr/include/x86_64-linux-gnu/bits/signum.h \
- /usr/include/x86_64-linux-gnu/bits/siginfo.h \
- /usr/include/x86_64-linux-gnu/bits/sigaction.h \
- /usr/include/x86_64-linux-gnu/bits/sigcontext.h \
- /usr/include/x86_64-linux-gnu/bits/sigstack.h \
- /usr/include/x86_64-linux-gnu/sys/ucontext.h \
- /usr/include/x86_64-linux-gnu/bits/sigthread.h /usr/include/netdb.h \
- /usr/include/netinet/in.h /usr/include/x86_64-linux-gnu/sys/socket.h \
+ /usr/include/netdb.h /usr/include/netinet/in.h \
+ /usr/include/x86_64-linux-gnu/sys/socket.h \
  /usr/include/x86_64-linux-gnu/sys/uio.h \
  /usr/include/x86_64-linux-gnu/bits/socket.h \
+ /usr/include/x86_64-linux-gnu/bits/socket_type.h \
  /usr/include/x86_64-linux-gnu/bits/sockaddr.h \
  /usr/include/x86_64-linux-gnu/asm/socket.h \
  /usr/include/asm-generic/socket.h \
@@ -290,13 +306,12 @@ nata_uid.lo: nata_uid.cpp \
  /usr/include/x86_64-linux-gnu/asm/ioctl.h \
  /usr/include/asm-generic/ioctl.h \
  /usr/include/x86_64-linux-gnu/bits/ioctl-types.h \
- /usr/include/x86_64-linux-gnu/sys/wait.h \
- /usr/include/x86_64-linux-gnu/sys/resource.h \
- /usr/include/x86_64-linux-gnu/bits/resource.h /usr/include/pthread.h \
+ /usr/include/x86_64-linux-gnu/sys/wait.h /usr/include/pthread.h \
  /usr/include/sched.h /usr/include/x86_64-linux-gnu/bits/sched.h \
  /usr/include/x86_64-linux-gnu/bits/setjmp.h \
- /home/mnakao/work/gcc-4.8.4/lib/gcc/x86_64-unknown-linux-gnu/4.8.4/include/stdbool.h \
- /usr/include/regex.h /usr/include/x86_64-linux-gnu/gnu/option-groups.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.9/include/stdbool.h \
+ /usr/include/x86_64-linux-gnu/sys/resource.h \
+ /usr/include/x86_64-linux-gnu/bits/resource.h /usr/include/regex.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_types.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_macros.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_logger.h \
@@ -305,54 +320,64 @@ nata_uid.lo: nata_uid.cpp \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_util.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_uid.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_sha1.h
-nata_sha1.lo: nata_sha1.cpp \
+nata_sha1.lo: nata_sha1.cpp /usr/include/stdc-predef.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_rcsid.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/libnata.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_includes.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_config.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_platform.h \
  /usr/include/inttypes.h /usr/include/features.h \
- /usr/include/x86_64-linux-gnu/bits/predefs.h \
  /usr/include/x86_64-linux-gnu/sys/cdefs.h \
  /usr/include/x86_64-linux-gnu/bits/wordsize.h \
  /usr/include/x86_64-linux-gnu/gnu/stubs.h \
  /usr/include/x86_64-linux-gnu/gnu/stubs-64.h \
- /home/mnakao/work/gcc-4.8.4/lib/gcc/x86_64-unknown-linux-gnu/4.8.4/include/stdint.h \
- /usr/include/stdint.h /usr/include/x86_64-linux-gnu/bits/wchar.h \
- /home/mnakao/work/gcc-4.8.4/lib/gcc/x86_64-unknown-linux-gnu/4.8.4/include-fixed/limits.h \
- /home/mnakao/work/gcc-4.8.4/lib/gcc/x86_64-unknown-linux-gnu/4.8.4/include-fixed/syslimits.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.9/include/stdint.h /usr/include/stdint.h \
+ /usr/include/x86_64-linux-gnu/bits/wchar.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.9/include-fixed/limits.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.9/include-fixed/syslimits.h \
  /usr/include/limits.h /usr/include/x86_64-linux-gnu/bits/posix1_lim.h \
  /usr/include/x86_64-linux-gnu/bits/local_lim.h \
  /usr/include/linux/limits.h \
  /usr/include/x86_64-linux-gnu/bits/posix2_lim.h \
  /usr/include/x86_64-linux-gnu/bits/xopen_lim.h \
  /usr/include/x86_64-linux-gnu/bits/stdio_lim.h \
- /usr/include/x86_64-linux-gnu/sys/param.h /usr/include/linux/param.h \
- /usr/include/x86_64-linux-gnu/asm/param.h \
- /usr/include/asm-generic/param.h \
+ /usr/include/x86_64-linux-gnu/sys/param.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.9/include/stddef.h \
  /usr/include/x86_64-linux-gnu/sys/types.h \
  /usr/include/x86_64-linux-gnu/bits/types.h \
  /usr/include/x86_64-linux-gnu/bits/typesizes.h /usr/include/time.h \
- /home/mnakao/work/gcc-4.8.4/lib/gcc/x86_64-unknown-linux-gnu/4.8.4/include/stddef.h \
  /usr/include/endian.h /usr/include/x86_64-linux-gnu/bits/endian.h \
  /usr/include/x86_64-linux-gnu/bits/byteswap.h \
+ /usr/include/x86_64-linux-gnu/bits/byteswap-16.h \
  /usr/include/x86_64-linux-gnu/sys/select.h \
  /usr/include/x86_64-linux-gnu/bits/select.h \
  /usr/include/x86_64-linux-gnu/bits/sigset.h \
  /usr/include/x86_64-linux-gnu/bits/time.h \
  /usr/include/x86_64-linux-gnu/sys/sysmacros.h \
- /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h /usr/include/ctype.h \
+ /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h /usr/include/signal.h \
+ /usr/include/x86_64-linux-gnu/bits/signum.h \
+ /usr/include/x86_64-linux-gnu/bits/siginfo.h \
+ /usr/include/x86_64-linux-gnu/bits/sigaction.h \
+ /usr/include/x86_64-linux-gnu/bits/sigcontext.h \
+ /usr/include/x86_64-linux-gnu/bits/sigstack.h \
+ /usr/include/x86_64-linux-gnu/sys/ucontext.h \
+ /usr/include/x86_64-linux-gnu/bits/sigthread.h \
+ /usr/include/x86_64-linux-gnu/bits/param.h /usr/include/linux/param.h \
+ /usr/include/x86_64-linux-gnu/asm/param.h \
+ /usr/include/asm-generic/param.h /usr/include/ctype.h \
  /usr/include/xlocale.h /usr/include/stdio.h /usr/include/libio.h \
  /usr/include/_G_config.h /usr/include/wchar.h \
- /home/mnakao/work/gcc-4.8.4/lib/gcc/x86_64-unknown-linux-gnu/4.8.4/include/stdarg.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.9/include/stdarg.h \
  /usr/include/x86_64-linux-gnu/bits/sys_errlist.h /usr/include/stdlib.h \
  /usr/include/x86_64-linux-gnu/bits/waitflags.h \
  /usr/include/x86_64-linux-gnu/bits/waitstatus.h /usr/include/alloca.h \
- /usr/include/unistd.h /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
+ /usr/include/x86_64-linux-gnu/bits/stdlib-float.h /usr/include/unistd.h \
+ /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
  /usr/include/x86_64-linux-gnu/bits/environments.h \
  /usr/include/x86_64-linux-gnu/bits/confname.h /usr/include/getopt.h \
  /usr/include/memory.h /usr/include/string.h /usr/include/malloc.h \
  /usr/include/dirent.h /usr/include/x86_64-linux-gnu/bits/dirent.h \
+ /usr/include/x86_64-linux-gnu/bits/timex.h \
  /usr/include/x86_64-linux-gnu/sys/time.h \
  /usr/include/x86_64-linux-gnu/sys/termios.h /usr/include/termios.h \
  /usr/include/x86_64-linux-gnu/bits/termios.h \
@@ -360,20 +385,16 @@ nata_sha1.lo: nata_sha1.cpp \
  /usr/include/x86_64-linux-gnu/sys/stat.h \
  /usr/include/x86_64-linux-gnu/bits/stat.h /usr/include/fcntl.h \
  /usr/include/x86_64-linux-gnu/bits/fcntl.h \
+ /usr/include/x86_64-linux-gnu/bits/fcntl-linux.h \
  /usr/include/x86_64-linux-gnu/bits/uio.h /usr/include/errno.h \
  /usr/include/x86_64-linux-gnu/bits/errno.h /usr/include/linux/errno.h \
  /usr/include/x86_64-linux-gnu/asm/errno.h \
  /usr/include/asm-generic/errno.h /usr/include/asm-generic/errno-base.h \
- /usr/include/signal.h /usr/include/x86_64-linux-gnu/bits/signum.h \
- /usr/include/x86_64-linux-gnu/bits/siginfo.h \
- /usr/include/x86_64-linux-gnu/bits/sigaction.h \
- /usr/include/x86_64-linux-gnu/bits/sigcontext.h \
- /usr/include/x86_64-linux-gnu/bits/sigstack.h \
- /usr/include/x86_64-linux-gnu/sys/ucontext.h \
- /usr/include/x86_64-linux-gnu/bits/sigthread.h /usr/include/netdb.h \
- /usr/include/netinet/in.h /usr/include/x86_64-linux-gnu/sys/socket.h \
+ /usr/include/netdb.h /usr/include/netinet/in.h \
+ /usr/include/x86_64-linux-gnu/sys/socket.h \
  /usr/include/x86_64-linux-gnu/sys/uio.h \
  /usr/include/x86_64-linux-gnu/bits/socket.h \
+ /usr/include/x86_64-linux-gnu/bits/socket_type.h \
  /usr/include/x86_64-linux-gnu/bits/sockaddr.h \
  /usr/include/x86_64-linux-gnu/asm/socket.h \
  /usr/include/asm-generic/socket.h \
@@ -388,13 +409,12 @@ nata_sha1.lo: nata_sha1.cpp \
  /usr/include/x86_64-linux-gnu/asm/ioctl.h \
  /usr/include/asm-generic/ioctl.h \
  /usr/include/x86_64-linux-gnu/bits/ioctl-types.h \
- /usr/include/x86_64-linux-gnu/sys/wait.h \
- /usr/include/x86_64-linux-gnu/sys/resource.h \
- /usr/include/x86_64-linux-gnu/bits/resource.h /usr/include/pthread.h \
+ /usr/include/x86_64-linux-gnu/sys/wait.h /usr/include/pthread.h \
  /usr/include/sched.h /usr/include/x86_64-linux-gnu/bits/sched.h \
  /usr/include/x86_64-linux-gnu/bits/setjmp.h \
- /home/mnakao/work/gcc-4.8.4/lib/gcc/x86_64-unknown-linux-gnu/4.8.4/include/stdbool.h \
- /usr/include/regex.h /usr/include/x86_64-linux-gnu/gnu/option-groups.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.9/include/stdbool.h \
+ /usr/include/x86_64-linux-gnu/sys/resource.h \
+ /usr/include/x86_64-linux-gnu/bits/resource.h /usr/include/regex.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_types.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_macros.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_logger.h \
@@ -403,53 +423,63 @@ nata_sha1.lo: nata_sha1.cpp \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_util.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_uid.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_sha1.h
-nata_safe_syscall.lo: nata_safe_syscall.cpp \
+nata_safe_syscall.lo: nata_safe_syscall.cpp /usr/include/stdc-predef.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_rcsid.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_includes.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_config.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_platform.h \
  /usr/include/inttypes.h /usr/include/features.h \
- /usr/include/x86_64-linux-gnu/bits/predefs.h \
  /usr/include/x86_64-linux-gnu/sys/cdefs.h \
  /usr/include/x86_64-linux-gnu/bits/wordsize.h \
  /usr/include/x86_64-linux-gnu/gnu/stubs.h \
  /usr/include/x86_64-linux-gnu/gnu/stubs-64.h \
- /home/mnakao/work/gcc-4.8.4/lib/gcc/x86_64-unknown-linux-gnu/4.8.4/include/stdint.h \
- /usr/include/stdint.h /usr/include/x86_64-linux-gnu/bits/wchar.h \
- /home/mnakao/work/gcc-4.8.4/lib/gcc/x86_64-unknown-linux-gnu/4.8.4/include-fixed/limits.h \
- /home/mnakao/work/gcc-4.8.4/lib/gcc/x86_64-unknown-linux-gnu/4.8.4/include-fixed/syslimits.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.9/include/stdint.h /usr/include/stdint.h \
+ /usr/include/x86_64-linux-gnu/bits/wchar.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.9/include-fixed/limits.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.9/include-fixed/syslimits.h \
  /usr/include/limits.h /usr/include/x86_64-linux-gnu/bits/posix1_lim.h \
  /usr/include/x86_64-linux-gnu/bits/local_lim.h \
  /usr/include/linux/limits.h \
  /usr/include/x86_64-linux-gnu/bits/posix2_lim.h \
  /usr/include/x86_64-linux-gnu/bits/xopen_lim.h \
  /usr/include/x86_64-linux-gnu/bits/stdio_lim.h \
- /usr/include/x86_64-linux-gnu/sys/param.h /usr/include/linux/param.h \
- /usr/include/x86_64-linux-gnu/asm/param.h \
- /usr/include/asm-generic/param.h \
+ /usr/include/x86_64-linux-gnu/sys/param.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.9/include/stddef.h \
  /usr/include/x86_64-linux-gnu/sys/types.h \
  /usr/include/x86_64-linux-gnu/bits/types.h \
  /usr/include/x86_64-linux-gnu/bits/typesizes.h /usr/include/time.h \
- /home/mnakao/work/gcc-4.8.4/lib/gcc/x86_64-unknown-linux-gnu/4.8.4/include/stddef.h \
  /usr/include/endian.h /usr/include/x86_64-linux-gnu/bits/endian.h \
  /usr/include/x86_64-linux-gnu/bits/byteswap.h \
+ /usr/include/x86_64-linux-gnu/bits/byteswap-16.h \
  /usr/include/x86_64-linux-gnu/sys/select.h \
  /usr/include/x86_64-linux-gnu/bits/select.h \
  /usr/include/x86_64-linux-gnu/bits/sigset.h \
  /usr/include/x86_64-linux-gnu/bits/time.h \
  /usr/include/x86_64-linux-gnu/sys/sysmacros.h \
- /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h /usr/include/ctype.h \
+ /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h /usr/include/signal.h \
+ /usr/include/x86_64-linux-gnu/bits/signum.h \
+ /usr/include/x86_64-linux-gnu/bits/siginfo.h \
+ /usr/include/x86_64-linux-gnu/bits/sigaction.h \
+ /usr/include/x86_64-linux-gnu/bits/sigcontext.h \
+ /usr/include/x86_64-linux-gnu/bits/sigstack.h \
+ /usr/include/x86_64-linux-gnu/sys/ucontext.h \
+ /usr/include/x86_64-linux-gnu/bits/sigthread.h \
+ /usr/include/x86_64-linux-gnu/bits/param.h /usr/include/linux/param.h \
+ /usr/include/x86_64-linux-gnu/asm/param.h \
+ /usr/include/asm-generic/param.h /usr/include/ctype.h \
  /usr/include/xlocale.h /usr/include/stdio.h /usr/include/libio.h \
  /usr/include/_G_config.h /usr/include/wchar.h \
- /home/mnakao/work/gcc-4.8.4/lib/gcc/x86_64-unknown-linux-gnu/4.8.4/include/stdarg.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.9/include/stdarg.h \
  /usr/include/x86_64-linux-gnu/bits/sys_errlist.h /usr/include/stdlib.h \
  /usr/include/x86_64-linux-gnu/bits/waitflags.h \
  /usr/include/x86_64-linux-gnu/bits/waitstatus.h /usr/include/alloca.h \
- /usr/include/unistd.h /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
+ /usr/include/x86_64-linux-gnu/bits/stdlib-float.h /usr/include/unistd.h \
+ /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
  /usr/include/x86_64-linux-gnu/bits/environments.h \
  /usr/include/x86_64-linux-gnu/bits/confname.h /usr/include/getopt.h \
  /usr/include/memory.h /usr/include/string.h /usr/include/malloc.h \
  /usr/include/dirent.h /usr/include/x86_64-linux-gnu/bits/dirent.h \
+ /usr/include/x86_64-linux-gnu/bits/timex.h \
  /usr/include/x86_64-linux-gnu/sys/time.h \
  /usr/include/x86_64-linux-gnu/sys/termios.h /usr/include/termios.h \
  /usr/include/x86_64-linux-gnu/bits/termios.h \
@@ -457,20 +487,16 @@ nata_safe_syscall.lo: nata_safe_syscall.cpp \
  /usr/include/x86_64-linux-gnu/sys/stat.h \
  /usr/include/x86_64-linux-gnu/bits/stat.h /usr/include/fcntl.h \
  /usr/include/x86_64-linux-gnu/bits/fcntl.h \
+ /usr/include/x86_64-linux-gnu/bits/fcntl-linux.h \
  /usr/include/x86_64-linux-gnu/bits/uio.h /usr/include/errno.h \
  /usr/include/x86_64-linux-gnu/bits/errno.h /usr/include/linux/errno.h \
  /usr/include/x86_64-linux-gnu/asm/errno.h \
  /usr/include/asm-generic/errno.h /usr/include/asm-generic/errno-base.h \
- /usr/include/signal.h /usr/include/x86_64-linux-gnu/bits/signum.h \
- /usr/include/x86_64-linux-gnu/bits/siginfo.h \
- /usr/include/x86_64-linux-gnu/bits/sigaction.h \
- /usr/include/x86_64-linux-gnu/bits/sigcontext.h \
- /usr/include/x86_64-linux-gnu/bits/sigstack.h \
- /usr/include/x86_64-linux-gnu/sys/ucontext.h \
- /usr/include/x86_64-linux-gnu/bits/sigthread.h /usr/include/netdb.h \
- /usr/include/netinet/in.h /usr/include/x86_64-linux-gnu/sys/socket.h \
+ /usr/include/netdb.h /usr/include/netinet/in.h \
+ /usr/include/x86_64-linux-gnu/sys/socket.h \
  /usr/include/x86_64-linux-gnu/sys/uio.h \
  /usr/include/x86_64-linux-gnu/bits/socket.h \
+ /usr/include/x86_64-linux-gnu/bits/socket_type.h \
  /usr/include/x86_64-linux-gnu/bits/sockaddr.h \
  /usr/include/x86_64-linux-gnu/asm/socket.h \
  /usr/include/asm-generic/socket.h \
@@ -485,66 +511,75 @@ nata_safe_syscall.lo: nata_safe_syscall.cpp \
  /usr/include/x86_64-linux-gnu/asm/ioctl.h \
  /usr/include/asm-generic/ioctl.h \
  /usr/include/x86_64-linux-gnu/bits/ioctl-types.h \
- /usr/include/x86_64-linux-gnu/sys/wait.h \
- /usr/include/x86_64-linux-gnu/sys/resource.h \
- /usr/include/x86_64-linux-gnu/bits/resource.h /usr/include/pthread.h \
+ /usr/include/x86_64-linux-gnu/sys/wait.h /usr/include/pthread.h \
  /usr/include/sched.h /usr/include/x86_64-linux-gnu/bits/sched.h \
  /usr/include/x86_64-linux-gnu/bits/setjmp.h \
- /home/mnakao/work/gcc-4.8.4/lib/gcc/x86_64-unknown-linux-gnu/4.8.4/include/stdbool.h \
- /usr/include/regex.h /usr/include/x86_64-linux-gnu/gnu/option-groups.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.9/include/stdbool.h \
+ /usr/include/x86_64-linux-gnu/sys/resource.h \
+ /usr/include/x86_64-linux-gnu/bits/resource.h /usr/include/regex.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_types.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_macros.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_logger.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_perror.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_safe_syscall.h
-ProcessJanitor.lo: ProcessJanitor.cpp \
+ProcessJanitor.lo: ProcessJanitor.cpp /usr/include/stdc-predef.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_rcsid.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/libnata.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_includes.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_config.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_platform.h \
  /usr/include/inttypes.h /usr/include/features.h \
- /usr/include/x86_64-linux-gnu/bits/predefs.h \
  /usr/include/x86_64-linux-gnu/sys/cdefs.h \
  /usr/include/x86_64-linux-gnu/bits/wordsize.h \
  /usr/include/x86_64-linux-gnu/gnu/stubs.h \
  /usr/include/x86_64-linux-gnu/gnu/stubs-64.h \
- /home/mnakao/work/gcc-4.8.4/lib/gcc/x86_64-unknown-linux-gnu/4.8.4/include/stdint.h \
- /usr/include/stdint.h /usr/include/x86_64-linux-gnu/bits/wchar.h \
- /home/mnakao/work/gcc-4.8.4/lib/gcc/x86_64-unknown-linux-gnu/4.8.4/include-fixed/limits.h \
- /home/mnakao/work/gcc-4.8.4/lib/gcc/x86_64-unknown-linux-gnu/4.8.4/include-fixed/syslimits.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.9/include/stdint.h /usr/include/stdint.h \
+ /usr/include/x86_64-linux-gnu/bits/wchar.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.9/include-fixed/limits.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.9/include-fixed/syslimits.h \
  /usr/include/limits.h /usr/include/x86_64-linux-gnu/bits/posix1_lim.h \
  /usr/include/x86_64-linux-gnu/bits/local_lim.h \
  /usr/include/linux/limits.h \
  /usr/include/x86_64-linux-gnu/bits/posix2_lim.h \
  /usr/include/x86_64-linux-gnu/bits/xopen_lim.h \
  /usr/include/x86_64-linux-gnu/bits/stdio_lim.h \
- /usr/include/x86_64-linux-gnu/sys/param.h /usr/include/linux/param.h \
- /usr/include/x86_64-linux-gnu/asm/param.h \
- /usr/include/asm-generic/param.h \
+ /usr/include/x86_64-linux-gnu/sys/param.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.9/include/stddef.h \
  /usr/include/x86_64-linux-gnu/sys/types.h \
  /usr/include/x86_64-linux-gnu/bits/types.h \
  /usr/include/x86_64-linux-gnu/bits/typesizes.h /usr/include/time.h \
- /home/mnakao/work/gcc-4.8.4/lib/gcc/x86_64-unknown-linux-gnu/4.8.4/include/stddef.h \
  /usr/include/endian.h /usr/include/x86_64-linux-gnu/bits/endian.h \
  /usr/include/x86_64-linux-gnu/bits/byteswap.h \
+ /usr/include/x86_64-linux-gnu/bits/byteswap-16.h \
  /usr/include/x86_64-linux-gnu/sys/select.h \
  /usr/include/x86_64-linux-gnu/bits/select.h \
  /usr/include/x86_64-linux-gnu/bits/sigset.h \
  /usr/include/x86_64-linux-gnu/bits/time.h \
  /usr/include/x86_64-linux-gnu/sys/sysmacros.h \
- /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h /usr/include/ctype.h \
+ /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h /usr/include/signal.h \
+ /usr/include/x86_64-linux-gnu/bits/signum.h \
+ /usr/include/x86_64-linux-gnu/bits/siginfo.h \
+ /usr/include/x86_64-linux-gnu/bits/sigaction.h \
+ /usr/include/x86_64-linux-gnu/bits/sigcontext.h \
+ /usr/include/x86_64-linux-gnu/bits/sigstack.h \
+ /usr/include/x86_64-linux-gnu/sys/ucontext.h \
+ /usr/include/x86_64-linux-gnu/bits/sigthread.h \
+ /usr/include/x86_64-linux-gnu/bits/param.h /usr/include/linux/param.h \
+ /usr/include/x86_64-linux-gnu/asm/param.h \
+ /usr/include/asm-generic/param.h /usr/include/ctype.h \
  /usr/include/xlocale.h /usr/include/stdio.h /usr/include/libio.h \
  /usr/include/_G_config.h /usr/include/wchar.h \
- /home/mnakao/work/gcc-4.8.4/lib/gcc/x86_64-unknown-linux-gnu/4.8.4/include/stdarg.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.9/include/stdarg.h \
  /usr/include/x86_64-linux-gnu/bits/sys_errlist.h /usr/include/stdlib.h \
  /usr/include/x86_64-linux-gnu/bits/waitflags.h \
  /usr/include/x86_64-linux-gnu/bits/waitstatus.h /usr/include/alloca.h \
- /usr/include/unistd.h /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
+ /usr/include/x86_64-linux-gnu/bits/stdlib-float.h /usr/include/unistd.h \
+ /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
  /usr/include/x86_64-linux-gnu/bits/environments.h \
  /usr/include/x86_64-linux-gnu/bits/confname.h /usr/include/getopt.h \
  /usr/include/memory.h /usr/include/string.h /usr/include/malloc.h \
  /usr/include/dirent.h /usr/include/x86_64-linux-gnu/bits/dirent.h \
+ /usr/include/x86_64-linux-gnu/bits/timex.h \
  /usr/include/x86_64-linux-gnu/sys/time.h \
  /usr/include/x86_64-linux-gnu/sys/termios.h /usr/include/termios.h \
  /usr/include/x86_64-linux-gnu/bits/termios.h \
@@ -552,20 +587,16 @@ ProcessJanitor.lo: ProcessJanitor.cpp \
  /usr/include/x86_64-linux-gnu/sys/stat.h \
  /usr/include/x86_64-linux-gnu/bits/stat.h /usr/include/fcntl.h \
  /usr/include/x86_64-linux-gnu/bits/fcntl.h \
+ /usr/include/x86_64-linux-gnu/bits/fcntl-linux.h \
  /usr/include/x86_64-linux-gnu/bits/uio.h /usr/include/errno.h \
  /usr/include/x86_64-linux-gnu/bits/errno.h /usr/include/linux/errno.h \
  /usr/include/x86_64-linux-gnu/asm/errno.h \
  /usr/include/asm-generic/errno.h /usr/include/asm-generic/errno-base.h \
- /usr/include/signal.h /usr/include/x86_64-linux-gnu/bits/signum.h \
- /usr/include/x86_64-linux-gnu/bits/siginfo.h \
- /usr/include/x86_64-linux-gnu/bits/sigaction.h \
- /usr/include/x86_64-linux-gnu/bits/sigcontext.h \
- /usr/include/x86_64-linux-gnu/bits/sigstack.h \
- /usr/include/x86_64-linux-gnu/sys/ucontext.h \
- /usr/include/x86_64-linux-gnu/bits/sigthread.h /usr/include/netdb.h \
- /usr/include/netinet/in.h /usr/include/x86_64-linux-gnu/sys/socket.h \
+ /usr/include/netdb.h /usr/include/netinet/in.h \
+ /usr/include/x86_64-linux-gnu/sys/socket.h \
  /usr/include/x86_64-linux-gnu/sys/uio.h \
  /usr/include/x86_64-linux-gnu/bits/socket.h \
+ /usr/include/x86_64-linux-gnu/bits/socket_type.h \
  /usr/include/x86_64-linux-gnu/bits/sockaddr.h \
  /usr/include/x86_64-linux-gnu/asm/socket.h \
  /usr/include/asm-generic/socket.h \
@@ -580,13 +611,12 @@ ProcessJanitor.lo: ProcessJanitor.cpp \
  /usr/include/x86_64-linux-gnu/asm/ioctl.h \
  /usr/include/asm-generic/ioctl.h \
  /usr/include/x86_64-linux-gnu/bits/ioctl-types.h \
- /usr/include/x86_64-linux-gnu/sys/wait.h \
- /usr/include/x86_64-linux-gnu/sys/resource.h \
- /usr/include/x86_64-linux-gnu/bits/resource.h /usr/include/pthread.h \
+ /usr/include/x86_64-linux-gnu/sys/wait.h /usr/include/pthread.h \
  /usr/include/sched.h /usr/include/x86_64-linux-gnu/bits/sched.h \
  /usr/include/x86_64-linux-gnu/bits/setjmp.h \
- /home/mnakao/work/gcc-4.8.4/lib/gcc/x86_64-unknown-linux-gnu/4.8.4/include/stdbool.h \
- /usr/include/regex.h /usr/include/x86_64-linux-gnu/gnu/option-groups.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.9/include/stdbool.h \
+ /usr/include/x86_64-linux-gnu/sys/resource.h \
+ /usr/include/x86_64-linux-gnu/bits/resource.h /usr/include/regex.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_types.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_macros.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_logger.h \
@@ -609,98 +639,105 @@ ProcessJanitor.lo: ProcessJanitor.cpp \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/Statistics.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/BoundedBlockingQueue.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/BlockingContainer.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/queue \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/deque \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/bits/stl_algobase.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/x86_64-unknown-linux-gnu/bits/c++config.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/x86_64-unknown-linux-gnu/bits/os_defines.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/x86_64-unknown-linux-gnu/bits/cpu_defines.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/bits/functexcept.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/bits/exception_defines.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/bits/cpp_type_traits.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/ext/type_traits.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/ext/numeric_traits.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/bits/stl_pair.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/bits/move.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/bits/concept_check.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/bits/stl_iterator_base_types.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/bits/stl_iterator_base_funcs.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/debug/debug.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/bits/stl_iterator.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/bits/allocator.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/x86_64-unknown-linux-gnu/bits/c++allocator.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/ext/new_allocator.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/new \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/exception \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/bits/atomic_lockfree_defines.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/bits/memoryfwd.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/bits/stl_construct.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/ext/alloc_traits.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/bits/stl_uninitialized.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/bits/stl_deque.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/bits/range_access.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/bits/deque.tcc \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/vector \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/bits/stl_vector.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/bits/stl_bvector.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/bits/vector.tcc \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/bits/stl_heap.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/bits/stl_function.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/backward/binders.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/bits/stl_queue.h \
+ /usr/include/c++/4.9/queue /usr/include/c++/4.9/deque \
+ /usr/include/c++/4.9/bits/stl_algobase.h \
+ /usr/include/x86_64-linux-gnu/c++/4.9/bits/c++config.h \
+ /usr/include/x86_64-linux-gnu/c++/4.9/bits/os_defines.h \
+ /usr/include/x86_64-linux-gnu/c++/4.9/bits/cpu_defines.h \
+ /usr/include/c++/4.9/bits/functexcept.h \
+ /usr/include/c++/4.9/bits/exception_defines.h \
+ /usr/include/c++/4.9/bits/cpp_type_traits.h \
+ /usr/include/c++/4.9/ext/type_traits.h \
+ /usr/include/c++/4.9/ext/numeric_traits.h \
+ /usr/include/c++/4.9/bits/stl_pair.h /usr/include/c++/4.9/bits/move.h \
+ /usr/include/c++/4.9/bits/concept_check.h \
+ /usr/include/c++/4.9/bits/stl_iterator_base_types.h \
+ /usr/include/c++/4.9/bits/stl_iterator_base_funcs.h \
+ /usr/include/c++/4.9/debug/debug.h \
+ /usr/include/c++/4.9/bits/stl_iterator.h \
+ /usr/include/c++/4.9/bits/ptr_traits.h \
+ /usr/include/c++/4.9/bits/predefined_ops.h \
+ /usr/include/c++/4.9/bits/allocator.h \
+ /usr/include/x86_64-linux-gnu/c++/4.9/bits/c++allocator.h \
+ /usr/include/c++/4.9/ext/new_allocator.h /usr/include/c++/4.9/new \
+ /usr/include/c++/4.9/exception \
+ /usr/include/c++/4.9/bits/atomic_lockfree_defines.h \
+ /usr/include/c++/4.9/bits/memoryfwd.h \
+ /usr/include/c++/4.9/bits/stl_construct.h \
+ /usr/include/c++/4.9/ext/alloc_traits.h \
+ /usr/include/c++/4.9/bits/stl_uninitialized.h \
+ /usr/include/c++/4.9/bits/stl_deque.h \
+ /usr/include/c++/4.9/bits/range_access.h \
+ /usr/include/c++/4.9/bits/deque.tcc /usr/include/c++/4.9/vector \
+ /usr/include/c++/4.9/bits/stl_vector.h \
+ /usr/include/c++/4.9/bits/stl_bvector.h \
+ /usr/include/c++/4.9/bits/vector.tcc \
+ /usr/include/c++/4.9/bits/stl_heap.h \
+ /usr/include/c++/4.9/bits/stl_function.h \
+ /usr/include/c++/4.9/backward/binders.h \
+ /usr/include/c++/4.9/bits/stl_queue.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/SynchronizedMap.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/map \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/bits/stl_tree.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/bits/stl_map.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/bits/stl_multimap.h \
+ /usr/include/c++/4.9/map /usr/include/c++/4.9/bits/stl_tree.h \
+ /usr/include/c++/4.9/bits/stl_map.h \
+ /usr/include/c++/4.9/bits/stl_multimap.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/Completion.h
-ThreadStatics.lo: ThreadStatics.cpp \
+ThreadStatics.lo: ThreadStatics.cpp /usr/include/stdc-predef.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_rcsid.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_includes.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_config.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_platform.h \
  /usr/include/inttypes.h /usr/include/features.h \
- /usr/include/x86_64-linux-gnu/bits/predefs.h \
  /usr/include/x86_64-linux-gnu/sys/cdefs.h \
  /usr/include/x86_64-linux-gnu/bits/wordsize.h \
  /usr/include/x86_64-linux-gnu/gnu/stubs.h \
  /usr/include/x86_64-linux-gnu/gnu/stubs-64.h \
- /home/mnakao/work/gcc-4.8.4/lib/gcc/x86_64-unknown-linux-gnu/4.8.4/include/stdint.h \
- /usr/include/stdint.h /usr/include/x86_64-linux-gnu/bits/wchar.h \
- /home/mnakao/work/gcc-4.8.4/lib/gcc/x86_64-unknown-linux-gnu/4.8.4/include-fixed/limits.h \
- /home/mnakao/work/gcc-4.8.4/lib/gcc/x86_64-unknown-linux-gnu/4.8.4/include-fixed/syslimits.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.9/include/stdint.h /usr/include/stdint.h \
+ /usr/include/x86_64-linux-gnu/bits/wchar.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.9/include-fixed/limits.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.9/include-fixed/syslimits.h \
  /usr/include/limits.h /usr/include/x86_64-linux-gnu/bits/posix1_lim.h \
  /usr/include/x86_64-linux-gnu/bits/local_lim.h \
  /usr/include/linux/limits.h \
  /usr/include/x86_64-linux-gnu/bits/posix2_lim.h \
  /usr/include/x86_64-linux-gnu/bits/xopen_lim.h \
  /usr/include/x86_64-linux-gnu/bits/stdio_lim.h \
- /usr/include/x86_64-linux-gnu/sys/param.h /usr/include/linux/param.h \
- /usr/include/x86_64-linux-gnu/asm/param.h \
- /usr/include/asm-generic/param.h \
+ /usr/include/x86_64-linux-gnu/sys/param.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.9/include/stddef.h \
  /usr/include/x86_64-linux-gnu/sys/types.h \
  /usr/include/x86_64-linux-gnu/bits/types.h \
  /usr/include/x86_64-linux-gnu/bits/typesizes.h /usr/include/time.h \
- /home/mnakao/work/gcc-4.8.4/lib/gcc/x86_64-unknown-linux-gnu/4.8.4/include/stddef.h \
  /usr/include/endian.h /usr/include/x86_64-linux-gnu/bits/endian.h \
  /usr/include/x86_64-linux-gnu/bits/byteswap.h \
+ /usr/include/x86_64-linux-gnu/bits/byteswap-16.h \
  /usr/include/x86_64-linux-gnu/sys/select.h \
  /usr/include/x86_64-linux-gnu/bits/select.h \
  /usr/include/x86_64-linux-gnu/bits/sigset.h \
  /usr/include/x86_64-linux-gnu/bits/time.h \
  /usr/include/x86_64-linux-gnu/sys/sysmacros.h \
- /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h /usr/include/ctype.h \
+ /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h /usr/include/signal.h \
+ /usr/include/x86_64-linux-gnu/bits/signum.h \
+ /usr/include/x86_64-linux-gnu/bits/siginfo.h \
+ /usr/include/x86_64-linux-gnu/bits/sigaction.h \
+ /usr/include/x86_64-linux-gnu/bits/sigcontext.h \
+ /usr/include/x86_64-linux-gnu/bits/sigstack.h \
+ /usr/include/x86_64-linux-gnu/sys/ucontext.h \
+ /usr/include/x86_64-linux-gnu/bits/sigthread.h \
+ /usr/include/x86_64-linux-gnu/bits/param.h /usr/include/linux/param.h \
+ /usr/include/x86_64-linux-gnu/asm/param.h \
+ /usr/include/asm-generic/param.h /usr/include/ctype.h \
  /usr/include/xlocale.h /usr/include/stdio.h /usr/include/libio.h \
  /usr/include/_G_config.h /usr/include/wchar.h \
- /home/mnakao/work/gcc-4.8.4/lib/gcc/x86_64-unknown-linux-gnu/4.8.4/include/stdarg.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.9/include/stdarg.h \
  /usr/include/x86_64-linux-gnu/bits/sys_errlist.h /usr/include/stdlib.h \
  /usr/include/x86_64-linux-gnu/bits/waitflags.h \
  /usr/include/x86_64-linux-gnu/bits/waitstatus.h /usr/include/alloca.h \
- /usr/include/unistd.h /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
+ /usr/include/x86_64-linux-gnu/bits/stdlib-float.h /usr/include/unistd.h \
+ /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
  /usr/include/x86_64-linux-gnu/bits/environments.h \
  /usr/include/x86_64-linux-gnu/bits/confname.h /usr/include/getopt.h \
  /usr/include/memory.h /usr/include/string.h /usr/include/malloc.h \
  /usr/include/dirent.h /usr/include/x86_64-linux-gnu/bits/dirent.h \
+ /usr/include/x86_64-linux-gnu/bits/timex.h \
  /usr/include/x86_64-linux-gnu/sys/time.h \
  /usr/include/x86_64-linux-gnu/sys/termios.h /usr/include/termios.h \
  /usr/include/x86_64-linux-gnu/bits/termios.h \
@@ -708,20 +745,16 @@ ThreadStatics.lo: ThreadStatics.cpp \
  /usr/include/x86_64-linux-gnu/sys/stat.h \
  /usr/include/x86_64-linux-gnu/bits/stat.h /usr/include/fcntl.h \
  /usr/include/x86_64-linux-gnu/bits/fcntl.h \
+ /usr/include/x86_64-linux-gnu/bits/fcntl-linux.h \
  /usr/include/x86_64-linux-gnu/bits/uio.h /usr/include/errno.h \
  /usr/include/x86_64-linux-gnu/bits/errno.h /usr/include/linux/errno.h \
  /usr/include/x86_64-linux-gnu/asm/errno.h \
  /usr/include/asm-generic/errno.h /usr/include/asm-generic/errno-base.h \
- /usr/include/signal.h /usr/include/x86_64-linux-gnu/bits/signum.h \
- /usr/include/x86_64-linux-gnu/bits/siginfo.h \
- /usr/include/x86_64-linux-gnu/bits/sigaction.h \
- /usr/include/x86_64-linux-gnu/bits/sigcontext.h \
- /usr/include/x86_64-linux-gnu/bits/sigstack.h \
- /usr/include/x86_64-linux-gnu/sys/ucontext.h \
- /usr/include/x86_64-linux-gnu/bits/sigthread.h /usr/include/netdb.h \
- /usr/include/netinet/in.h /usr/include/x86_64-linux-gnu/sys/socket.h \
+ /usr/include/netdb.h /usr/include/netinet/in.h \
+ /usr/include/x86_64-linux-gnu/sys/socket.h \
  /usr/include/x86_64-linux-gnu/sys/uio.h \
  /usr/include/x86_64-linux-gnu/bits/socket.h \
+ /usr/include/x86_64-linux-gnu/bits/socket_type.h \
  /usr/include/x86_64-linux-gnu/bits/sockaddr.h \
  /usr/include/x86_64-linux-gnu/asm/socket.h \
  /usr/include/asm-generic/socket.h \
@@ -736,13 +769,12 @@ ThreadStatics.lo: ThreadStatics.cpp \
  /usr/include/x86_64-linux-gnu/asm/ioctl.h \
  /usr/include/asm-generic/ioctl.h \
  /usr/include/x86_64-linux-gnu/bits/ioctl-types.h \
- /usr/include/x86_64-linux-gnu/sys/wait.h \
- /usr/include/x86_64-linux-gnu/sys/resource.h \
- /usr/include/x86_64-linux-gnu/bits/resource.h /usr/include/pthread.h \
+ /usr/include/x86_64-linux-gnu/sys/wait.h /usr/include/pthread.h \
  /usr/include/sched.h /usr/include/x86_64-linux-gnu/bits/sched.h \
  /usr/include/x86_64-linux-gnu/bits/setjmp.h \
- /home/mnakao/work/gcc-4.8.4/lib/gcc/x86_64-unknown-linux-gnu/4.8.4/include/stdbool.h \
- /usr/include/regex.h /usr/include/x86_64-linux-gnu/gnu/option-groups.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.9/include/stdbool.h \
+ /usr/include/x86_64-linux-gnu/sys/resource.h \
+ /usr/include/x86_64-linux-gnu/bits/resource.h /usr/include/regex.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_types.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_macros.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_logger.h \
@@ -753,89 +785,99 @@ ThreadStatics.lo: ThreadStatics.cpp \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/ScopedLock.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/Statistics.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/SynchronizedMap.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/map \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/bits/stl_tree.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/bits/stl_algobase.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/x86_64-unknown-linux-gnu/bits/c++config.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/x86_64-unknown-linux-gnu/bits/os_defines.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/x86_64-unknown-linux-gnu/bits/cpu_defines.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/bits/functexcept.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/bits/exception_defines.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/bits/cpp_type_traits.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/ext/type_traits.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/ext/numeric_traits.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/bits/stl_pair.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/bits/move.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/bits/concept_check.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/bits/stl_iterator_base_types.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/bits/stl_iterator_base_funcs.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/debug/debug.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/bits/stl_iterator.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/bits/allocator.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/x86_64-unknown-linux-gnu/bits/c++allocator.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/ext/new_allocator.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/new \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/exception \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/bits/atomic_lockfree_defines.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/bits/memoryfwd.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/bits/stl_function.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/backward/binders.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/bits/stl_map.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/bits/stl_multimap.h \
- /home/mnakao/work/gcc-4.8.4/include/c++/4.8.4/bits/range_access.h \
+ /usr/include/c++/4.9/map /usr/include/c++/4.9/bits/stl_tree.h \
+ /usr/include/c++/4.9/bits/stl_algobase.h \
+ /usr/include/x86_64-linux-gnu/c++/4.9/bits/c++config.h \
+ /usr/include/x86_64-linux-gnu/c++/4.9/bits/os_defines.h \
+ /usr/include/x86_64-linux-gnu/c++/4.9/bits/cpu_defines.h \
+ /usr/include/c++/4.9/bits/functexcept.h \
+ /usr/include/c++/4.9/bits/exception_defines.h \
+ /usr/include/c++/4.9/bits/cpp_type_traits.h \
+ /usr/include/c++/4.9/ext/type_traits.h \
+ /usr/include/c++/4.9/ext/numeric_traits.h \
+ /usr/include/c++/4.9/bits/stl_pair.h /usr/include/c++/4.9/bits/move.h \
+ /usr/include/c++/4.9/bits/concept_check.h \
+ /usr/include/c++/4.9/bits/stl_iterator_base_types.h \
+ /usr/include/c++/4.9/bits/stl_iterator_base_funcs.h \
+ /usr/include/c++/4.9/debug/debug.h \
+ /usr/include/c++/4.9/bits/stl_iterator.h \
+ /usr/include/c++/4.9/bits/ptr_traits.h \
+ /usr/include/c++/4.9/bits/predefined_ops.h \
+ /usr/include/c++/4.9/bits/allocator.h \
+ /usr/include/x86_64-linux-gnu/c++/4.9/bits/c++allocator.h \
+ /usr/include/c++/4.9/ext/new_allocator.h /usr/include/c++/4.9/new \
+ /usr/include/c++/4.9/exception \
+ /usr/include/c++/4.9/bits/atomic_lockfree_defines.h \
+ /usr/include/c++/4.9/bits/memoryfwd.h \
+ /usr/include/c++/4.9/bits/stl_function.h \
+ /usr/include/c++/4.9/backward/binders.h \
+ /usr/include/c++/4.9/ext/alloc_traits.h \
+ /usr/include/c++/4.9/bits/stl_map.h \
+ /usr/include/c++/4.9/bits/stl_multimap.h \
+ /usr/include/c++/4.9/bits/range_access.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/Thread.h \
  /usr/include/x86_64-linux-gnu/sys/syscall.h \
  /usr/include/x86_64-linux-gnu/asm/unistd.h \
  /usr/include/x86_64-linux-gnu/asm/unistd_64.h \
  /usr/include/x86_64-linux-gnu/bits/syscall.h \
  /usr/include/x86_64-linux-gnu/sys/prctl.h /usr/include/linux/prctl.h
-NanoSecondStatics.lo: NanoSecondStatics.cpp \
+NanoSecondStatics.lo: NanoSecondStatics.cpp /usr/include/stdc-predef.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_rcsid.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_includes.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_config.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_platform.h \
  /usr/include/inttypes.h /usr/include/features.h \
- /usr/include/x86_64-linux-gnu/bits/predefs.h \
  /usr/include/x86_64-linux-gnu/sys/cdefs.h \
  /usr/include/x86_64-linux-gnu/bits/wordsize.h \
  /usr/include/x86_64-linux-gnu/gnu/stubs.h \
  /usr/include/x86_64-linux-gnu/gnu/stubs-64.h \
- /home/mnakao/work/gcc-4.8.4/lib/gcc/x86_64-unknown-linux-gnu/4.8.4/include/stdint.h \
- /usr/include/stdint.h /usr/include/x86_64-linux-gnu/bits/wchar.h \
- /home/mnakao/work/gcc-4.8.4/lib/gcc/x86_64-unknown-linux-gnu/4.8.4/include-fixed/limits.h \
- /home/mnakao/work/gcc-4.8.4/lib/gcc/x86_64-unknown-linux-gnu/4.8.4/include-fixed/syslimits.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.9/include/stdint.h /usr/include/stdint.h \
+ /usr/include/x86_64-linux-gnu/bits/wchar.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.9/include-fixed/limits.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.9/include-fixed/syslimits.h \
  /usr/include/limits.h /usr/include/x86_64-linux-gnu/bits/posix1_lim.h \
  /usr/include/x86_64-linux-gnu/bits/local_lim.h \
  /usr/include/linux/limits.h \
  /usr/include/x86_64-linux-gnu/bits/posix2_lim.h \
  /usr/include/x86_64-linux-gnu/bits/xopen_lim.h \
  /usr/include/x86_64-linux-gnu/bits/stdio_lim.h \
- /usr/include/x86_64-linux-gnu/sys/param.h /usr/include/linux/param.h \
- /usr/include/x86_64-linux-gnu/asm/param.h \
- /usr/include/asm-generic/param.h \
+ /usr/include/x86_64-linux-gnu/sys/param.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.9/include/stddef.h \
  /usr/include/x86_64-linux-gnu/sys/types.h \
  /usr/include/x86_64-linux-gnu/bits/types.h \
  /usr/include/x86_64-linux-gnu/bits/typesizes.h /usr/include/time.h \
- /home/mnakao/work/gcc-4.8.4/lib/gcc/x86_64-unknown-linux-gnu/4.8.4/include/stddef.h \
  /usr/include/endian.h /usr/include/x86_64-linux-gnu/bits/endian.h \
  /usr/include/x86_64-linux-gnu/bits/byteswap.h \
+ /usr/include/x86_64-linux-gnu/bits/byteswap-16.h \
  /usr/include/x86_64-linux-gnu/sys/select.h \
  /usr/include/x86_64-linux-gnu/bits/select.h \
  /usr/include/x86_64-linux-gnu/bits/sigset.h \
  /usr/include/x86_64-linux-gnu/bits/time.h \
  /usr/include/x86_64-linux-gnu/sys/sysmacros.h \
- /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h /usr/include/ctype.h \
+ /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h /usr/include/signal.h \
+ /usr/include/x86_64-linux-gnu/bits/signum.h \
+ /usr/include/x86_64-linux-gnu/bits/siginfo.h \
+ /usr/include/x86_64-linux-gnu/bits/sigaction.h \
+ /usr/include/x86_64-linux-gnu/bits/sigcontext.h \
+ /usr/include/x86_64-linux-gnu/bits/sigstack.h \
+ /usr/include/x86_64-linux-gnu/sys/ucontext.h \
+ /usr/include/x86_64-linux-gnu/bits/sigthread.h \
+ /usr/include/x86_64-linux-gnu/bits/param.h /usr/include/linux/param.h \
+ /usr/include/x86_64-linux-gnu/asm/param.h \
+ /usr/include/asm-generic/param.h /usr/include/ctype.h \
  /usr/include/xlocale.h /usr/include/stdio.h /usr/include/libio.h \
  /usr/include/_G_config.h /usr/include/wchar.h \
- /home/mnakao/work/gcc-4.8.4/lib/gcc/x86_64-unknown-linux-gnu/4.8.4/include/stdarg.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.9/include/stdarg.h \
  /usr/include/x86_64-linux-gnu/bits/sys_errlist.h /usr/include/stdlib.h \
  /usr/include/x86_64-linux-gnu/bits/waitflags.h \
  /usr/include/x86_64-linux-gnu/bits/waitstatus.h /usr/include/alloca.h \
- /usr/include/unistd.h /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
+ /usr/include/x86_64-linux-gnu/bits/stdlib-float.h /usr/include/unistd.h \
+ /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
  /usr/include/x86_64-linux-gnu/bits/environments.h \
  /usr/include/x86_64-linux-gnu/bits/confname.h /usr/include/getopt.h \
  /usr/include/memory.h /usr/include/string.h /usr/include/malloc.h \
  /usr/include/dirent.h /usr/include/x86_64-linux-gnu/bits/dirent.h \
+ /usr/include/x86_64-linux-gnu/bits/timex.h \
  /usr/include/x86_64-linux-gnu/sys/time.h \
  /usr/include/x86_64-linux-gnu/sys/termios.h /usr/include/termios.h \
  /usr/include/x86_64-linux-gnu/bits/termios.h \
@@ -843,20 +885,16 @@ NanoSecondStatics.lo: NanoSecondStatics.cpp \
  /usr/include/x86_64-linux-gnu/sys/stat.h \
  /usr/include/x86_64-linux-gnu/bits/stat.h /usr/include/fcntl.h \
  /usr/include/x86_64-linux-gnu/bits/fcntl.h \
+ /usr/include/x86_64-linux-gnu/bits/fcntl-linux.h \
  /usr/include/x86_64-linux-gnu/bits/uio.h /usr/include/errno.h \
  /usr/include/x86_64-linux-gnu/bits/errno.h /usr/include/linux/errno.h \
  /usr/include/x86_64-linux-gnu/asm/errno.h \
  /usr/include/asm-generic/errno.h /usr/include/asm-generic/errno-base.h \
- /usr/include/signal.h /usr/include/x86_64-linux-gnu/bits/signum.h \
- /usr/include/x86_64-linux-gnu/bits/siginfo.h \
- /usr/include/x86_64-linux-gnu/bits/sigaction.h \
- /usr/include/x86_64-linux-gnu/bits/sigcontext.h \
- /usr/include/x86_64-linux-gnu/bits/sigstack.h \
- /usr/include/x86_64-linux-gnu/sys/ucontext.h \
- /usr/include/x86_64-linux-gnu/bits/sigthread.h /usr/include/netdb.h \
- /usr/include/netinet/in.h /usr/include/x86_64-linux-gnu/sys/socket.h \
+ /usr/include/netdb.h /usr/include/netinet/in.h \
+ /usr/include/x86_64-linux-gnu/sys/socket.h \
  /usr/include/x86_64-linux-gnu/sys/uio.h \
  /usr/include/x86_64-linux-gnu/bits/socket.h \
+ /usr/include/x86_64-linux-gnu/bits/socket_type.h \
  /usr/include/x86_64-linux-gnu/bits/sockaddr.h \
  /usr/include/x86_64-linux-gnu/asm/socket.h \
  /usr/include/asm-generic/socket.h \
@@ -871,13 +909,12 @@ NanoSecondStatics.lo: NanoSecondStatics.cpp \
  /usr/include/x86_64-linux-gnu/asm/ioctl.h \
  /usr/include/asm-generic/ioctl.h \
  /usr/include/x86_64-linux-gnu/bits/ioctl-types.h \
- /usr/include/x86_64-linux-gnu/sys/wait.h \
- /usr/include/x86_64-linux-gnu/sys/resource.h \
- /usr/include/x86_64-linux-gnu/bits/resource.h /usr/include/pthread.h \
+ /usr/include/x86_64-linux-gnu/sys/wait.h /usr/include/pthread.h \
  /usr/include/sched.h /usr/include/x86_64-linux-gnu/bits/sched.h \
  /usr/include/x86_64-linux-gnu/bits/setjmp.h \
- /home/mnakao/work/gcc-4.8.4/lib/gcc/x86_64-unknown-linux-gnu/4.8.4/include/stdbool.h \
- /usr/include/regex.h /usr/include/x86_64-linux-gnu/gnu/option-groups.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.9/include/stdbool.h \
+ /usr/include/x86_64-linux-gnu/sys/resource.h \
+ /usr/include/x86_64-linux-gnu/bits/resource.h /usr/include/regex.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_types.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_macros.h \
  /home/mnakao/omni-compiler/Driver/atool/src/include/nata/nata_logger.h \

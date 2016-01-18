@@ -15,12 +15,16 @@ gasnet_handlerentry_t htable[] = {
   { _XMP_GASNET_UNPACK_REPLY,               _xmp_gasnet_unpack_reply },
   { _XMP_GASNET_PACK,                       _xmp_gasnet_pack },
   { _XMP_GASNET_UNPACK_GET_REPLY,           _xmp_gasnet_unpack_get_reply},
-  { _XMP_GASNET_PACK_USGIN_BUF,             _xmp_gasnet_pack_using_buf},
+  { _XMP_GASNET_PACK_USING_BUF,             _xmp_gasnet_pack_using_buf},
   { _XMP_GASNET_UNPACK_GET_REPLY_USING_BUF, _xmp_gasnet_unpack_get_reply_using_buf},
   { _XMP_GASNET_PACK_GET_HANDLER,           _xmp_gasnet_pack_get },
-  { _XMP_GASNET_UNPACK_GET_REPLY_NONC,      _xmp_gasnet_unpack_get_reply_nonc }
+  { _XMP_GASNET_UNPACK_GET_REPLY_NONC,      _xmp_gasnet_unpack_get_reply_nonc },
+  { _XMP_GASNET_ADD_NOTIFY,                 _xmp_gasnet_add_notify }
 };
 
+/**
+   Initialize GASNet job
+*/
 void _XMP_gasnet_initialize(int argc, char **argv, const size_t xmp_gasnet_heap_size, 
 			    const size_t xmp_gasnet_stride_size)
 {
@@ -69,6 +73,9 @@ void _XMP_gasnet_initialize(int argc, char **argv, const size_t xmp_gasnet_heap_
   _XMP_gasnet_build_shift_queue();
 }
 
+/**
+   Finalize GASNet job
+*/
 void _XMP_gasnet_finalize(const int val)
 {
   _XMP_gasnet_sync_all();

@@ -1,24 +1,6 @@
 /*
- * $TSUKUBA_Release: Omni Compiler Version 0.9.1 $
+ * $TSUKUBA_Release: $
  * $TSUKUBA_Copyright:
- *  Copyright (C) 2010-2014 University of Tsukuba, 
- *  	      2012-2014  University of Tsukuba and Riken AICS
- *  
- *  This software is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU Lesser General Public License version
- *  2.1 published by the Free Software Foundation.
- *  
- *  Please check the Copyright and License information in the files named
- *  COPYRIGHT and LICENSE under the top  directory of the Omni Compiler
- *  Software release kit.
- *  
- *  * The specification of XcalableMP has been designed by the XcalableMP
- *    Specification Working Group (http://www.xcalablemp.org/).
- *  
- *  * The development of this software was partially supported by "Seamless and
- *    Highly-productive Parallel Programming Environment for
- *    High-performance computing" project funded by Ministry of Education,
- *    Culture, Sports, Science and Technology, Japan.
  *  $
  */
 #ifndef MPI_PORTABLE_PLATFORM_H
@@ -67,4 +49,39 @@ void _XMP_fatal_nomsg(){
 
 void _XMP_unexpected_error(void) {
   _XMP_fatal("unexpected error in runtime");
+}
+
+_Bool union_triplet(int lb0, int ub0, int st0, int lb1, int ub1, int st1){
+
+  if (ub0 < lb0 || ub1 < lb0) return false;
+
+  int lb2, ub2, st2;
+  int lb3,      st3;
+
+  if (lb0 > lb1){
+    lb2 = lb0;
+    lb3 = lb1;
+    st2 = st0;
+    st3 = st1;
+  }
+  else {
+    lb2 = lb1;
+    lb3 = lb0;
+    st2 = st1;
+    st3 = st0;
+  }
+
+  if (ub0 > ub1){
+    ub2 = ub1;
+  }
+  else {
+    ub2 = ub0;
+  }
+
+  for (int i = lb2; i <= ub2; i += st2){
+    if ((i - lb3) % st3 == 0) return true;
+  }
+
+  return false;
+
 }

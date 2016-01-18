@@ -1,24 +1,7 @@
 /* 
- * $TSUKUBA_Release: Omni Compiler Version 0.9.1 $
+ * $TSUKUBA_Release: Omni OpenMP Compiler 3 $
  * $TSUKUBA_Copyright:
- *  Copyright (C) 2010-2014 University of Tsukuba, 
- *  	      2012-2014  University of Tsukuba and Riken AICS
- *  
- *  This software is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU Lesser General Public License version
- *  2.1 published by the Free Software Foundation.
- *  
- *  Please check the Copyright and License information in the files named
- *  COPYRIGHT and LICENSE under the top  directory of the Omni Compiler
- *  Software release kit.
- *  
- *  * The specification of XcalableMP has been designed by the XcalableMP
- *    Specification Working Group (http://www.xcalablemp.org/).
- *  
- *  * The development of this software was partially supported by "Seamless and
- *    Highly-productive Parallel Programming Environment for
- *    High-performance computing" project funded by Ministry of Education,
- *    Culture, Sports, Science and Technology, Japan.
+ *  PLEASE DESCRIBE LICENSE AGREEMENT HERE
  *  $
  */
 #include <stdlib.h>
@@ -89,6 +72,10 @@ outx_ACC_Clause(FILE *fp, int indent, CExprOfList* clause)
   switch(clause->e_aux){
   case ACC_SEQ:
   case ACC_INDEPENDENT:
+  case ACC_READ:
+  case ACC_WRITE:
+  case ACC_UPDATE_CLAUSE:
+  case ACC_CAPTURE:
       break;
 
   case ACC_IF:
@@ -193,6 +180,7 @@ char *accDirectiveName(int c)
   case ACC_KERNELS_LOOP:return "KERNELS_LOOP";
   case ACC_ENTER_DATA: return "ENTER_DATA";
   case ACC_EXIT_DATA: return "EXIT_DATA";
+  case ACC_ATOMIC: return "ATOMIC";
   default: return "??ACC??";
   }
 }
@@ -244,6 +232,11 @@ char *accClauseName(int c)
   case ACC_REDUCTION_LOGOR: return "REDUCTION_LOGOR";
   case ACC_REDUCTION_MIN: return "REDUCTION_MIN";
   case ACC_REDUCTION_MAX: return "REDUCTION_MAX";
+
+  case ACC_READ: return "READ";
+  case ACC_WRITE: return "WRITE";
+  case ACC_UPDATE_CLAUSE: return "UPDATE";
+  case ACC_CAPTURE: return "CAPTURE";
 
   default:  return "???ACC clause???";
   }

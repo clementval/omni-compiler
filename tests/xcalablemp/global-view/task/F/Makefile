@@ -1,4 +1,4 @@
-XCC     = xmpf90 -O2
+XCC     = xmpf90
 XRUN    = mpiexec
 TESTS = $(wildcard *.f90)
 EXES  = $(TESTS:.f90=.x)
@@ -15,6 +15,8 @@ all default: $(EXES)
 
 run: $(EXES)
 	$(XRUN) -n 4 ./barrier.x
+	$(XRUN) -n 8 ./tasks.x
+	$(XRUN) -n 16 ./nocomm.x
 
 clean:
 	rm -f $(EXES) $(OBJS)

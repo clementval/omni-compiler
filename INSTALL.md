@@ -6,20 +6,21 @@
  * MPI Implementation (supports MPI-2)
  * libxml2
  * make
-
+ * [Optional] mpfr, gmp (when using --enable-mod2xmod option)
+ 
 ## On Debian GNU/Linux and Ubuntu
  The following packages may be needed to be installed previously:
 
- * flex gcc gfortran g++ openjdk-7-jdk libopenmpi-dev openmpi-bin libxml2-dev byacc make
+ * flex gcc gfortran g++ openjdk-7-jdk libopenmpi-dev openmpi-bin libxml2-dev byacc make perl
 
 ## On Red Hat and CentOS
  The following packages may be needed to be installed previously:
 
- * flex gcc gfortran gcc-c++ java-1.7.0-openjdk-devel openmpi-devel libxml2-devel byacc make
+ * flex gcc gfortran gcc-c++ java-1.7.0-openjdk-devel openmpi-devel libxml2-devel byacc make perl
 
 ## For local-view operations (coarray, post/wait, lock/unlock)
- * On the K computer or FX10, the Omni compiler automatically uses Fujitsu RDMA.
- * On the other system, please install GASNet (http://gasnet.lbl.gov) before installing the Omni compiler.
+ * On the K computer/FX10/FX100, the Omni compiler automatically uses Fujitsu RDMA.
+ * On the other system, please install GASNet (http://gasnet.lbl.gov) or MPI3 library before installing the Omni compiler.
 
 ## For Omni OpenACC compiler
  * Need to install CUDA (https://developer.nvidia.com/cuda-zone).
@@ -32,11 +33,11 @@
     $ ./configure CC=gcc FC=gfortran   // PGI compiler
 
  If you want to use Coarray functions
-    $ ./configure --with-gasnet=[GASNet INSTALLATION PATH] --with-gasnet-conduit=[GASNet-Conduit]
+    $ ./configure --with-gasnet=[GASNet INSTALLATION PATH] --with-gasnet-conduit=[GASNet conduit]
 
-    The "GASNet-Conduit" is a method how GASnet uses an interconnect.
+    The "GASNet conduit" is a method how GASNet uses an interconnect.
 
-    If you omit "--with-gasnet-conduit=[GASNet-Conduit]",
+    If you omit "--with-gasnet-conduit=[GASNet conduit]",
     the Omni compiler automatically selects an appropriate conduit.
 
     If you specify "--with-gasnet-conduit=mpi", the execute file can execute on the most clusters.
@@ -52,14 +53,18 @@
 ### On the K computer
     $ ./configure --target=Kcomputer-linux-gnu --prefix=[INSTALLATION PATH]
 
-### On FX10
+### On FX10/FX100
     $ ./configure --target=FX10-linux-gnu --prefix=[INSTALLATION PATH]
+            or
+    $ ./configure --target=FX100-linux-gnu --prefix=[INSTALLATION PATH]
 
 ### On Cray machines
     $ ./configure --target=Cray-linux-gnu --prefix=[INSTALLATION PATH]
 
-### On NEC SX machines
-    $ ./configure --target=sx-nec-superux --prefix=[INSTALLATION PATH]
+### On NEC SX9/SX-ACE
+    $ ./configure --target=sx9-nec-superux --prefix=[INSTALLATION PATH]
+            or
+    $ ./configure --target=sxace-nec-superux --prefix=[INSTALLATION PATH]
 
 ### On IBM BlueGene/Q
     We recommend to install openJDK for AIX (e.g. openjdk1.7.0-ppc-aix-port-linux-ppc64-b**.tar.bz2,
@@ -87,3 +92,5 @@
  issuing autogen.sh on the top directory would be a solution.
  And if the build still failed even after issuing the autogen.sh,
  you should update your autotools (autoconf/automake/libtools) to the latest ones.
+ We have tested autoconf-2.69, automake-1.14 and libtool-2.4.6.
+ 

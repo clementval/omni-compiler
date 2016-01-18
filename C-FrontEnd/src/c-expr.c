@@ -597,11 +597,11 @@ addSymbolAt(CExprOfSymbol *sym, CExpr *parent, CSymbolTable *symTab,
     assertExpr((CExpr*)sym, symTab != NULL);
 
     switch(symType) {
-    case ST_TYPE:
+    case ST_TYPE: 
     case ST_FUNC:
-    case ST_VAR:
+    case ST_VAR: 
     case ST_PARAM:
-    case ST_ENUM:
+    case ST_ENUM: 
         ht = &symTab->stb_identGroup;
         group = STB_IDENT;
         break;
@@ -672,8 +672,15 @@ addSymbolAt(CExprOfSymbol *sym, CExpr *parent, CSymbolTable *symTab,
                         td->e_preDeclType = htd;
                     }
                     break;
+		case ST_TYPE:
+		    // -----------------
+		    // typedef int hoge;
+		    // typedef hoge hoge;
+		    // -----------------
+		    // Above pattern is ignore for FX100.
+		  break;
                 default:
-                    addRedeclError(sym);
+		    addRedeclError(sym);
                     return;
                 }
                 checkAndMergeIdent(hsym, sym, ht);
@@ -1860,6 +1867,37 @@ allocExprOfList5(CExprCodeEnum exprCode, CExpr *expr1, CExpr *expr2,
 {
   CExprOfList *expr = allocExprOfList4(exprCode, expr1, expr2, expr3, expr4);
   exprListAdd((CExpr*)expr, expr5);
+  return expr;
+}
+
+
+/**
+ * \brief
+ * alloc CExprOfList and 6 children
+ *
+ * @param exprCode
+ *      expression code
+ * @param expr1
+ *      child node
+ * @param expr2
+ *      child node
+ * @param expr3
+ *      child node
+ * @param expr4
+ *      child node
+ * @param expr5
+ *      child node
+ * @param expr6
+ *      child node
+ * @return
+ *      allocated node
+ */
+CExprOfList*
+allocExprOfList6(CExprCodeEnum exprCode, CExpr *expr1, CExpr *expr2,
+		 CExpr *expr3, CExpr *expr4, CExpr *expr5, CExpr *expr6)
+{
+  CExprOfList *expr = allocExprOfList5(exprCode, expr1, expr2, expr3, expr4, expr5);
+  exprListAdd((CExpr*)expr, expr6);
   return expr;
 }
 

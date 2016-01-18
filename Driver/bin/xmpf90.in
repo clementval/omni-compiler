@@ -85,7 +85,7 @@ for file in "${f_files[@]}"; do
     if [ $EXT = "F90" -o $EXT = "F" -o $ENABLE_CPP = true ]; then
         # When ">" or ">>" is used, please use "omni_exec_echo" and "omni_exec_run" instead of "omni_exec".
 	omni_exec_echo $OMNI_FPP_CMD "${include_opt[@]}" "${pp_add_opt[@]}" $OMNI_FPP_OPT "${other_args[@]}" "${FILE}" ">" "${FILE_PP}"
-	omni_exec_run  $OMNI_FPP_CMD "${include_opt[@]}" "${pp_add_opt[@]}" $OMNI_FPP_OPT "${other_args[@]}" "${FILE}" > "${FILE_PP}"
+	[ $DRY_RUN = false ] && omni_exec_run  $OMNI_FPP_CMD "${include_opt[@]}" "${pp_add_opt[@]}" $OMNI_FPP_OPT "${other_args[@]}" "${FILE}" > "${FILE_PP}"
         # AIX compiler cannot output file with ".i" suffix. So, ">" is used.
 
 	if [ $ONLY_PP = true ]; then
@@ -157,7 +157,7 @@ fi
 [ $STOP_BACKEND = true ] && exit 0;
 
 ### Native Compiler ###
-[ $ENABLE_OPENMP = true ] && native_add_opt+=("$OPENMP_OPT")
+[ $ENABLE_OPENMP = true ] && native_add_opt+=("$OPENMP_OPT_F")
 for file in "${f_files[@]}"; do
     FILE=("${file}")
     FILE_NAME=`omni_f_norm_file_name "${FILE}"`     # ./hoge/fuga.f90 -> hoge_2f_fuga_2f_a
@@ -200,8 +200,11 @@ for file in "${f_files[@]}"; do
 done
 
 obj_files+=("$XMPF_MAIN_O")
+OMNI_TRAVERSE_OPT="--F --prefix xmpf --nm ${NM}"
+[ "${NM_OPT}" != "" ] && OMNI_TRAVERSE_OPT="${OMNI_TRAVERSE_OPT} --nm_opt ${NM_OPT}"
+[ ${TARGET} = "powerpc-hitachi-aix" ] && OMNI_TRAVERSE_OPT="${OMNI_TRAVERSE_OPT} --sr"
 TRAVERSE_FILE=${TEMP_DIR}/omni_traverse_${PID}.f90
-omni_exec $OMNI_TRAVERSE --F --prefix xmpf -o $TRAVERSE_FILE "${obj_files[@]}"
+omni_exec $OMNI_TRAVERSE $OMNI_TRAVERSE_OPT -o $TRAVERSE_FILE "${obj_files[@]}"
 
 # link
 [ $ENABLE_TLOG_ALL = true -o $ENABLE_TLOG = true ] && OMNI_LINKER_OPT="-ltlog_mpi $OMNI_LINKER_OPT"

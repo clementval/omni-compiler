@@ -1,25 +1,7 @@
 package exc.openacc;
 /*
- * $TSUKUBA_Release: Omni Compiler Version 0.9.1 $
+ * $TSUKUBA_Release: $
  * $TSUKUBA_Copyright:
- *  Copyright (C) 2010-2014 University of Tsukuba, 
- *  	      2012-2014  University of Tsukuba and Riken AICS
- *  
- *  This software is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU Lesser General Public License version
- *  2.1 published by the Free Software Foundation.
- *  
- *  Please check the Copyright and License information in the files named
- *  COPYRIGHT and LICENSE under the top  directory of the Omni Compiler
- *  Software release kit.
- *  
- *  * The specification of XcalableMP has been designed by the XcalableMP
- *    Specification Working Group (http://www.xcalablemp.org/).
- *  
- *  * The development of this software was partially supported by "Seamless and
- *    Highly-productive Parallel Programming Environment for
- *    High-performance computing" project funded by Ministry of Education,
- *    Culture, Sports, Science and Technology, Japan.
  *  $
  */
 
@@ -29,7 +11,7 @@ import exc.object.*;
 import java.io.*;
 import java.util.*;
 
-public class ACCgpuDecompileWriter extends PrintWriter {
+class ACCgpuDecompileWriter extends PrintWriter {
   private XobjectFile _env = null;
 
   public ACCgpuDecompileWriter(Writer out, XobjectFile env) {
@@ -58,9 +40,9 @@ public class ACCgpuDecompileWriter extends PrintWriter {
     printWithIdentList(def.getDef(), _env.getGlobalIdentList(), false, null);
   }
   
-  public void printFunc(XobjectDef def){
+  void printFunc(XobjectDef def){
     String funcName = def.getName();
-    boolean isDeviceFunc = funcName.endsWith(ACCgpuKernel.ACC_GPU_DEVICE_FUNC_SUFFIX);
+    boolean isDeviceFunc = funcName.endsWith(AccKernel.ACC_GPU_DEVICE_FUNC_SUFFIX);
     printWithIdentList(def.getDef(), _env.getGlobalIdentList(), isDeviceFunc, (Ident)def.getNameObj());
   }
   
@@ -1128,6 +1110,7 @@ public class ACCgpuDecompileWriter extends PrintWriter {
   private void printDeclList(Xobject v, Xobject id_list) {
     Ident id;
     if (v == null) {
+      printDeclList(Xcons.List(), id_list);
       return;
     }
 
@@ -1135,6 +1118,10 @@ public class ACCgpuDecompileWriter extends PrintWriter {
       case LIST:
         {
           for(XobjArgs a = v.getArgs(); a != null; a = a.nextArgs()) {
+            printDeclList(a.getArg(),id_list);
+          }
+          XobjList addDeclList = getDeclForNotDeclared((XobjList)id_list);
+          for(XobjArgs a = addDeclList.getArgs(); a != null; a = a.nextArgs()) {
             printDeclList(a.getArg(),id_list);
           }
         } break;
@@ -1166,5 +1153,27 @@ public class ACCgpuDecompileWriter extends PrintWriter {
       default:
         break;
     }
+  }
+
+  /* copied from XmcXobjectToXcodeTranslator.java */
+  private XobjList getDeclForNotDeclared(XobjList identList) {
+    if (identList == null) {
+      return null;
+    }
+
+    XobjList declList = Xcons.List();
+    for (Xobject a : identList) {
+      Ident id = (Ident)a;
+      if (id.isDeclared() || !id.getStorageClass().isVarOrFunc()) {
+        continue;
+      }
+      Xtype t = id.Type();
+      Xcode declCode = t.isFunction() ? Xcode.FUNCTION_DECL
+              : Xcode.VAR_DECL;
+      declList.add(Xcons.List(declCode, Xcons.Symbol(Xcode.IDENT,
+                      id.getName()),
+              null));
+    }
+    return declList;
   }
 }

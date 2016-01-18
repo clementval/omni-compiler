@@ -1,24 +1,7 @@
 /* 
- * $TSUKUBA_Release: Omni Compiler Version 0.9.1 $
+ * $TSUKUBA_Release: Omni OpenMP Compiler 3 $
  * $TSUKUBA_Copyright:
- *  Copyright (C) 2010-2014 University of Tsukuba, 
- *  	      2012-2014  University of Tsukuba and Riken AICS
- *  
- *  This software is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU Lesser General Public License version
- *  2.1 published by the Free Software Foundation.
- *  
- *  Please check the Copyright and License information in the files named
- *  COPYRIGHT and LICENSE under the top  directory of the Omni Compiler
- *  Software release kit.
- *  
- *  * The specification of XcalableMP has been designed by the XcalableMP
- *    Specification Working Group (http://www.xcalablemp.org/).
- *  
- *  * The development of this software was partially supported by "Seamless and
- *    Highly-productive Parallel Programming Environment for
- *    High-performance computing" project funded by Ministry of Education,
- *    Culture, Sports, Science and Technology, Japan.
+ *  PLEASE DESCRIBE LICENSE AGREEMENT HERE
  *  $
  */
 /**
@@ -2810,6 +2793,7 @@ next_line0:
         if( line_buffer[0]=='!' ){ 
 	  /* now '!' on 1st place always means comment line. */
 	  // skip succeeding characters
+	  if (linelen == max_line_len+1) fseek(source_file,-1,1);
 	  if (linelen > max_line_len) while (fgetc(source_file) != '\n');
 	  goto next_line;
         }
@@ -3763,15 +3747,30 @@ struct keyword_token OMP_keywords[ ] =
 {
     {"parallel",	OMPKW_PARALLEL },
     {"end",		OMPKW_END },
+    {"task",            OMPKW_TASK},
     {"private",		OMPKW_PRIVATE },
     {"shared",		OMPKW_SHARED },
     {"default",		OMPKW_DEFAULT },
     {"none",		OMPKW_NONE },
     {"firstprivate",	OMPKW_FIRSTPRIVATE },
     {"reduction",	OMPKW_REDUCTION },
-    {"if",		OMPKW_IF },
+    {"if",	        OMPKW_IF },
+    {"final",           OMPKW_FINAL },
+    {"untied",          OMPKW_UNTIED },
+    {"mergeable",       OMPKW_MERGEABLE },
+    {"depend",		OMPKW_DEPEND },
+    {"in",		OMPKW_DEPEND_IN },
+    {"out",		OMPKW_DEPEND_OUT },
+    {"inout",		OMPKW_DEPEND_INOUT },
+    {"safelen",		OMPKW_SAFELEN },
+    {"simdlen",		OMPKW_SIMDLEN },
+    {"linear",		OMPKW_LINEAR },
+    {"aligned",		OMPKW_ALIGNED },
+    {"num_threads",     OMPKW_NUM_THREADS },
     {"copyin",		OMPKW_COPYIN },
     {"do",		OMPKW_DO },
+    {"simd",		OMPKW_SIMD },
+    {"declare",		OMPKW_DECLARE },
     {"lastprivate",	OMPKW_LASTPRIVATE },
     {"schedule",	OMPKW_SCHEDULE },
     {"static",		OMPKW_STATIC },
@@ -3788,9 +3787,9 @@ struct keyword_token OMP_keywords[ ] =
     {"barrier",		OMPKW_BARRIER},
     {"atomic",		OMPKW_ATOMIC},
     {"flush",		OMPKW_FLUSH },
-    {"threadprivate",	OMPKW_THREADPRIVATE},
-    {"workshare",	OMPKW_WORKSHARE},
-    {"copyprivate",     OMPKW_COPYPRIVATE},
+    {"threadprivate",	OMPKW_THREADPRIVATE },
+    {"workshare",	OMPKW_WORKSHARE },
+    {"copyprivate",     OMPKW_COPYPRIVATE },
 
     { 0, 0 }
 };
@@ -3910,6 +3909,7 @@ struct keyword_token XMP_keywords[ ] =
     {"wait_async",	XMPKW_WAIT_ASYNC },
     {"array",	XMPKW_ARRAY },
     {"coarray",	XMPKW_COARRAY },
+    {"save_desc", XMPKW_SAVE_DESC },
 
     {"in",	XMPKW_IN },
     {"out",	XMPKW_OUT },
@@ -3923,6 +3923,8 @@ struct keyword_token XMP_keywords[ ] =
 
     {"nowait",	XMPKW_NOWAIT },
     {"async",	XMPKW_ASYNC },
+
+    {"nocomm",  XMPKW_NOCOMM },
 
     {"master",	XMPKW_MASTER },
     {"critical",XMPKW_CRITICAL },

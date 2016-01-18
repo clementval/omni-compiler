@@ -1,24 +1,6 @@
 /*
- * $TSUKUBA_Release: Omni Compiler Version 0.9.1 $
+ * $TSUKUBA_Release: $
  * $TSUKUBA_Copyright:
- *  Copyright (C) 2010-2014 University of Tsukuba, 
- *  	      2012-2014  University of Tsukuba and Riken AICS
- *  
- *  This software is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU Lesser General Public License version
- *  2.1 published by the Free Software Foundation.
- *  
- *  Please check the Copyright and License information in the files named
- *  COPYRIGHT and LICENSE under the top  directory of the Omni Compiler
- *  Software release kit.
- *  
- *  * The specification of XcalableMP has been designed by the XcalableMP
- *    Specification Working Group (http://www.xcalablemp.org/).
- *  
- *  * The development of this software was partially supported by "Seamless and
- *    Highly-productive Parallel Programming Environment for
- *    High-performance computing" project funded by Ministry of Education,
- *    Culture, Sports, Science and Technology, Japan.
  *  $
  */
 
@@ -47,6 +29,9 @@ public class XMPtemplate extends XMPobject {
   private XobjList              _decl;
   private XobjList              _distDecl;
   private Vector<Ident>		_gtolTemp0IdVector;
+
+  private boolean               _isStaticDesc = false;
+  private Ident                 _flagId = null;
 
   public XMPtemplate(String name, int dim, Ident descId) {
     super(XMPobject.TEMPLATE, name, dim, descId);
@@ -199,6 +184,22 @@ public class XMPtemplate extends XMPobject {
     return _gtolTemp0IdVector.get(index);
   }
 
+  public void setIsStaticDesc(boolean flag){
+    _isStaticDesc = flag;
+  }
+
+  public boolean isStaticDesc(){
+    return _isStaticDesc;
+  }
+
+  public void setFlagId(Ident id){
+    _flagId = id;
+  }
+
+  public Ident getFlagId(){
+    return _flagId;
+  }
+
   @Override
   public boolean checkInheritExec() {
     return _ontoNodes.checkInheritExec();
@@ -210,6 +211,8 @@ public class XMPtemplate extends XMPobject {
     //BlockList funcBlockList = null;
     XMPsymbolTable localXMPsymbolTable = null;
     Block parentBlock = null;
+    boolean isStaticDesc = false;
+
     if (isLocalPragma) {
       //funcBlockList = XMPlocalDecl.findParentFunctionBlock(pb).getBody();
       //localXMPsymbolTable = XMPlocalDecl.declXMPsymbolTable(pb);
@@ -222,6 +225,7 @@ public class XMPtemplate extends XMPobject {
     if (isLocalPragma) {
       //XMPlocalDecl.checkObjectNameCollision(templateName, funcBlockList, localXMPsymbolTable);
       XMPlocalDecl.checkObjectNameCollision(templateName, parentBlock.getBody(), localXMPsymbolTable);
+      isStaticDesc = localXMPsymbolTable.isStaticDesc(templateName);
     }
     else {
       globalDecl.checkObjectNameCollision(templateName);
@@ -236,6 +240,8 @@ public class XMPtemplate extends XMPobject {
     else {
       templateDescId = globalDecl.declStaticIdent(XMP.DESC_PREFIX_ + templateName, Xtype.voidPtrType);
     }
+
+    if (isStaticDesc) templateDescId.setStorageClass(StorageClass.STATIC);
 
     // declare template object
     int templateDim = 0;
@@ -278,6 +284,11 @@ public class XMPtemplate extends XMPobject {
       }
     }
 
+    // check static_desc
+    if (isLocalPragma) templateObject.setIsStaticDesc(isStaticDesc);
+    if (!templateIsFixed && isStaticDesc)
+      throw new XMPexception("non-fixed template cannot have the static_desc attribute.");
+
     if (templateIsFixed)
       templateObject.createSizeVector();
 
@@ -290,8 +301,20 @@ public class XMPtemplate extends XMPobject {
     }
 
     if (isLocalPragma) {
-      XMPlocalDecl.addConstructorCall2(constructorName, templateArgs, globalDecl, parentBlock);
-      XMPlocalDecl.insertDestructorCall2("_XMP_finalize_template", Xcons.List(templateDescId.Ref()), globalDecl, parentBlock);
+
+      if (isStaticDesc){
+	Ident id = parentBlock.getBody().declLocalIdent(XMP.STATIC_DESC_PREFIX_ + templateName, Xtype.intType,
+							StorageClass.STATIC, Xcons.IntConstant(0));
+	templateObject.setFlagId(id);
+	XMPlocalDecl.addConstructorCall2_staticDesc(constructorName, templateArgs, globalDecl, parentBlock, id, false);
+      }
+      else {
+	XMPlocalDecl.addConstructorCall2(constructorName, templateArgs, globalDecl, parentBlock);
+      }
+
+      if (!isStaticDesc)
+	XMPlocalDecl.insertDestructorCall2("_XMP_finalize_template", Xcons.List(templateDescId.Ref()), globalDecl, parentBlock);
+
     } else {
       globalDecl.addGlobalInitFuncCall(constructorName, templateArgs);
     }
@@ -355,10 +378,18 @@ public class XMPtemplate extends XMPobject {
 
       // setup chunk constructor
       if (isLocalPragma) {
-	XMPlocalDecl.addConstructorCall2("_XMP_init_template_chunk",
-					 Xcons.List(templateObject.getDescId().Ref(),
-						    nodesObject.getDescId().Ref()),
-					 globalDecl, parentBlock);
+	if (templateObject.isStaticDesc()){
+	  XMPlocalDecl.addConstructorCall2_staticDesc("_XMP_init_template_chunk",
+						      Xcons.List(templateObject.getDescId().Ref(),
+								 nodesObject.getDescId().Ref()),
+						      globalDecl, parentBlock, templateObject.getFlagId(), false);
+	}
+	else {
+	  XMPlocalDecl.addConstructorCall2("_XMP_init_template_chunk",
+					   Xcons.List(templateObject.getDescId().Ref(),
+						      nodesObject.getDescId().Ref()),
+					   globalDecl, parentBlock);
+	}
       }
       else {
 	globalDecl.addGlobalInitFuncCall("_XMP_init_template_chunk",
@@ -471,6 +502,7 @@ public class XMPtemplate extends XMPobject {
 	    if (isLocalPragma) {
 	      Block parentBlock = pb.getParentBlock();
 	      gtolTemp0Id = XMPlocalDecl.addObjectId2(tempName, Xtype.intType, parentBlock);
+	      if (templateObject.isStaticDesc()) gtolTemp0Id.setStorageClass(StorageClass.STATIC);
 	    }
 	    else {
 	      gtolTemp0Id = globalDecl.declStaticIdent(tempName, Xtype.intType);
@@ -496,8 +528,15 @@ public class XMPtemplate extends XMPobject {
 
       if (isLocalPragma) {
 	Block parentBlock = pb.getParentBlock();
-	XMPlocalDecl.addConstructorCall2("_XMP_dist_template_" + distMannerName,
-					 funcArgs, globalDecl, parentBlock);
+	if (templateObject.isStaticDesc()){
+	  XMPlocalDecl.addConstructorCall2_staticDesc("_XMP_dist_template_" + distMannerName,
+						      funcArgs, globalDecl, parentBlock, templateObject.getFlagId(),
+						      templateDimIdx == templateObject.getDim() - 1);
+	}
+	else {
+	  XMPlocalDecl.addConstructorCall2("_XMP_dist_template_" + distMannerName,
+					   funcArgs, globalDecl, parentBlock);
+	}
       }
       else {
 	globalDecl.addGlobalInitFuncCall("_XMP_dist_template_" + distMannerName, funcArgs);

@@ -1,24 +1,7 @@
 /*
- * $TSUKUBA_Release: Omni Compiler Version 0.9.1 $
+ * $TSUKUBA_Release: Omni OpenMP Compiler 3 $
  * $TSUKUBA_Copyright:
- *  Copyright (C) 2010-2014 University of Tsukuba, 
- *  	      2012-2014  University of Tsukuba and Riken AICS
- *  
- *  This software is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU Lesser General Public License version
- *  2.1 published by the Free Software Foundation.
- *  
- *  Please check the Copyright and License information in the files named
- *  COPYRIGHT and LICENSE under the top  directory of the Omni Compiler
- *  Software release kit.
- *  
- *  * The specification of XcalableMP has been designed by the XcalableMP
- *    Specification Working Group (http://www.xcalablemp.org/).
- *  
- *  * The development of this software was partially supported by "Seamless and
- *    Highly-productive Parallel Programming Environment for
- *    High-performance computing" project funded by Ministry of Education,
- *    Culture, Sports, Science and Technology, Japan.
+ *  PLEASE DESCRIBE LICENSE AGREEMENT HERE
  *  $
  */
 package exc.xcodeml;
@@ -58,6 +41,7 @@ import exc.object.XobjectFile;
 import exc.object.XobjectIterator;
 import exc.object.Xtype;
 import exc.object.topdownXobjectIterator;
+import exc.openmp.OMPpragma;
 
 
 public class XmfXobjectToXcodeTranslator extends XmXobjectToXcodeTranslator {
@@ -83,7 +67,7 @@ public class XmfXobjectToXcodeTranslator extends XmXobjectToXcodeTranslator {
             return null;
         }
 
-	// System.out.println("trans="+xobj);
+	//System.out.println("trans="+xobj);
 
         Element e = null;
 
@@ -105,7 +89,7 @@ public class XmfXobjectToXcodeTranslator extends XmXobjectToXcodeTranslator {
 
         final Xcode xcode = xobj.Opcode();
         final String name = nameTable.getName(xcode);
-
+//System.out.println(xobj.toString());
         switch (xcode) {
         case F_ARRAY_INDEX:
             e = addChildNode(createElement(name), transExpr(xobj.getArg(0)));
@@ -712,11 +696,53 @@ public class XmfXobjectToXcodeTranslator extends XmXobjectToXcodeTranslator {
 
         case NULL:
             return null;
-
+        case STRING:
+        	e =createElement("srting");
+        	if(xobj.getName().equals("SCHED_DYNAMIC"))
+        		xobj.setName("DYNAMIC");
+        	if(xobj.getName().equals("SCHED_STATIC"))
+        		xobj.setName("STATIC");
+        	if(xobj.getName().equals("SCHED_RUNTIME"))
+        		xobj.setName("RUNTIME");
+        	if(xobj.getName().equals("SCHED_NONE"))
+        		xobj.setName("NONE");
+        	if(xobj.getName().equals("DEFAULT_NONE"))
+        		xobj.setName("NONE");
+        	if(xobj.getName().equals("DEFAULT_SHARED"))
+        		xobj.setName("SHARED");
+        	if(xobj.getName().equals("DEFAULT_PRIVATE"))
+        		xobj.setName("PRIVATE");
+        	switch(xobj.Opcode())
+        	{
+        	case OMP_PRAGMA:
+        		switch(OMPpragma.valueOf(xobj))
+        		{
+    			case SCHED_STATIC:
+    				xobj.setName("STATIC");
+    				break;    
+    			case SCHED_DYNAMIC:
+    				xobj.setName("DYNAMIC");
+    				break;
+    			case SCHED_GUIDED:
+    				xobj.setName("GUIDED");
+    				break;
+    			case SCHED_RUNTIME:
+    				xobj.setName("RUNTIME");
+    				break;
+    			case SCHED_NONE:
+    				xobj.setName("NOME");
+    				break;
+    			default:
+        			fatal_dump("OMP SCHED error",xobj);
+        		}
+        	}
+        	addChildNode(e,trans(xobj.getName()));        	
+        	break;
         case OMP_PRAGMA: {
 	    e = createElement(name);
 
 	    Element f0 = createElement("string");
+
 	    addChildNode(f0, trans(xobj.getArg(0).getString()));
 	    addChildNode(e, f0);
         	
@@ -724,15 +750,14 @@ public class XmfXobjectToXcodeTranslator extends XmXobjectToXcodeTranslator {
 	    Xobject clause = xobj.getArg(1);
 	    if (clause != null){
 		for (Xobject a : (XobjList)clause){
-        			
-		    if (a instanceof XobjString){
+
+			if (a instanceof XobjString){
 			addChildNode(f1, trans(a));
 		    }
 		    else {
 			Element g = createElement("list");
 			
 			addChildNode(g, trans(a.getArg(0).getString()));
-        			
 			Xobject vars = a.getArg(1);
 			if (vars != null){
 			    Element g1 = createElement("list");
@@ -775,9 +800,9 @@ public class XmfXobjectToXcodeTranslator extends XmXobjectToXcodeTranslator {
 	    addChildNode(e, f2);
             
         }
-
+//System.out.println(xcode.toString());
 	    break;
-        	
+
         default:
             fatal_dump("cannot convert Xcode to XcodeML.", xobj);
         }
@@ -823,7 +848,6 @@ public class XmfXobjectToXcodeTranslator extends XmXobjectToXcodeTranslator {
                 break;
             }
         }
-
         return e;
     }
 

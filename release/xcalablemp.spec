@@ -2,8 +2,8 @@
 
 Summary: Omni Compiler Software
 Name: omni-compiler
-Version: 0.9.1
-Release: r20150421
+Version: 0.9.2
+Release: r20151127
 License: LGPLv2
 Packager: Hitoshi Murai <h-murai@riken.jp>
 Vendor: Riken AICS and University of Tsukuba
@@ -14,11 +14,11 @@ Source: %{name}-%{version}.tar.gz
 
 Requires:	openmpi-devel gcc-gfortran java-1.7.0-openjdk
 
-%define default_prefix /usr/local
-%define default_conf_prefix /usr/local/etc
+%define default_prefix /home/mnakao/work/xmp-trunk
+%define default_conf_prefix /home/mnakao/work/xmp-trunk/etc
 
 %description
-Omni OpenMP/XcalableMP/OpenACC Compilers
+Omni Compiler
 
 %prep
 %setup

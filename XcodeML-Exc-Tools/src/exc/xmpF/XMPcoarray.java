@@ -1,24 +1,6 @@
 /*
- * $TSUKUBA_Release: Omni Compiler Version 0.9.1 $
+ * $TSUKUBA_Release: $
  * $TSUKUBA_Copyright:
- *  Copyright (C) 2010-2014 University of Tsukuba, 
- *  	      2012-2014  University of Tsukuba and Riken AICS
- *  
- *  This software is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU Lesser General Public License version
- *  2.1 published by the Free Software Foundation.
- *  
- *  Please check the Copyright and License information in the files named
- *  COPYRIGHT and LICENSE under the top  directory of the Omni Compiler
- *  Software release kit.
- *  
- *  * The specification of XcalableMP has been designed by the XcalableMP
- *    Specification Working Group (http://www.xcalablemp.org/).
- *  
- *  * The development of this software was partially supported by "Seamless and
- *    Highly-productive Parallel Programming Environment for
- *    High-performance computing" project funded by Ministry of Education,
- *    Culture, Sports, Science and Technology, Japan.
  *  $
  */
 
@@ -34,12 +16,14 @@ import java.util.*;
 public class XMPcoarray {
 
   // name of library
+  public final static String VAR_DESCPOINTER_PREFIX = "xmpf_descptr";
+  public final static String VAR_CRAYPOINTER_PREFIX = "xmpf_crayptr";
   final static String XMPF_LCOBOUND = "xmpf_lcobound";
   final static String XMPF_UCOBOUND = "xmpf_ucobound";
   final static String XMPF_COSIZE = "xmpf_cosize";
   final static String GET_IMAGE_INDEX_NAME = "xmpf_coarray_get_image_index";
-  public final static String SET_COSHAPE_NAME = "xmpf_coarray_set_coshape";
-  public final static String SET_VARNAME_NAME = "xmpf_coarray_set_varname";
+  final static String SET_COSHAPE_NAME = "xmpf_coarray_set_coshape";
+  final static String SET_VARNAME_NAME = "xmpf_coarray_set_varname";
 
   // original attributes
   private Ident ident;
@@ -49,13 +33,16 @@ public class XMPcoarray {
   //private Xtype originalType;
   private Boolean isAllocatable;
   private Boolean isPointer;
+  private Boolean isUseAssociated;
+  private Boolean _wasMovedFromModule = false;
 
-  // corresponding cray pointer and descriptor
-  private String crayPtrName = null;
+  // corresponding cray pointer, descriptor and common block names
+  private String _crayPtrName = null;
   private Ident crayPtrId = null;
-  private String descPtrName = null;
+  private String _descPtrName = null;
   private Ident descPtrId = null;
-
+  private String homeBlockName = null;
+  
   // context
   protected XMPenv env;
   protected XobjectDef def;
@@ -67,20 +54,35 @@ public class XMPcoarray {
   //------------------------------
   //  CONSTRUCTOR
   //------------------------------
-  public XMPcoarray(Ident ident, FuncDefBlock funcDef, XMPenv env) {
+  public XMPcoarray(Ident ident, FuncDefBlock funcDef, XMPenv env)
+  {
     this(ident, funcDef.getDef(), funcDef.getBlock(), env);
   }
-  public XMPcoarray(Ident ident, XobjectDef def, FunctionBlock fblock, XMPenv env) {
-    this.ident = ident;
+  public XMPcoarray(Ident ident, FuncDefBlock funcDef, XMPenv env,
+                    String homeBlockName)
+  {
+    this(ident, funcDef.getDef(), funcDef.getBlock(), env, homeBlockName);
+  }
+  public XMPcoarray(Ident ident, XobjectDef def, FunctionBlock fblock, XMPenv env)
+  {
     this.env = env;
     this.def = def;
     this.fblock = fblock;
-    name = ident.getName();
-    //originalType = ident.Type().copy();
-    isAllocatable = ident.Type().isFallocatable();
-    isPointer = ident.Type().isFpointer();
-    if (DEBUG) System.out.println("[XMPcoarray] new coarray = "+this);
+    setIdent(ident);
+    homeBlockName = ident.getFdeclaredModule();
+    if (homeBlockName == null)
+      homeBlockName = def.getName();
   }
+  public XMPcoarray(Ident ident, XobjectDef def, FunctionBlock fblock, XMPenv env,
+                    String homeBlockName)
+  {
+    this.env = env;
+    this.def = def;
+    this.fblock = fblock;
+    setIdent(ident);
+    this.homeBlockName = homeBlockName;
+  }
+
 
   //------------------------------
   //  actions
@@ -88,10 +90,9 @@ public class XMPcoarray {
 
   // declare cray-pointer variable correspoinding to this.
   //
-  public void genDecl_crayPointer(String crayPtrPrefix) {
-
+  public void genDecl_crayPointer() {
     BlockList blist = fblock.getBody();
-    crayPtrName = crayPtrPrefix + "_" + name;
+    String crayPtrName = getCrayPointerName();
 
     // generate declaration of crayPtrId
     Xtype crayPtrType = Xtype.Farray(BasicType.Fint8Type);
@@ -105,25 +106,29 @@ public class XMPcoarray {
 
   // declare variable of descriptor pointer corresponding to this.
   //
-  public void genDecl_descPointer(String descPtrPrefix) {
+  public void genDecl_descPointer() {
+    if(descPtrId != null) {
+      return;
+    }
 
+    String descPtrName = getDescPointerName();
     BlockList blist = fblock.getBody();
-    descPtrName = descPtrPrefix + "_" + name;
-
-    // generate declaration of descPtrId
-    descPtrId = blist.declLocalIdent(descPtrName,
-                                   BasicType.Fint8Type,
-                                   StorageClass.FLOCAL,
-                                   null);
+    
+    descPtrId = env.declInternIdent(descPtrName,
+                                    BasicType.Fint8Type);
   }
 
 
 
   /*
    *  m. "CALL set_coshape(descPtr, corank, clb1, clb2, ..., clbr)"
-   *     without static coshape
+   *     returns null if it is not allocated
    */
   public Xobject makeStmt_setCoshape() {
+    return makeStmt_setCoshape(env);
+  }
+
+  public Xobject makeStmt_setCoshape(XMPenv env) {
     int corank = getCorank();
 
     Xobject args = Xcons.List(getDescPointerId(),
@@ -133,6 +138,9 @@ public class XMPcoarray {
       args.add(getUcobound(i));
     }
     args.add(getLcobound(corank - 1));
+    if (args.hasNullArg())
+      XMP.fatal("generated null argument " + SET_COSHAPE_NAME +
+                "(makeStmt_setCoshape())");
 
     Ident subr = env.findVarIdent(SET_COSHAPE_NAME, null);
     if (subr == null) {
@@ -151,7 +159,7 @@ public class XMPcoarray {
   public Xobject makeStmt_setCoshape(XobjList coshape) {
     int corank = getCorank();
     if (corank != coshape.Nargs()) {
-      XMP.error("number of codimensions not matched with the declaration:"
+      XMP.fatal("number of codimensions not matched with the declaration:"
                 + corank + " and " + coshape.Nargs());
       return null;
     }
@@ -163,6 +171,9 @@ public class XMPcoarray {
       args.add(_getUboundInIndexRange(coshape.getArg(i)));
     }
     args.add(_getLboundInIndexRange(coshape.getArg(corank - 1)));
+    if (args.hasNullArg())
+      XMP.fatal("generated null argument " + SET_COSHAPE_NAME + 
+                "(makeStmt_setCoshape(coshape))");
 
     Ident subr = env.findVarIdent(SET_COSHAPE_NAME, null);
     if (subr == null) {
@@ -219,7 +230,7 @@ public class XMPcoarray {
     }
 
     if (ubound == null)
-      XMP.error("illegal upper bound specified in ALLOCATE statement");
+      XMP.fatal("illegal upper bound specified in ALLOCATE statement");
 
     return ubound.cfold(fblock);
   }
@@ -229,6 +240,10 @@ public class XMPcoarray {
    *  n. "CALL set_varname(descPtr, name, namelen)"
    */
   public Xobject makeStmt_setVarName() {
+    return makeStmt_setVarName(env);
+  }
+
+  public Xobject makeStmt_setVarName(XMPenv env) {
     String varName = getName();
     Xobject varNameObj = 
       Xcons.FcharacterConstant(Xtype.FcharacterType, varName, null);
@@ -236,6 +251,9 @@ public class XMPcoarray {
       Xcons.IntConstant(varName.length());
     Xobject args = Xcons.List(getDescPointerId(),
                               varNameObj, varNameLen);
+    if (args.hasNullArg())
+      XMP.fatal("generated null argument " + SET_VARNAME_NAME +
+                "(makeStmt_setVarName)");
 
     Ident subr = env.findVarIdent(SET_VARNAME_NAME, null);
     if (subr == null) {
@@ -244,21 +262,6 @@ public class XMPcoarray {
     }
     Xobject subrCall = subr.callSubroutine(args);
     return subrCall;
-  }
-
-
-
-  /*** not used now ***/
-  public Xobject genMallocCallStmt(String mallocLibName) {
-    BlockList blist = fblock.getBody();
-    Ident mallocId = blist.declLocalIdent(mallocLibName,
-                                          BasicType.FsubroutineType);
-    Xobject varRef = Xcons.FvarRef(getCrayPointerId());
-    Xobject elem = getElementLengthExpr(); 
-    Xobject count = getTotalArraySizeExpr();
-    Xobject args = Xcons.List(varRef, count, elem);
-    Xobject stmt = Xcons.functionCall(mallocId, args);
-    return stmt;
   }
 
 
@@ -272,8 +275,11 @@ public class XMPcoarray {
         XMP.error("Coarray variable cannot be a pointer: " + name);
       }
       if (isDummyArg()) {
-        if (!isScalar() && !isExplicitShape() && !isAllocatable())
-          XMP.error("Coarray dummy argument must be explicit-shaped or allocatable: "
+        if (isScalar() || isExplicitShape() || isAssumedSize() ||
+            isAssumedShape() || isAllocatable())
+          ;
+        else
+          XMP.error("Coarray dummy argument must be of explicit shape, assumed size, assumed shape, or allocatable: "
                     + name);
       }
     }
@@ -385,13 +391,19 @@ public class XMPcoarray {
 
 
   public Xobject getLboundStatic(int i) {
-    FarrayType ftype = (FarrayType)ident.Type();
-    return ftype.getLbound(i, fblock);
+    if (isExplicitShape()) {
+      FarrayType ftype = (FarrayType)ident.Type();
+      return ftype.getLbound(i, fblock);
+    }
+    return null;
   }
 
   public Xobject getUboundStatic(int i) {
-    FarrayType ftype = (FarrayType)ident.Type();
-    return ftype.getUbound(i, fblock);
+    if (isExplicitShape()) {
+      FarrayType ftype = (FarrayType)ident.Type();
+      return ftype.getUbound(i, fblock);
+    }
+    return null;
   }
 
   public Xobject getLbound(int i) {
@@ -528,6 +540,8 @@ public class XMPcoarray {
     for (Xobject cosubs: (XobjList)cosubscripts) {
       args.add(cosubs);
     }
+    if (args.hasNullArg())
+      XMP.fatal("generated null argument " + fname + "(getImageIndex)");
 
     return fnameId.Call(args);
   }
@@ -562,6 +576,18 @@ public class XMPcoarray {
   public void resetAllocatable() {
     for (Xtype type = ident.Type(); type != null; ) {
       type.setIsFallocatable(false);
+      if (type.copied != null)
+        type = type.copied;
+      else if (type.isBasic())
+        break;
+      else
+        type = type.getRef();
+    }
+  }
+
+  public void resetSaveAttr() {
+    for (Xtype type = ident.Type(); type != null; ) {
+      type.setIsFsave(false);
       if (type.copied != null)
         type = type.copied;
       else if (type.isBasic())
@@ -611,7 +637,7 @@ public class XMPcoarray {
   }
 
   public Boolean isUseAssociated() {
-    return ident.getFdeclaredModule() != null;
+    return isUseAssociated;
   }
 
 
@@ -620,12 +646,47 @@ public class XMPcoarray {
     return ident;
   }
 
+  public void setIdent(Ident ident) {
+    this.ident = ident;
+    name = ident.getName();
+
+    isAllocatable = ident.Type().isFallocatable();
+    isPointer = ident.Type().isFpointer();
+    isUseAssociated = (ident.getFdeclaredModule() != null);
+  }
+
+  public XobjectDef getDef() {
+    return def;
+  }
+
+  public FunctionBlock getFblock() {
+    return fblock;
+  }
+
   public XMPenv getEnv() {
     return env;
   }
 
+  public String getHomeBlockName()
+  {
+    return homeBlockName;
+  }
+
+  public String getDescCommonName()
+  {
+    return VAR_DESCPOINTER_PREFIX + "_" + homeBlockName;
+  }
+
+  public String getCrayCommonName()
+  {
+    return VAR_CRAYPOINTER_PREFIX + "_" + homeBlockName;
+  }
+
   public String getCrayPointerName() {
-    return crayPtrName;
+    if (_crayPtrName == null) {
+      _crayPtrName = VAR_CRAYPOINTER_PREFIX + "_" + name;
+    }
+    return _crayPtrName;
   }
 
   public Ident getCrayPointerId() {
@@ -633,13 +694,23 @@ public class XMPcoarray {
   }
 
   public String getDescPointerName() {
-    return descPtrName;
+    if (_descPtrName == null) {
+      _descPtrName = VAR_DESCPOINTER_PREFIX + "_" + name;
+    }
+
+    return _descPtrName;
   }
 
   public Ident getDescPointerId() {
+    if (descPtrId == null)
+      XMP.warning("INTERNAL: illeagal null descPtrId");
+
     return descPtrId;
   }
 
+
+  /*************** should be deleted .....
+  ***************************/
   public Xobject getDescPointerIdExpr(Xobject baseAddr) {
     if (descPtrId != null)
       return descPtrId;
@@ -675,6 +746,15 @@ public class XMPcoarray {
     return ident.Type();
   }
 
+  public void setWasMovedFromModule(Boolean bool) {
+    _wasMovedFromModule = bool;
+  }
+
+  public Boolean wasMovedFromModule() {
+    return _wasMovedFromModule;
+  }
+
+
   //public Xtype getOriginalType() {
   //return originalType;
   //}
@@ -697,7 +777,7 @@ public class XMPcoarray {
 
 
   //------------------------------
-  //  low-level handling
+  //  low-level handling (NOT USED)
   //------------------------------
   public Ident unlinkIdent() {
     return unlinkIdent(def);
@@ -744,56 +824,39 @@ public class XMPcoarray {
   //   ******** under construction *********
   //------------------------------------------------------------
 
-  /* TEMPORARY VERSION
-   *   getFkind().getKind() is useful, which is integer as Xtype.Fxxx
-   */
-  public Xtype getFtype() {
-    Xtype ftype = ident.Type();
-    if (ftype.getKind() == Xtype.F_ARRAY)
-      ftype = ftype.getRef();
-    return ftype;
+  private Xtype _getXtype() {
+    Xtype xtype = ident.Type();
+    if (xtype.getKind() == Xtype.F_ARRAY)
+      xtype = xtype.getRef();
+    return xtype;
   }
 
-  /* TEMPORARY VERSION
-   *   getFkind().getInt() is useful.
-   */
+  public int getFtypeNumber() {
+    return _getXtype().getBasicType();
+  }
+
   public Xobject getFkind() {
-    return getFtype().getFkind();
+    return _getXtype().getFkind();
   }
 
   /*
    * return a name of Fortran intrinsic function
    */
-  private String getTypeIntrinsicName() {
-    return getTypeIntrinsicName(getType());
+  public String getFtypeString() {
+    String name = _getTypeIntrinName_1(getFtypeNumber());
+    return name;
   }
-
-  private String getTypeIntrinsicName(Xtype xtype) {
-    String name = null;
-
-    switch (xtype.getKind()) {
-    case Xtype.F_ARRAY:
-      name = _getTypeIntrinName_1(xtype.getRef());
-      break;
-    case Xtype.BASIC:
-      name = _getTypeIntrinName_1(xtype);
-      break;
-    case Xtype.STRUCT:
-      //XMP.error("internal error: STRUCT unsupported in _getTypeSuffix()");
-    default:
-      //XMP.error("internal error: unexpected kind in _getTypeSuffix(): xtype.getKind()");
-      break;
-    }
-
+  public String getFtypeString(int typeNumber) {
+    String name = _getTypeIntrinName_1(typeNumber);
     return name;
   }
 
   /// see also BasicType.getElementLength
-  private String _getTypeIntrinName_1(Xtype xtype) {
-    String key = null;
-    switch(xtype.getBasicType()) {
+  private String _getTypeIntrinName_1(int typeNumber) {
+
+    switch(typeNumber) {
     case BasicType.BOOL:
-      key = "l";
+      name = "logical";
       break;
     case BasicType.SHORT:
     case BasicType.UNSIGNED_SHORT:
@@ -803,30 +866,34 @@ public class XMPcoarray {
     case BasicType.UNSIGNED_LONG:
     case BasicType.LONGLONG:
     case BasicType.UNSIGNED_LONGLONG:
-      key = "int";
+      name = "int";
       break;
     case BasicType.FLOAT:
     case BasicType.DOUBLE:
     case BasicType.LONG_DOUBLE:
-      key = "real";
+      name = "real";
       break;
     case BasicType.FLOAT_COMPLEX:
     case BasicType.DOUBLE_COMPLEX:
     case BasicType.LONG_DOUBLE_COMPLEX:
-      key = "cmplx";
+      name = "cmplx";
       break;
     case BasicType.CHAR:
     case BasicType.UNSIGNED_CHAR:
     case BasicType.F_CHARACTER:
-      key = "c";
+      name = "char";
+      break;
+
+    case BasicType.F_NUMERIC_ALL:
+      name = null;
       break;
 
     default:
-      XMP.error("found unsupported type of coarray");
+      XMP.fatal("found illegal type number in BasicType: " + typeNumber);
       break;
     }
 
-    return key;
+    return name;
   }
 
 }

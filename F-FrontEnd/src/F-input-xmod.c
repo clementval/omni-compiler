@@ -1,24 +1,7 @@
 /* 
- * $TSUKUBA_Release: Omni Compiler Version 0.9.1 $
+ * $TSUKUBA_Release: Omni OpenMP Compiler 3 $
  * $TSUKUBA_Copyright:
- *  Copyright (C) 2010-2014 University of Tsukuba, 
- *  	      2012-2014  University of Tsukuba and Riken AICS
- *  
- *  This software is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU Lesser General Public License version
- *  2.1 published by the Free Software Foundation.
- *  
- *  Please check the Copyright and License information in the files named
- *  COPYRIGHT and LICENSE under the top  directory of the Omni Compiler
- *  Software release kit.
- *  
- *  * The specification of XcalableMP has been designed by the XcalableMP
- *    Specification Working Group (http://www.xcalablemp.org/).
- *  
- *  * The development of this software was partially supported by "Seamless and
- *    Highly-productive Parallel Programming Environment for
- *    High-performance computing" project funded by Ministry of Education,
- *    Culture, Sports, Science and Technology, Japan.
+ *  PLEASE DESCRIBE LICENSE AGREEMENT HERE
  *  $
  */
 /**
@@ -2532,6 +2515,9 @@ input_module(xmlTextReaderPtr reader, struct module * mod)
     return TRUE;
 }
 
+#include <stdlib.h>
+#define _XMPMOD_NAME "T_Module"
+
 /**
  * input module from .xmod file
  */
@@ -2543,6 +2529,7 @@ input_module_file(const SYMBOL mod_name, struct module **pmod)
     const char * filepath;
     xmlTextReaderPtr reader;
 
+    // search for "xxx.xmod"
     bzero(filename, sizeof(filename));
     strcpy(filename, SYM_NAME(mod_name));
     strcat(filename, ".xmod");
@@ -2550,6 +2537,31 @@ input_module_file(const SYMBOL mod_name, struct module **pmod)
     filepath = search_include_path(filename);
 
     reader = xmlNewTextReaderFilename(filepath);
+
+#if defined _MPI_FC && _MPI_FC == gfortran
+    // if not found, then search for "xxx.mod" and convert it into "xxx.xmod"
+    if (reader == NULL){
+      char filename2[FILE_NAME_LEN];
+      const char * filepath2;
+
+      bzero(filename2, sizeof(filename));
+      strcpy(filename2, SYM_NAME(mod_name));
+      strcat(filename2, ".mod");
+      filepath2 = search_include_path(filename2);
+
+      if (!filepath2) return FALSE;
+
+      char command[FILE_NAME_LEN + 9];
+      bzero(command, sizeof(filename2) + 9);
+      strcpy(command, _XMPMOD_NAME);
+      strcat(command, " ");
+      strcat(command, filepath2);
+      if (system(command) != 0) return FALSE;
+
+      reader = xmlNewTextReaderFilename(filepath);
+    }
+#endif
+
     if (reader == NULL)
         return FALSE;
 

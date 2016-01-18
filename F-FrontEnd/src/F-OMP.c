@@ -1,24 +1,7 @@
 /* 
- * $TSUKUBA_Release: Omni Compiler Version 0.9.1 $
+ * $TSUKUBA_Release: Omni OpenMP Compiler 3 $
  * $TSUKUBA_Copyright:
- *  Copyright (C) 2010-2014 University of Tsukuba, 
- *  	      2012-2014  University of Tsukuba and Riken AICS
- *  
- *  This software is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU Lesser General Public License version
- *  2.1 published by the Free Software Foundation.
- *  
- *  Please check the Copyright and License information in the files named
- *  COPYRIGHT and LICENSE under the top  directory of the Omni Compiler
- *  Software release kit.
- *  
- *  * The specification of XcalableMP has been designed by the XcalableMP
- *    Specification Working Group (http://www.xcalablemp.org/).
- *  
- *  * The development of this software was partially supported by "Seamless and
- *    Highly-productive Parallel Programming Environment for
- *    High-performance computing" project funded by Ministry of Education,
- *    Culture, Sports, Science and Technology, Japan.
+ *  PLEASE DESCRIBE LICENSE AGREEMENT HERE
  *  $
  */
 #include "F-front.h"
@@ -63,6 +46,17 @@ int OMP_reduction_op(expr v)
     return OMP_DATA_REDUCTION_PLUS;	/* dummy */
 }
 
+int OMP_depend_op(expv v)
+{
+    char *s;
+    if(EXPR_CODE(v) != IDENT) fatal("OMP_depend_op: no IDENT");
+    s = SYM_NAME(EXPR_SYM(v));
+    if(strcmp("in",s) == 0) return (int)OMP_DATA_DEPEND_IN;
+    if(strcmp("out",s) == 0) return (int)OMP_DATA_DEPEND_OUT;
+    if(strcmp("inout",s) == 0) return (int)OMP_DATA_DEPEND_INOUT;
+    error("bad intrinsic function in REPEND clause of OpenMP");
+    return OMP_DATA_DEPEND_IN;     /* dummy */
+}
 void init_for_OMP_pragma()
 {
     OMP_do_required = FALSE;
@@ -439,6 +433,114 @@ void compile_OMP_directive(expr x)
 	OMP_st_required = OMP_ST_ATOMIC;
 	break;
 
+    case OMP_F_TASK:
+      push_ctl(CTL_OMP);
+      compile_OMP_pragma_clause(EXPR_ARG2(x),OMP_TASK,FALSE,
+				&pclause,&dclause);
+      CTL_OMP_ARG(ctl_top) = list3(LIST,dir,pclause,dclause);
+      EXPR_LINE(CTL_OMP_ARG(ctl_top)) = current_line;
+      return;
+    case OMP_F_END_TASK:
+      if(CTL_TYPE(ctl_top) == CTL_OMP &&
+         CTL_OMP_ARG_DIR(ctl_top) == OMP_F_TASK){
+        CTL_BLOCK(ctl_top) =
+          OMP_pragma_list(OMP_TASK,CTL_OMP_ARG_DCLAUSE(ctl_top),
+                          CURRENT_STATEMENTS);
+        EXPR_LINE(CTL_BLOCK(ctl_top)) = EXPR_LINE(CTL_OMP_ARG(ctl_top));
+        pop_ctl();
+      } else  error("OpenMP TASK block is not closed");
+      return;
+
+    case OMP_F_SIMD:
+      push_ctl(CTL_OMP);
+      compile_OMP_pragma_clause(EXPR_ARG2(x),OMP_SIMD,TRUE,
+				&pclause,&dclause);
+      CTL_OMP_ARG(ctl_top) = list3(LIST,dir,pclause,dclause);
+      EXPR_LINE(CTL_OMP_ARG(ctl_top)) = current_line;
+      return;
+
+    case OMP_F_END_SIMD:
+      if(CTL_TYPE(ctl_top) == CTL_OMP &&
+         CTL_OMP_ARG_DIR(ctl_top) == OMP_F_SIMD){
+        CTL_BLOCK(ctl_top) =
+          OMP_pragma_list(OMP_SIMD,CTL_OMP_ARG_DCLAUSE(ctl_top),
+                          CURRENT_STATEMENTS);
+        EXPR_LINE(CTL_BLOCK(ctl_top)) = EXPR_LINE(CTL_OMP_ARG(ctl_top));
+        pop_ctl();
+      } else  error("OpenMP SIMD block is not closed");
+      return;
+    
+    case OMP_F_DO_SIMD:
+      push_ctl(CTL_OMP);
+      compile_OMP_pragma_clause(EXPR_ARG2(x),OMP_SIMD,TRUE,
+				&pclause,&dclause);
+      CTL_OMP_ARG(ctl_top) = list3(LIST,dir,pclause,dclause);
+      EXPR_LINE(CTL_OMP_ARG(ctl_top)) = current_line;
+      return;
+    case OMP_F_END_DO_SIMD:
+      if(CTL_TYPE(ctl_top) == CTL_OMP &&
+         CTL_OMP_ARG_DIR(ctl_top) == OMP_F_DO_SIMD){
+	CTL_BLOCK(ctl_top) =
+	  OMP_pragma_list(OMP_FOR,CTL_OMP_ARG_DCLAUSE(ctl_top),
+			  OMP_pragma_list(OMP_SIMD,
+					  CTL_OMP_ARG_DCLAUSE(ctl_top),
+					  CURRENT_STATEMENTS));
+	/*        CTL_BLOCK(ctl_top) =
+          OMP_pragma_list(OMP_DO_SIMD,CTL_OMP_ARG_DCLAUSE(ctl_top),
+	  CURRENT_STATEMENTS);*/
+        EXPR_LINE(CTL_BLOCK(ctl_top)) = EXPR_LINE(CTL_OMP_ARG(ctl_top));
+        pop_ctl();
+      } else  error("OpenMP DO SIMD block is not closed");
+      return;
+
+    case OMP_F_DECLARE_SIMD:
+      push_ctl(CTL_OMP);
+      compile_OMP_pragma_clause(EXPR_ARG2(x),OMP_SIMD,TRUE,
+				&pclause,&dclause);
+      CTL_OMP_ARG(ctl_top) = list3(LIST,dir,pclause,dclause);
+      EXPR_LINE(CTL_OMP_ARG(ctl_top)) = current_line;
+      return;
+    case OMP_F_END_DECLARE_SIMD:
+      if(CTL_TYPE(ctl_top) == CTL_OMP &&
+         CTL_OMP_ARG_DIR(ctl_top) == OMP_F_DECLARE_SIMD){
+        CTL_BLOCK(ctl_top) =
+          OMP_pragma_list(OMP_DECLARE,CTL_OMP_ARG_DCLAUSE(ctl_top),
+                          OMP_pragma_list(OMP_SIMD,
+                                          CTL_OMP_ARG_DCLAUSE(ctl_top),
+                                          CURRENT_STATEMENTS));
+	/*          OMP_pragma_list(OMP_DECLARE_SIMD,CTL_OMP_ARG_DCLAUSE(ctl_top),
+		    CURRENT_STATEMENTS);*/
+        EXPR_LINE(CTL_BLOCK(ctl_top)) = EXPR_LINE(CTL_OMP_ARG(ctl_top));
+        pop_ctl();
+      } else  error("OpenMP DECLARE SIMD block is not closed");
+      return;
+
+    case OMP_F_PARALLEL_DO_SIMD:
+      push_ctl(CTL_OMP);
+      compile_OMP_pragma_clause(EXPR_ARG2(x),OMP_SIMD,TRUE,
+				&pclause,&dclause);
+      CTL_OMP_ARG(ctl_top) = list3(LIST,dir,pclause,dclause);
+      EXPR_LINE(CTL_OMP_ARG(ctl_top)) = current_line;
+      return;
+
+    case OMP_F_END_PARALLEL_DO_SIMD:
+      if(CTL_TYPE(ctl_top) == CTL_OMP &&
+         CTL_OMP_ARG_DIR(ctl_top) == OMP_F_PARALLEL_DO_SIMD){
+        CTL_BLOCK(ctl_top) =
+          OMP_pragma_list(OMP_PARALLEL,CTL_OMP_ARG_DCLAUSE(ctl_top),
+                          OMP_pragma_list(OMP_FOR,
+                                          CTL_OMP_ARG_DCLAUSE(ctl_top),
+					  OMP_pragma_list(OMP_SIMD,
+							  CTL_OMP_ARG_DCLAUSE(ctl_top),
+							  CURRENT_STATEMENTS)));
+	/*
+          OMP_pragma_list(OMP_PARALLEL_DO_SIMD,CTL_OMP_ARG_PCLAUSE(ctl_top),
+	  CURRENT_STATEMENTS);*/
+        EXPR_LINE(CTL_BLOCK(ctl_top)) = EXPR_LINE(CTL_OMP_ARG(ctl_top));
+        pop_ctl();
+      } else  error("OpenMP PARALLEL DO SIMD block is not closed");
+      return;
+
     default:
 	fatal("unknown OMP pragma");
     }
@@ -486,7 +588,6 @@ void compile_OMP_pragma_clause(expr x, int pragma, int is_parallel,
     list lp;
     expr c,v;
     expv pclause,dclause;
-
     pclause = EMPTY_LIST;
     dclause = EMPTY_LIST;
     if(x == NULL) goto ret; /* empy */
@@ -495,7 +596,7 @@ void compile_OMP_pragma_clause(expr x, int pragma, int is_parallel,
 	c = LIST_ITEM(lp);
 	switch(EXPR_INT(EXPR_ARG1(c))){
 	case OMP_DATA_DEFAULT:	/* default(shared|none|private) */
-	    if(!is_parallel){
+	  if(!is_parallel){
 		error_at_node(x,"'default' clause must be in PARALLEL");
 		break;
 	    }
@@ -504,13 +605,27 @@ void compile_OMP_pragma_clause(expr x, int pragma, int is_parallel,
 					  EXPR_ARG1(EXPR_ARG2(c))));
 	    break;
 	case OMP_DATA_SHARED:
-	    compile_OMP_name_list(EXPR_ARG2(c));
-	    if(!is_parallel){
+	    /* all pragma can have these */
+	  /* compile_OMP_name_list(EXPR_ARG2a(c));
+	    if(pragma == OMP_PARALLEL)
+	      pclause = list_put_last(pclause,c);
+	    else     
+	      dclause = list_put_last(dclause,c);
+	    break;
+	  */
+	  compile_OMP_name_list(EXPR_ARG2(c));
+	    if(!is_parallel && pragma!=OMP_TASK){
 		error_at_node(x,"'shared' clause must be in PARALLEL");
 		break;
 	    }
+            if(is_parallel){
 	    pclause = list_put_last(pclause,c);
+	    }
+	    else if(pragma == OMP_TASK){
+	    dclause = list_put_last(dclause,c);
+	    }
 	    break;
+	  
 	case OMP_DATA_COPYIN:
 	    compile_OMP_name_list(EXPR_ARG2(c));
 	    if(!is_parallel){
@@ -520,15 +635,31 @@ void compile_OMP_pragma_clause(expr x, int pragma, int is_parallel,
 	    pclause = list_put_last(pclause,c);
 	    break;
 	case OMP_DIR_IF:
-	    if(!is_parallel){
+	    if(!is_parallel && pragma != OMP_TASK){
 		error_at_node(x,"'if' clause must be in PARALLEL");
 		break;
 	    }
+            if(pragma == OMP_PARALLEL){
 	    v = compile_expression(EXPR_ARG2(c));
 	    pclause = list_put_last(pclause,
-					list2(LIST,EXPR_ARG1(c),v));
+				    list2(LIST,EXPR_ARG1(c),v));
+	    }
+	    else if(pragma == OMP_TASK){
+	      v = compile_expression(EXPR_ARG2(c));
+	      dclause = list_put_last(dclause,
+				      list2(LIST,EXPR_ARG1(c),v));
+	    }
 	    break;
 
+	case OMP_DIR_NUM_THREADS:
+            if(!is_parallel){
+                error_at_node(x,"'num_threads' clause must be in PARALLEL");
+                break;
+            }
+            v = compile_expression(EXPR_ARG2(c));
+	    pclause = list_put_last(pclause,
+					list2(LIST,EXPR_ARG1(c),v));
+            break;
 	case OMP_DATA_PRIVATE:
 	case OMP_DATA_FIRSTPRIVATE:
 	    /* all pragma can have these */
@@ -539,6 +670,7 @@ void compile_OMP_pragma_clause(expr x, int pragma, int is_parallel,
 	      dclause = list_put_last(dclause,c);
 	    break;
 
+
 	case OMP_DATA_LASTPRIVATE:
 	    compile_OMP_name_list(EXPR_ARG2(c));
 	    if(pragma != OMP_FOR && pragma != OMP_SECTIONS){
@@ -547,7 +679,56 @@ void compile_OMP_pragma_clause(expr x, int pragma, int is_parallel,
 	    }
 	    dclause = list_put_last(dclause,c);
 	    break;
-
+	case OMP_DATA_DEPEND_IN:
+	case OMP_DATA_DEPEND_OUT:
+	case OMP_DATA_DEPEND_INOUT:
+	  compile_OMP_name_list(EXPR_ARG2(c));
+	  if(pragma != OMP_TASK){
+	    error_at_node(x,"'depend' clause must be in TASK");
+	    break;
+	  }
+	  dclause = list_put_last(dclause,c);
+	  break;
+	case OMP_DIR_UNTIED:
+	  if(pragma != OMP_TASK){
+	    error_at_node(x,"'untied' clause must be in TASK");
+	    break;
+	  }
+	  dclause = list_put_last(dclause,c);
+	  break;
+	case OMP_DIR_MERGEABLE:
+	  if(pragma != OMP_TASK){
+	    error_at_node(x,"'mergeable' clause must be in TASK");
+		break;
+	  }
+	  dclause = list_put_last(dclause,c);
+	  break;
+	case OMP_DATA_FINAL:
+	    if(!is_parallel && pragma != OMP_TASK){
+		error_at_node(x,"'if' clause must be in PARALLEL");
+		break;
+	    }
+            if(pragma == OMP_PARALLEL){
+	    v = compile_expression(EXPR_ARG2(c));
+	    pclause = list_put_last(pclause,
+				    list2(LIST,EXPR_ARG1(c),v));
+	    }
+	    else if(pragma == OMP_TASK){
+	      v = compile_expression(EXPR_ARG2(c));
+	      dclause = list_put_last(dclause,
+				      list2(LIST,EXPR_ARG1(c),v));
+	    }
+	    break;
+	    /*
+	  if(pragma != OMP_TASK){
+		  error_at_node(x,"'final' clause must be in TASK");
+		  break;
+	  }
+	  v = compile_expression(EXPR_ARG2(c));
+	  dclause = list_put_last(dclause,
+				  list2(LIST,EXPR_ARG1(c),v));
+	  break;
+	    */
 	case OMP_DATA_REDUCTION_PLUS:
 	case OMP_DATA_REDUCTION_MINUS:
 	case OMP_DATA_REDUCTION_MUL:

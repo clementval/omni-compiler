@@ -1,4 +1,4 @@
-XCC     = xmpcc -O2
+XCC     = xmpcc
 XRUN    = mpiexec
 C_TESTS = $(wildcard *.c)
 C_EXES  = $(C_TESTS:.c=.x)
@@ -21,6 +21,7 @@ run:
 	$(XRUN) -n 2 ./coarray_get_5dims.x
 	$(XRUN) -n 2 ./coarray_get_6dims.x
 	$(XRUN) -n 2 ./coarray_get_7dims.x
+	$(XRUN) -n 2 ./coarray_scalar_mput.x
 
 clean:
 	rm -f $(EXES) $(C_OBJS)

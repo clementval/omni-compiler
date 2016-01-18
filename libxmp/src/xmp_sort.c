@@ -175,21 +175,27 @@ static void set_funcs(_XMP_array_t *a_desc, int is_up){
     break;
 
   case _XMP_N_TYPE_FLOAT:
+#ifdef __STD_IEC_559_COMPLEX__
   case _XMP_N_TYPE_FLOAT_IMAGINARY:
+#endif
     compare_func = is_up ? compare_up_FLOAT : compare_down_FLOAT;
     get_rotate_pivot = get_rotate_pivot_for_FLOAT;
     mpi_type = MPI_FLOAT;
     break;
 
   case _XMP_N_TYPE_DOUBLE:
+#ifdef __STD_IEC_559_COMPLEX__
   case _XMP_N_TYPE_DOUBLE_IMAGINARY:
+#endif
     compare_func = is_up ? compare_up_DOUBLE : compare_down_DOUBLE;
     get_rotate_pivot = get_rotate_pivot_for_DOUBLE;
     mpi_type = MPI_DOUBLE;
     break;
 
   case _XMP_N_TYPE_LONG_DOUBLE:
+#ifdef __STD_IEC_559_COMPLEX__
   case _XMP_N_TYPE_LONG_DOUBLE_IMAGINARY:
+#endif
     compare_func = is_up ? compare_up_LONG_DOUBLE : compare_down_LONG_DOUBLE;
     get_rotate_pivot = get_rotate_pivot_for_LONG_DOUBLE;
     mpi_type = MPI_LONG_DOUBLE;
@@ -545,7 +551,8 @@ static void kway_inplace_merge_sort(void *a, int *start, int k){
 
 static void do_gmove(void *buf, int *bufStart, _XMP_array_t *b_desc){
 
-  _XMP_nodes_t *n_desc = b_desc->array_nodes;
+  //_XMP_nodes_t *n_desc = b_desc->array_nodes;
+  _XMP_nodes_t *n_desc = b_desc->align_template->onto_nodes;
   _XMP_template_t *t_desc;
   _XMP_array_t *buf_desc;
 

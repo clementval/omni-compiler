@@ -1,33 +1,23 @@
 #include <stdlib.h>
 #include "xmpf_internal.h"
 #include "config.h"
-void xmpf_finalize_all__();
 //#define DBG 1
 
 /*
  * For xmpf, initialize all
  */
 
-void call_xmpf_finalize_all__(){
-  xmpf_finalize_all__();
-}
-
 void xmpf_init_all__()
 {
   _XMP_init(0, NULL);
 
-  /* 
-     On SR16000, when calling MPI_Finalize from atexit(),
-     the atexit must be called after MPI_Init().
-   */
-  atexit(call_xmpf_finalize_all__);
   _XMP_check_reflect_type();
 
   _XMPC_running = 0;
   _XMPF_running = 1;
 
-#if defined(_XMP_GASNET) || defined(_XMP_FJRDMA)
-  /* for Coarray environment */
+#if defined(_XMP_GASNET) || defined(_XMP_FJRDMA) || defined(_XMP_MPI3_ONESIDED)
+  /* for Coarray Fortran environment */
   _XMPF_coarray_init();
 #endif
 
@@ -42,6 +32,10 @@ void xmpf_finalize_all__()
 {
 
   //  xmpf_dbg_printf("sched = %f, start = %f, wait = %f\n", t_sched, t_start, t_wait);
+
+#if defined(_XMP_GASNET) || defined(_XMP_FJRDMA) || defined(_XMP_MPI3_ONESIDED)
+  xmpf_sync_all_auto_();
+#endif
 
 #if defined(OMNI_TARGET_CPU_KCOMPUTER) && defined(K_RDMA_REFLECT)
   FJMPI_Rdma_finalize();
@@ -151,15 +145,21 @@ size_t _XMP_get_datatype_size(int datatype)
     size = SIZEOF_UNSIGNED_LONG_LONG; break;
 
   case _XMP_N_TYPE_FLOAT:
+#ifdef __STD_IEC_559_COMPLEX__
   case _XMP_N_TYPE_FLOAT_IMAGINARY:
+#endif
     size = SIZEOF_FLOAT; break;
 
   case _XMP_N_TYPE_DOUBLE:
+#ifdef __STD_IEC_559_COMPLEX__
   case _XMP_N_TYPE_DOUBLE_IMAGINARY:
+#endif
     size = SIZEOF_DOUBLE; break;
 
   case _XMP_N_TYPE_LONG_DOUBLE:
+#ifdef __STD_IEC_559_COMPLEX__
   case _XMP_N_TYPE_LONG_DOUBLE_IMAGINARY:
+#endif
     size = SIZEOF_LONG_DOUBLE; break;
 
   case _XMP_N_TYPE_FLOAT_COMPLEX:

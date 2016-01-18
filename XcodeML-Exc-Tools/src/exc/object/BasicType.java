@@ -1,24 +1,7 @@
 /* 
- * $TSUKUBA_Release: Omni Compiler Version 0.9.1 $
+ * $TSUKUBA_Release: Omni OpenMP Compiler 3 $
  * $TSUKUBA_Copyright:
- *  Copyright (C) 2010-2014 University of Tsukuba, 
- *  	      2012-2014  University of Tsukuba and Riken AICS
- *  
- *  This software is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU Lesser General Public License version
- *  2.1 published by the Free Software Foundation.
- *  
- *  Please check the Copyright and License information in the files named
- *  COPYRIGHT and LICENSE under the top  directory of the Omni Compiler
- *  Software release kit.
- *  
- *  * The specification of XcalableMP has been designed by the XcalableMP
- *    Specification Working Group (http://www.xcalablemp.org/).
- *  
- *  * The development of this software was partially supported by "Seamless and
- *    Highly-productive Parallel Programming Environment for
- *    High-performance computing" project funded by Ministry of Education,
- *    Culture, Sports, Science and Technology, Japan.
+ *  PLEASE DESCRIBE LICENSE AGREEMENT HERE
  *  $
  */
 
@@ -267,8 +250,8 @@ public class BasicType extends Xtype
           put(DOUBLE_IMAGINARY       , 8 );
           put(LONG_DOUBLE_IMAGINARY  , 8 );    // ???
           put(FLOAT_COMPLEX          , 8 );
-          put(DOUBLE_COMPLEX         , 8 ); // should be 16 but bug347. 
-          put(LONG_DOUBLE_COMPLEX    ,16 );    // ???
+          put(DOUBLE_COMPLEX         ,16 );
+          put(LONG_DOUBLE_COMPLEX    ,32 );    // ???
           put(GCC_BUILTIN_VA_LIST    , 0 );
           put(F_CHARACTER            , 1 );
           put(F_NUMERIC              , 0 );
@@ -287,12 +270,19 @@ public class BasicType extends Xtype
       }
 
       // case: Fortran kind-parameter specified
-      if (fkind != null) {
+      /////////////////////////////
+      // temporary implementation:
+      // If fkind cannot be evaluated as an integer,
+      // ignore it and get element length from basic_type
+      /////////////////////////////
+      if (fkind != null && fkind.canGetInt()) {
         if (basic_type == FLOAT_COMPLEX ||
             basic_type == DOUBLE_COMPLEX ||
-            basic_type == LONG_DOUBLE_COMPLEX)
+            basic_type == LONG_DOUBLE_COMPLEX) {
           return fkind.getInt() * 2;
-        return fkind.getInt();
+        } else {
+          return fkind.getInt();
+        }
       }
 
       // otherwise

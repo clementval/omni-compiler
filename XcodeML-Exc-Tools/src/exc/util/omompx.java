@@ -1,24 +1,7 @@
 /* 
- * $TSUKUBA_Release: Omni Compiler Version 0.9.1 $
+ * $TSUKUBA_Release: Omni OpenMP Compiler 3 $
  * $TSUKUBA_Copyright:
- *  Copyright (C) 2010-2014 University of Tsukuba, 
- *  	      2012-2014  University of Tsukuba and Riken AICS
- *  
- *  This software is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU Lesser General Public License version
- *  2.1 published by the Free Software Foundation.
- *  
- *  Please check the Copyright and License information in the files named
- *  COPYRIGHT and LICENSE under the top  directory of the Omni Compiler
- *  Software release kit.
- *  
- *  * The specification of XcalableMP has been designed by the XcalableMP
- *    Specification Working Group (http://www.xcalablemp.org/).
- *  
- *  * The development of this software was partially supported by "Seamless and
- *    Highly-productive Parallel Programming Environment for
- *    High-performance computing" project funded by Ministry of Education,
- *    Culture, Sports, Science and Technology, Japan.
+ *  PLEASE DESCRIBE LICENSE AGREEMENT HERE
  *  $
  */
 package exc.util;
@@ -29,13 +12,7 @@ import java.util.List;
 
 import exc.object.XobjectFile;
 
-import exc.openacc.ACC;
-import exc.openacc.ACCanalyzePragma;
-import exc.openacc.ACCglobalDecl;
-import exc.openacc.ACCgpuDecompiler;
-import exc.openacc.ACCrewritePragma;
-import exc.openacc.ACCtranslatePragma;
-
+import exc.openacc.AccTranslator;
 import exc.openmp.OMP;
 import exc.openmp.OMPtranslate;
 
@@ -48,8 +25,8 @@ import exc.xcodeml.XcodeMLtools;
 import exc.xcodeml.XcodeMLtools_F;
 import exc.xcodeml.XcodeMLtools_Fmod;
 import exc.xcodeml.XcodeMLtools_C;
+import xcodeml.IXobject;
 import xcodeml.XmLanguage;
-import xcodeml.XmObj;
 import xcodeml.binding.XmXcodeProgram;
 import xcodeml.util.*;
 
@@ -353,6 +330,11 @@ public class omompx
           xobjFile.addHeaderLine("# include \"xmp_tlog.h\"");
         }
       }
+      if(openACC){
+        if(xobjFile.findIdent("acc_init", IXobject.FINDKIND_ANY) == null){
+          xobjFile.addHeaderLine("# include \"openacc.h\"");
+        }
+      }
       xmpTranslator.finalize();
 
       if(xcodeWriter != null) {
@@ -389,7 +371,6 @@ public class omompx
         if(exc.xmpF.XMP.hasErrors())
           System.exit(1);
         caf_translator2.finish();
-
       } else {    // without coarray features
 
         // XMP Fortran
@@ -399,15 +380,17 @@ public class omompx
         if(exc.xmpF.XMP.hasErrors())
           System.exit(1);
         xmp_translator.finish();
+
       }
 
       if(xcodeWriter != null) {
-        xobjFile.Output(xcodeWriter);
-        xcodeWriter.flush();
+          xobjFile.Output(xcodeWriter);
+          xcodeWriter.flush();
       }
     }
 
     // OpenMP translation
+//    OMP.debugFlag = true;
     if(openMP) {
       OMPtranslate omp_translator = new OMPtranslate(xobjFile);
       xobjFile.iterateDef(omp_translator);
@@ -424,33 +407,11 @@ public class omompx
     }
     
     if(openACC){
-      ACCglobalDecl accGlobalDecl = new ACCglobalDecl(xobjFile);
-      ACCanalyzePragma accAnalyzer = new ACCanalyzePragma(accGlobalDecl);
-      xobjFile.iterateDef(accAnalyzer);
-      accAnalyzer.finalize();
-      ACC.exitByError();
-      
-      ACCtranslatePragma accTranslator = new ACCtranslatePragma(accGlobalDecl);
+      //XmOption.setDebugOutput(true);
+      AccTranslator accTranslator = new AccTranslator(xobjFile, false);
       xobjFile.iterateDef(accTranslator);
-      accTranslator.finalize();
-      ACC.exitByError();
-      
-      ACCrewritePragma accRewriter = new ACCrewritePragma(accGlobalDecl);
-      xobjFile.iterateDef(accRewriter);
-      accRewriter.finalize();
-      ACC.exitByError();
-      
-      ACCgpuDecompiler gpuDecompiler = new ACCgpuDecompiler();
-      gpuDecompiler.decompile(accGlobalDecl);
 
-      accGlobalDecl.setupGlobalConstructor();
-      accGlobalDecl.setupGlobalDestructor();
-      accGlobalDecl.setupMain();
-      ACC.exitByError();
-      
-      xobjFile.addHeaderLine("# include \"acc.h\"");
-      xobjFile.addHeaderLine("# include \"acc_gpu.h\"");
-      accGlobalDecl.finalize();
+      accTranslator.finish();
       
       if(xcodeWriter != null) {
         xobjFile.Output(xcodeWriter);
@@ -536,7 +497,7 @@ public class omompx
       }
       decompiler.decompile(context, xcodeDoc, decompWriter);
       // for collect-init
-      decompWriter.write(xobjFile.getTailText());
+      //decompWriter.write(xobjFile.getTailText());
       decompWriter.flush();
     
       if(!dump && outputDecomp) {

@@ -5,8 +5,8 @@ XMP_TMPDIR=$2
 
 XMP_RPM_BUILD_DIR="${XMP_TMPDIR}/rpmbuild/"
 XMPPKG_NAME="omni-compiler"
-XMPPKG_VERSION="0.9.1"
-XMPPKG_RELEASE="r20150421"
+XMPPKG_VERSION="0.9.2"
+XMPPKG_RELEASE="r20151127"
 SPEC_FILE_NAME="xcalablemp.spec"
 SPEC_FILE="${XMP_SRCDIR}/release/${SPEC_FILE_NAME}"
 MKARCHIVE_FILE="${XMP_SRCDIR}/release/mkarchive"
@@ -56,7 +56,8 @@ rpmbuild -v -bb \
 --define "_builddir ${XMP_RPM_BUILD_DIR}/BUILD" \
 --define "_srcrpmdir ${XMP_RPM_BUILD_DIR}/SRPMS" \
 --define "_rpmdir ${XMP_RPM_BUILD_DIR}/RPMS" \
-${XMP_RPM_BUILD_DIR}/SPECS/${SPEC_FILE_NAME}
+--define "debug_package %{nil}" \
+ ${XMP_RPM_BUILD_DIR}/SPECS/${SPEC_FILE_NAME}
 test $? -ne 0 && clean_exit 1
 CPU=`uname -m`
 case $CPU in

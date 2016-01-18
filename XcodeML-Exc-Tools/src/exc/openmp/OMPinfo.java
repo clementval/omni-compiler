@@ -1,29 +1,13 @@
 /* 
- * $TSUKUBA_Release: Omni Compiler Version 0.9.1 $
+ * $TSUKUBA_Release: Omni OpenMP Compiler 3 $
  * $TSUKUBA_Copyright:
- *  Copyright (C) 2010-2014 University of Tsukuba, 
- *  	      2012-2014  University of Tsukuba and Riken AICS
- *  
- *  This software is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU Lesser General Public License version
- *  2.1 published by the Free Software Foundation.
- *  
- *  Please check the Copyright and License information in the files named
- *  COPYRIGHT and LICENSE under the top  directory of the Omni Compiler
- *  Software release kit.
- *  
- *  * The specification of XcalableMP has been designed by the XcalableMP
- *    Specification Working Group (http://www.xcalablemp.org/).
- *  
- *  * The development of this software was partially supported by "Seamless and
- *    Highly-productive Parallel Programming Environment for
- *    High-performance computing" project funded by Ministry of Education,
- *    Culture, Sports, Science and Technology, Japan.
+ *  PLEASE DESCRIBE LICENSE AGREEMENT HERE
  *  $
  */
 package exc.openmp;
 
 import exc.object.*;
+import exc.xcodeml.XcodeMLtools;
 import exc.block.*;
 
 import java.util.ArrayList;
@@ -44,7 +28,7 @@ public class OMPinfo
     private List<OMPvar> varlist; /* variable list */
     private XobjList id_list;
     private List<OMPvar> thdprv_varlist; /* threadprivate variable list */
-
+    private XcodeMLtools tools;
     // for OMPpragma.FLUSH
     List<Xobject> flush_vars;
 
@@ -52,12 +36,15 @@ public class OMPinfo
     OMPpragma sched = OMPpragma.SCHED_NONE; /* for DIR_SCHEDULE */
     Xobject sched_chunk;
     boolean ordered;
+    boolean untied;
+    boolean mergeable;
 
+    boolean simd;
     // for parallel region, OMPpragma.PARALLEL
     OMPpragma data_default = OMPpragma._DEFAULT_NOT_SET;
     Xobject num_threads;
     boolean no_wait;
-    private Xobject if_expr;
+    private Xobject if_expr,final_expr;
     private List<Xobject> region_args; // for parallel region
     private List<Ident> region_params;
     private Xobject thdnum_var;
@@ -78,7 +65,9 @@ public class OMPinfo
         region_args = new ArrayList<Xobject>();
         region_params = new ArrayList<Ident>();
 
-        if(pragma == OMPpragma.PARALLEL) {
+        OMP.debug("OMPinfo");
+
+        if(pragma == OMPpragma.PARALLEL ||pragma == OMPpragma.TASK) {
             /* check local tagnames, replicate them. */
             for(Block bb = b.getParentBlock(); bb != null; bb = bb.getParentBlock()) {
                 BlockList b_list = bb.getBody();
@@ -104,28 +93,32 @@ public class OMPinfo
             }
         }
 
-        if(pragma == OMPpragma.PARALLEL || pragma == OMPpragma.FUNCTION_BODY) {
+        if(pragma == OMPpragma.PARALLEL || pragma == OMPpragma.FUNCTION_BODY ||pragma == OMPpragma.TASK) {
             thdprv_varlist = new ArrayList<OMPvar>();
         }
     }
     
     public Block getBlock()
     {
+        OMP.debug("getBlock");
         return block;
     }
     
     List<OMPvar> getVarList()
     {
+        OMP.debug("getVarList");
         return varlist;
     }
     
     private void addVar(OMPvar var)
     {
+        OMP.debug("addVar");
         varlist.add(var);
     }
 
     OMPvar findOMPvar(String name)
     {
+        OMP.debug("findOMPVar");
         for(OMPvar v : varlist)
             if(v.id.getName().equals(name))
                 return v;
@@ -134,6 +127,7 @@ public class OMPinfo
 
     OMPvar findOMPvar(Ident id)
     {
+        OMP.debug("findOMPVar");
         for(OMPvar v : varlist)
             if(v.id == id)
                 return v;
@@ -146,6 +140,7 @@ public class OMPinfo
     // for checking implicit private in FOR directive
     boolean isPrivateOMPvar(String name)
     {
+        OMP.debug("isPrivateOMPVar");
         OMPvar v = null;
         Ident id = null;
         for(Block b = block; b != null; b = b.getParentBlock()) {
@@ -161,7 +156,7 @@ public class OMPinfo
             // if declared as OMPvar, check it
             if((v = i.findOMPvar(name)) != null)
                 break;
-            if(i.pragma == OMPpragma.PARALLEL)
+            if(i.pragma == OMPpragma.PARALLEL || i.pragma==OMPpragma.TASK)
                 break; // not beyond parallel region
         }
         if(id != null) {
@@ -184,6 +179,7 @@ public class OMPinfo
     //
     OMPvar declOMPvar(String name, OMPpragma atr)
     {
+        OMP.debug("declOMPVar");
         if(atr == null)
             return null;
         
@@ -224,7 +220,7 @@ public class OMPinfo
             // if declared as OMPvar, check it
             if((v = i.findOMPvar(name)) != null)
                 break;
-            if(i.pragma == OMPpragma.PARALLEL)
+            if(i.pragma == OMPpragma.PARALLEL||i.pragma == OMPpragma.TASK)
                 break; // not beyond parallel region
         }
         if(id != null) {
@@ -282,7 +278,7 @@ public class OMPinfo
                 return null;
             }
         }
-
+	if(id.getStorageClass()!=null)
         if(env.isThreadPrivate(id)) {
             if(atr != OMPpragma.DATA_COPYIN) {
                 OMP.error(block.getLineNo(), "variable '" + name + "' is threadprivate");
@@ -325,13 +321,14 @@ public class OMPinfo
         if(v.is_reduction) {
             v.setSharedArray(createSharedArray(v, 0, true));
         }
-
+        
         addVar(v);
         return v;
     }
     
     private Xobject createPrivateAddr(OMPvar v)
     {
+        OMP.debug("createPrivateAddr");
         Ident id = v.id;
         Xtype t = id.Type();
         
@@ -344,6 +341,9 @@ public class OMPinfo
                 t.setIsConst(false);
             } else {
                 t.unsetIsFsave();
+                t.setIsFintentIN(false);
+                t.setIsFintentOUT(false);
+                t.setIsFintentINOUT(false);
                 if(v.is_reduction ||
                     (v.is_shared && !v.is_first_private && !v.is_last_private && !v.is_private)) {
                     t.unsetIsFtarget();
@@ -362,6 +362,7 @@ public class OMPinfo
     
     private Xobject createCopyPrivateAddr(OMPvar v)
     {
+        OMP.debug("createCopyPrivateAddr");
         Ident id = v.id;
         Xtype t = id.Type();
         
@@ -381,6 +382,7 @@ public class OMPinfo
     
     private Xobject createSharedAddr(Ident id)
     {
+        OMP.debug("createSharedAddr");
         Block b;
         BlockList b_list;
         OMPinfo i;
@@ -419,7 +421,7 @@ public class OMPinfo
             if((v = i.findOMPvar(id.getName())) != null)
                 return v.getAddr();
 
-            if(i.pragma == OMPpragma.PARALLEL) {
+            if(i.pragma == OMPpragma.PARALLEL || i.pragma == OMPpragma.TASK) {
                 return addRegionVar(b, i, id);
             }
         }
@@ -429,6 +431,7 @@ public class OMPinfo
     
     private Xobject createSharedArray(OMPvar v, int sizeOffset, boolean isRedction)
     {
+        OMP.debug("createSharedArray");
         if(!XmOption.isLanguageF())
             return null;
         
@@ -458,12 +461,14 @@ public class OMPinfo
     
     private Xobject addRegionVar(Block b, OMPinfo i, Ident id)
     {
+        OMP.debug("addRegionVar");
         // make local variable to pass across parallel section.
         if(XmOption.isLanguageF() && id.Type() != null && id.Type().isFparameter())
             return null;
         
         // get reference outside block.
         String local_name = OMPtransPragma.SHARE_VAR_PREFIX + id.getName();
+        OMP.debug(local_name);
         if(i.id_list.hasIdent(local_name))
             return i.id_list.getIdent(local_name).Ref();
         
@@ -492,7 +497,8 @@ public class OMPinfo
                     t = torg;
                 } else {
                     t = torg.copy();
-                    t.setIsFtarget(true);
+//                    t.setIsFtarget(true);
+                    t.unsetIsFtarget();
                     t.setIsFparameter(false);
                     t.unsetIsFsave();
                     if(t.isFarray()) {
@@ -512,12 +518,14 @@ public class OMPinfo
 
         i.id_list.add(id_local);
         i.addRegionParam(id_local);
-
+        
+        
         return id_local.Ref();
     }
     
     private void addRegionVarInExpr(Xobject x, Block b, OMPinfo i)
     {
+        OMP.debug("addRegionVarInExpr");
         if(x == null)
             return;
         topdownXobjectIterator ite = new topdownXobjectIterator(x);
@@ -544,9 +552,10 @@ public class OMPinfo
     
     void declOMPVarsInType(XobjList names)
     {
+        OMP.debug("addRegionVarInType");
         OMPinfo i = null;
         Block b = null;
-        
+
         for(b = block; b != null; b = b.getParentBlock()) {
             // if declared as local variable, reference it.
             i = (OMPinfo)b.getProp(OMP.prop);
@@ -582,6 +591,7 @@ public class OMPinfo
 
     OMPvar declThreadPrivate(Ident id)
     {
+        OMP.debug("declThreadPrivate");
         for(OMPvar v : varlist)
             if(v.id == id)
                 return v;
@@ -636,6 +646,7 @@ public class OMPinfo
 
     OMPvar declCopyinThreadPrivate(OMPvar thdprv_var)
     {
+        OMP.debug("declCopyinThreadPrivate");
         OMPvar v = new OMPvar(thdprv_var.id, OMPpragma.DATA_COPYIN);
         v.setPrivateAddr(thdprv_var.getPrivateAddr());
         v.setSharedAddr(thdprv_var.getSharedAddr());
@@ -656,6 +667,8 @@ public class OMPinfo
     
     static OMPvar findOMPvarRecurse(Block b, String name)
     {
+        OMP.debug("findOMPvarRecurse");
+
         OMPinfo i;
         OMPvar v;
         
@@ -675,11 +688,13 @@ public class OMPinfo
     // reference OMPvar in 'block'
     static OMPvar refOMPvar(Block b, String name)
     {
+        OMP.debug("refOMPvar"+name);
         return refOMPvar(b, name, null);
     }
     
     private static OMPvar refOMPvar(Block b, String name, OMPpragma override_default)
     {
+        OMP.debug("refOMPvar");
         OMPinfo i;
         OMPvar v;
         Ident id;
@@ -694,6 +709,7 @@ public class OMPinfo
                 
             switch(i.pragma) {
             case PARALLEL:
+            case TASK:
                 /* not found, then declare variable as default attribute */
                 if((id = i.env.findThreadPrivate(b, name)) != null)
                     return i.declThreadPrivate(id);
@@ -738,6 +754,7 @@ public class OMPinfo
 
     static OMPvar findOMPvarBySharedOrPrivate(Block b, String name)
     {
+        OMP.debug("findOMPvarBySharedOrPrivate");
         if(name.startsWith(OMPtransPragma.LOCAL_VAR_PREFIX)) {
             return findOMPvarRecurse(b, name.substring(OMPtransPragma.LOCAL_VAR_PREFIX.length()));
         } else if(name.startsWith(OMPtransPragma.SHARE_VAR_PREFIX)) {
@@ -748,6 +765,7 @@ public class OMPinfo
     
     static Xobject refOMPvarExpr(Block b, Xobject x)
     {
+        OMP.debug("refOMPvarExpr");
         OMPvar v;
         if(x == null)
             return null;
@@ -772,6 +790,7 @@ public class OMPinfo
 
     void setSchedule(Xobject sched_arg)
     {
+        OMP.debug("setSchedule");
         if(sched_arg == null)
             return; // for error recovery
 
@@ -792,6 +811,7 @@ public class OMPinfo
 
     void setIfExpr(Xobject cond)
     {
+        OMP.debug("setIfExpr");
         if_expr = refOMPvarExpr(block.getParentBlock(), cond);
         if(XmOption.isLanguageC() && !if_expr.Type().isIntegral())
             if_expr = Xcons.Cast(Xtype.intType, if_expr);
@@ -799,8 +819,19 @@ public class OMPinfo
             System.out.println("parallel if = " + if_expr);
     }
 
+    void setFinalExpr(Xobject cond)
+    {
+        OMP.debug("setFinalExpr");
+        final_expr = refOMPvarExpr(block.getParentBlock(), cond);
+        if(XmOption.isLanguageC() && !final_expr.Type().isIntegral())
+            final_expr = Xcons.Cast(Xtype.intType, final_expr);
+        if(OMP.debugFlag)
+            System.out.println("task final = " + final_expr);
+    }
+
     void setFlushVars(Xobject list)
     {
+        OMP.debug("setFlushVars");
         // list is list of IDENT
         if(list == null)
             return;
@@ -856,6 +887,7 @@ public class OMPinfo
 
     OMPinfo findContext(OMPpragma pragma)
     {
+        OMP.debug("findContext");
         for(OMPinfo i = this.parent; i != null; i = i.parent)
             if(i.pragma == pragma)
                 return i;
@@ -864,6 +896,7 @@ public class OMPinfo
 
     OMPinfo findContext(OMPpragma pragma, Xobject arg)
     {
+        OMP.debug("findContext");
         for(OMPinfo i = this.parent; i != null; i = i.parent)
             if(i.pragma == pragma && i.arg == arg)
                 return i;
@@ -872,81 +905,109 @@ public class OMPinfo
 
     public List<Xobject> getRegionArgs()
     {
+        OMP.debug("getRegionArgs");
         return region_args;
     }
     
     private void addRegionArg(Xobject x)
     {
+        OMP.debug("getRegionArg");
         region_args.add(x);
     }
     
     public List<Ident> getRegionParams()
     {
+        OMP.debug("getRegionParams");
         return region_params;
     }
     
     private void addRegionParam(Ident id)
     {
+        OMP.debug("addRegionParam"+id.toString());
         region_params.add(id);
     }
 
     public boolean hasIfExpr()
     {
+        OMP.debug("hasIfExpr");
         return if_expr != null;
     }
     
     public Xobject getIfExpr()
     {
+        OMP.debug("getIfExpr");
         return if_expr;
+    }
+
+    public boolean hasFinalExpr()
+    {
+        OMP.debug("hasFinalExpr");
+        return final_expr != null;
+    }
+    
+    public Xobject getFinalExpr()
+    {
+        OMP.debug("getFinalExpr");
+        return final_expr;
     }
 
     public Xobject getIdList()
     {
+        OMP.debug("getIdList");
         return id_list;
     }
     
     public List<OMPvar> getThdPrvVarList()
     {
+        OMP.debug("getThdPrvVarList");
         return thdprv_varlist;
     }
     
     private void addThdPrvVar(OMPvar var)
     {
+        OMP.debug("addThdPrvVar");
         thdprv_varlist.add(var);
     }
 
     public OMPpragma getSched()
     {
+        OMP.debug("getSched");
         return sched;
     }
 
     public void setSchedChunk(Xobject new_chunk)
     {
+        OMP.debug("setSchedChunk");
         sched_chunk = new_chunk;
     }
 
     public Xobject getSchedChunk()
     {
+        OMP.debug("getSchedChunk");
         return sched_chunk;
     }
 
     public boolean isOrdered()
     {
+        OMP.debug("isOrdered");
         return ordered;
     }
 
     public boolean isNoWait()
     {
+        OMP.debug("isNoWait");
         return no_wait;
     }
     
     public Xobject getNumThreads()
     {
+        OMP.debug("getNumThreads");
         return num_threads;
     }
     
     public boolean hasCopyPrivate()
     {
+        OMP.debug("hasCopyPrivate");
         for(OMPvar v : varlist) {
             if(v.is_copy_private)
                 return true;
@@ -956,6 +1017,7 @@ public class OMPinfo
     
     public Xobject getThreadNumVar()
     {
+        OMP.debug("getThreadNumVar");
         if(thdnum_var == null) {
             thdnum_var = Ident.Fident(OMPtransPragma.THDNUM_VAR, Xtype.FintType).getAddr();
         }

@@ -3,10 +3,10 @@ Section: devel
 Priority: extra
 Maintainer: Hitoshi Murai <h-murai@riken.jp>
 Build-Depends:
-Standards-Version: 0.9.1
+Standards-Version: 0.9.2
 Homepage: http://omni-compiler.org/
 
 Package: omni-compiler
 Architecture: amd64
 Depends: ${shlibs:Depends}, ${misc:Depends}, openjdk-7-jdk, libopenmpi-dev, openmpi-bin, gfortran
-Description: Omni OpenMP/XcalableMP/OpenACC Compilers
+Description: Omni Compiler

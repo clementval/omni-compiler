@@ -39,7 +39,7 @@ ENABLE_TLOG=false
 #  obj_files="c.o"                  # Object files
 #  other_args="-I/usr/lib"          # Options for Preprocessor, Compiler, and Linker
 # 
-#  Note that "-omp" is extracted by xmpcc_set_parameters, and set "ENABLE_OPENMP".
+#  Note that "-omp" is extracted by xmpcc_set_parameters(), and set "ENABLE_OPENMP".
 #
 # To deal with space-separator in options, the following variables are defined as an array (#278)
 output_file=()
@@ -82,7 +82,7 @@ for c_file in "${c_files[@]}"; do
 
     # When ">" or ">>" is used, please use "omni_exec_echo" and "omni_exec_run" instead of "omni_exec".
     omni_exec_echo $OMNI_CPP_CMD $OMNI_CPP_OPT "${pp_add_opt[@]}" "${other_args[@]}" "${FILE_PP_C}" ">" "${FILE_PP_I}"
-    omni_exec_run  $OMNI_CPP_CMD $OMNI_CPP_OPT "${pp_add_opt[@]}" "${other_args[@]}" "${FILE_PP_C}" > "${FILE_PP_I}"
+    [ $DRY_RUN = false ] && omni_exec_run  $OMNI_CPP_CMD $OMNI_CPP_OPT "${pp_add_opt[@]}" "${other_args[@]}" "${FILE_PP_C}" > "${FILE_PP_I}"
     # AIX compiler cannot output file with ".i" suffix. So, ">" is used.
 
     if [ $ONLY_PP = true ]; then
@@ -95,7 +95,7 @@ for c_file in "${c_files[@]}"; do
     fi
 done
 [ $STOP_PP = true ] && exit 0;
-[ $ONLY_PP = true -a $ENABLE_DEBUG = true ] && exit 0;            # xmpcc -E --debug hoge.c (save $TMP_DIR)
+[ $ONLY_PP = true -a $ENABLE_DEBUG = true ] && exit 0;          # xmpcc -E --debug hoge.c (save $TEMP_DIR)
 [ $ONLY_PP = true ] && { omni_exec rm -rf $TEMP_DIR; exit 0; }  # xmpcc -E hoge.c
 
 ### Frontend ###
@@ -143,7 +143,8 @@ fi
 [ $STOP_BACKEND = true ] && exit 0;
 
 ### Native Compiler ###
-[ $ENABLE_OPENMP = true ] && OMNI_MPICC_OPT="$OPENMP_OPT $OMNI_MPICC_OPT"
+[ $ENABLE_OPENMP = true ] && OMNI_MPICC_OPT="$OPENMP_OPT_C $OMNI_MPICC_OPT"
+[ $ENABLE_SCALASCA_ALL = true -o $ENABLE_SCALASCA = true ] && OMNI_MPICC_CMD="scalasca -instrument -user $OMNI_MPICC_CMD"
 for c_file in "${c_files[@]}"; do
     C_FILE=("${c_file}")
     FILE_NAME=`omni_c_norm_file_name "${C_FILE}"`     # ./hoge/fuga.c -> hoge_2f_fuga_2f_a
@@ -184,17 +185,26 @@ for c_file in "${c_files[@]}"; do
 done
 TRAVERSE_FILE_C=${TEMP_DIR}/omni_traverse_${PID}.c
 TRAVERSE_FILE_O=${TEMP_DIR}/omni_traverse_${PID}.o
-omni_exec $OMNI_TRAVERSE  --C --prefix xmpc -o $TRAVERSE_FILE_C "${obj_files[@]}"
+OMNI_TRAVERSE_OPT="--C --nm ${NM}"
+[ "${NM_OPT}" != "" ] && OMNI_TRAVERSE_OPT="${OMNI_TRAVERSE_OPT} --nm_opt ${NM_OPT}"
+[ "${TARGET}" = "powerpc-hitachi-aix" ] && OMNI_TRAVERSE_OPT="${OMNI_TRAVERSE_OPT} --sr"
+[ $ENABLE_XACC = true ] && OMNI_TRAVERSE_XACC_OPT="${OMNI_TRAVERSE_OPT} --prefix acc"
+OMNI_TRAVERSE_OPT="${OMNI_TRAVERSE_OPT} --prefix xmpc"
+omni_exec $OMNI_TRAVERSE $OMNI_TRAVERSE_OPT -o $TRAVERSE_FILE_C "${obj_files[@]}"
+
 omni_exec $OMNI_MPICC_CMD -c $TRAVERSE_FILE_C -o $TRAVERSE_FILE_O
+
+# omni_traverse for XACC
 if [ $ENABLE_XACC = true ]; then
     TRAVERSE_FILE_XACC_C=${TEMP_DIR}/omni_traverse_xacc_${PID}.c
     TRAVERSE_FILE_XACC_O=${TEMP_DIR}/omni_traverse_xacc_${PID}.o
-    omni_exec $OMNI_TRAVERSE --C --prefix acc -o $TRAVERSE_FILE_XACC_C "${obj_files[@]}"
+    omni_exec $OMNI_TRAVERSE $OMNI_TRAVERSE_XACC_OPT -o $TRAVERSE_FILE_XACC_C "${obj_files[@]}"
     omni_exec $OMNI_MPICC_CMD -c $TRAVERSE_FILE_XACC_C -o $TRAVERSE_FILE_XACC_O
 fi
 
 # link
-[ $ENABLE_TLOG_ALL = true -o $ENABLE_TLOG = true ] && OMNI_CX2X_OPT="-ltlog_mpi $OMNI_CX2X_OPT"
+[ $ENABLE_SCALASCA_ALL = true -o $ENABLE_SCALASCA = true ] && OMNI_LINKER_CMD="scalasca -instrument -user $OMNI_LINKER_CMD"
+[ $ENABLE_TLOG_ALL = true -o $ENABLE_TLOG = true ] && OMNI_LINKER_OPT="-ltlog_mpi $OMNI_LINKER_OPT"
 [ "${output_file}" != "" ] && other_args+=("-o" "${output_file}")
 obj_files+=("$TRAVERSE_FILE_O")
 if [ $ENABLE_XACC = true ]; then
