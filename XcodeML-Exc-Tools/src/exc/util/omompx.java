@@ -12,6 +12,7 @@ import java.util.List;
 
 import exc.object.XobjectFile;
 
+import exc.openacc.ACC;
 import exc.openacc.AccTranslator;
 import exc.openmp.OMP;
 import exc.openmp.OMPtranslate;
@@ -204,8 +205,11 @@ public class omompx
       } else if (arg.startsWith("-max_assumed_shape=")) {
 	  String n = arg.substring(19);
 	  exc.xmpF.XMP.MAX_ASSUMED_SHAPE = Integer.parseInt(n);
-      } else if (arg.equals("-no-ldg")){
+      } else if (arg.equals("-no-ldg")) {
         exc.openacc.ACC.useReadOnlyDataCache = false;
+      } else if (arg.startsWith("-default-veclen=")){
+        String n = arg.substring("-default-veclen=".length());
+        ACC.defaultVectorLength = Integer.parseInt(n);
       } else if(arg.startsWith("-")){
         error("unknown option " + arg);
       } else if(inXmlFile == null) {
@@ -351,11 +355,17 @@ public class omompx
       xobjFile.iterateDef(caf_translator0);
       if(exc.xmpF.XMP.hasErrors())
         System.exit(1);
+      Boolean containsCoarray = caf_translator0.containsCoarray();
+      caf_translator0.finish();
 
-      if (caf_translator0.containsCoarray()) {
+      Boolean cascadeMode = "1".equals(System.getenv("XMP_CASCADE"));
+      Boolean onlyCafMode = "1".equals(System.getenv("XMP_ONLYCAF"));
 
-        //XMP.warning("translating coarray features");
-
+      if (containsCoarray || cascadeMode || onlyCafMode) {
+        if (cascadeMode || onlyCafMode) {
+          System.out.println("Translating CAF Program File: " +
+                             xobjFile.getSourceFileName());
+        }
         // Coarray Fortran pass#1
         exc.xmpF.XMPtransCoarray
           caf_translator1 = new exc.xmpF.XMPtransCoarray(xobjFile, 1);
@@ -371,8 +381,13 @@ public class omompx
         if(exc.xmpF.XMP.hasErrors())
           System.exit(1);
         caf_translator2.finish();
-      } else {    // without coarray features
+      }
 
+      if ((!containsCoarray || cascadeMode) && !onlyCafMode) {
+        if (cascadeMode) {
+          System.out.println("Translating XMP/F Program File: " +
+                             xobjFile.getSourceFileName());
+        }
         // XMP Fortran
         exc.xmpF.XMPtranslate
           xmp_translator = new exc.xmpF.XMPtranslate(xobjFile);
@@ -380,7 +395,6 @@ public class omompx
         if(exc.xmpF.XMP.hasErrors())
           System.exit(1);
         xmp_translator.finish();
-
       }
 
       if(xcodeWriter != null) {

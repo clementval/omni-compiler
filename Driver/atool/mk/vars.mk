@@ -5,11 +5,11 @@ TARGET_ARCH	= POSIX
 SHELL		= /bin/bash
 VPATH		= .
 srcdir		= .
-TOPDIR		= /home/mnakao/omni-compiler
+TOPDIR		= /tmp/omnicompiler-0.9.3
 top_builddir	?= $(TOPDIR)
-MKRULESDIR	= /home/mnakao/omni-compiler/Driver/atool/mk
+MKRULESDIR	= /tmp/omnicompiler-0.9.3/Driver/atool/mk
 
-PREFIX		= /home/mnakao/work/xmp-trunk
+PREFIX		= /usr/local
 DEST_EXEDIR	= $(PREFIX)/bin
 DEST_LIBDIR	= $(PREFIX)/lib
 DEST_HDRDIR_TOP	= $(PREFIX)/include

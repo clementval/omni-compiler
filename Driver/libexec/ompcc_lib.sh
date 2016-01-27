@@ -33,8 +33,9 @@ Process Options
 
 Omni OpenACC Options
 
-  -acc, --openacc : Enable OpenACC.
-  --no-ldg        : Disable use of read-only data cache.
+  -acc, --openacc         : Enable OpenACC.
+  --no-ldg                : Disable use of read-only data cache.
+  --default-veclen=LENGTH : Specify default vector length (default: 256)
 EOF
 }
 
@@ -51,8 +52,15 @@ function ompcc_show_env()
     fi
 }
 
+function get_target()
+{
+    DIR=$(cd $(dirname $0); pwd)
+    grep TARGET $DIR/../etc/xmpcc.conf | sed 's/TARGET=//' | sed "s/\"//g"
+}
+
 function ompcc_set_parameters()
 {
+    target=`get_target`
     while [ -n "$1" ]; do
         case "$1" in
             *.c)
@@ -62,11 +70,16 @@ function ompcc_set_parameters()
             *.o)
                 obj_files+=("$1");;
             -o)
-                shift; output_file=("$1");;
+		shift;
+		output_file=("$1");;
             -c)
 		ENABLE_LINKER=false;;
 	    -E)
 		ONLY_PP=true;;
+	    -D?*)
+		define_opts+=("$1");;
+	    -l?*)
+		lib_args+=("$1");;
             -v|--verbose)
 		VERBOSE=true;;
 	    --version)
@@ -108,6 +121,8 @@ function ompcc_set_parameters()
 		ENABLE_ACC=true;;
 	    --no-ldg)
 		DISABLE_LDG=true;;
+	    --default-veclen=*)
+		DEFAULT_VECLEN="${1#--default-veclen=}";;
             *)
 		other_args+=("$1");;
 	esac

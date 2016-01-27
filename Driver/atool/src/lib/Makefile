@@ -1,7 +1,7 @@
 # $Id: Makefile.in 86 2012-07-30 05:33:07Z m-hirano $
 
-TOPDIR		= /home/mnakao/omni-compiler
-MKRULESDIR	= /home/mnakao/omni-compiler/Driver/atool/mk
+TOPDIR		= /tmp/omnicompiler-0.9.3
+MKRULESDIR	= /tmp/omnicompiler-0.9.3/Driver/atool/mk
 
 include $(MKRULESDIR)/vars.mk
 

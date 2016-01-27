@@ -79,22 +79,22 @@ POST_UNINSTALL = :
 build_triplet = x86_64-unknown-linux-gnu
 host_triplet = x86_64-unknown-linux-gnu
 target_triplet = x86_64-unknown-linux-gnu
-am__append_1 = xmpf_coarray.c xmpf_coarray_wrap.f90 xmpf_coarray_put.c \
-                         xmpf_coarray_get.c xmpf_coarray_lib.c xmpf_coarray_get_wrap.f90 \
-                         xmpf_coarray_alloc.c xmpf_coarray_alloc_wrap.f90 \
-                         xmpf_coarray_reduction.F90
-
-am__append_2 = -D_XMP_GASNET
-#am__append_3 = -WF,-D_XMP_GASNET
-am__append_4 = -D_XMP_GASNET
-#am__append_5 = xmpf_coarray.c xmpf_coarray_wrap.f90 xmpf_coarray_put.c \
+#am__append_1 = xmpf_coarray.c xmpf_coarray_wrap.f90 xmpf_coarray_put.c \
 #                         xmpf_coarray_get.c xmpf_coarray_lib.c xmpf_coarray_get_wrap.f90 \
 #                         xmpf_coarray_alloc.c xmpf_coarray_alloc_wrap.f90 \
 #                         xmpf_coarray_reduction.F90
 
-#am__append_6 = -D_XMP_MPI3_ONESIDED
-#am__append_7 = -D_XMP_MPI3_ONESIDED
-#am__append_8 = -D_XMP_MPI3
+#am__append_2 = -D_XMP_GASNET
+##am__append_3 = -WF,-D_XMP_GASNET
+#am__append_4 = -D_XMP_GASNET
+am__append_5 = xmpf_coarray.c xmpf_coarray_wrap.f90 xmpf_coarray_put.c \
+                         xmpf_coarray_get.c xmpf_coarray_lib.c xmpf_coarray_get_wrap.f90 \
+                         xmpf_coarray_alloc.c xmpf_coarray_alloc_wrap.f90 \
+                         xmpf_coarray_reduction.F90
+
+am__append_6 = -D_XMP_MPI3_ONESIDED
+am__append_7 = -D_XMP_MPI3_ONESIDED
+am__append_8 = -D_XMP_MPI3
 #am__append_9 = xmpf_coarray.c xmpf_coarray_wrap.f90 xmpf_coarray_put.c \
 #                         xmpf_coarray_get.c xmpf_coarray_lib.c xmpf_coarray_get_wrap.f90 \
 #                         xmpf_coarray_alloc.c xmpf_coarray_alloc_wrap.f90 \
@@ -157,16 +157,7 @@ am__libxmpf_a_SOURCES_DIST = $(XMPF_INC_DIR)/xmpf_internal.h \
 	xmpf_coarray_lib.c xmpf_coarray_get_wrap.f90 \
 	xmpf_coarray_alloc.c xmpf_coarray_alloc_wrap.f90 \
 	xmpf_coarray_reduction.F90
-am__objects_1 = xmpf_coarray.$(OBJEXT) \
-	xmpf_coarray_wrap.$(OBJEXT) \
-	xmpf_coarray_put.$(OBJEXT) \
-	xmpf_coarray_get.$(OBJEXT) \
-	xmpf_coarray_lib.$(OBJEXT) \
-	xmpf_coarray_get_wrap.$(OBJEXT) \
-	xmpf_coarray_alloc.$(OBJEXT) \
-	xmpf_coarray_alloc_wrap.$(OBJEXT) \
-	xmpf_coarray_reduction.$(OBJEXT)
-#am__objects_2 = xmpf_coarray.$(OBJEXT) \
+#am__objects_1 = xmpf_coarray.$(OBJEXT) \
 #	xmpf_coarray_wrap.$(OBJEXT) \
 #	xmpf_coarray_put.$(OBJEXT) \
 #	xmpf_coarray_get.$(OBJEXT) \
@@ -175,6 +166,15 @@ am__objects_1 = xmpf_coarray.$(OBJEXT) \
 #	xmpf_coarray_alloc.$(OBJEXT) \
 #	xmpf_coarray_alloc_wrap.$(OBJEXT) \
 #	xmpf_coarray_reduction.$(OBJEXT)
+am__objects_2 = xmpf_coarray.$(OBJEXT) \
+	xmpf_coarray_wrap.$(OBJEXT) \
+	xmpf_coarray_put.$(OBJEXT) \
+	xmpf_coarray_get.$(OBJEXT) \
+	xmpf_coarray_lib.$(OBJEXT) \
+	xmpf_coarray_get_wrap.$(OBJEXT) \
+	xmpf_coarray_alloc.$(OBJEXT) \
+	xmpf_coarray_alloc_wrap.$(OBJEXT) \
+	xmpf_coarray_reduction.$(OBJEXT)
 #am__objects_3 = xmpf_coarray.$(OBJEXT) \
 #	xmpf_coarray_wrap.$(OBJEXT) \
 #	xmpf_coarray_put.$(OBJEXT) \
@@ -262,24 +262,23 @@ am__define_uniq_tagged_files = \
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
-ACLOCAL = ${SHELL} /home/mnakao/omni-compiler/buildutils/missing aclocal-1.14
+ACLOCAL = ${SHELL} /tmp/omnicompiler-0.9.3/buildutils/missing aclocal-1.14
 AMTAR = $${TAR-tar}
 AM_DEFAULT_VERBOSITY = 1
 API_FLAVOR = NATA_API_POSIX
 AR = ar
 ARFLAGS = cru
-AUTOCONF = ${SHELL} /home/mnakao/omni-compiler/buildutils/missing autoconf
-AUTOHEADER = ${SHELL} /home/mnakao/omni-compiler/buildutils/missing autoheader
-AUTOMAKE = ${SHELL} /home/mnakao/omni-compiler/buildutils/missing automake-1.14
+AUTOCONF = ${SHELL} /tmp/omnicompiler-0.9.3/buildutils/missing autoconf
+AUTOHEADER = ${SHELL} /tmp/omnicompiler-0.9.3/buildutils/missing autoheader
+AUTOMAKE = ${SHELL} /tmp/omnicompiler-0.9.3/buildutils/missing automake-1.14
 AWK = mawk
 CC = mpicc
 CCDEPMODE = depmode=none
-CFLAGS = -I$(XMPF_INC_DIR) -I$(XMP_INC_DIR) -O2 -std=gnu99 -Wall -Wpointer-arith -fopenmp -O3 --param max-inline-insns-single=35000 --param inline-unit-growth=10000 --param large-function-growth=200000 -Winline -DGASNET_SEQ -I/home/mnakao/work/GASNet-1.24.2/include -I/home/mnakao/work/GASNet-1.24.2/include/mpi-conduit \
+CFLAGS = -I$(XMPF_INC_DIR) -I$(XMP_INC_DIR) -O2 -std=gnu99 -Wall -Wpointer-arith -fopenmp \
 	$(am__append_2) $(am__append_6) $(am__append_8) \
 	$(am__append_10)
 CPP = gcc -E
 CPPFLAGS = -DOMNI_CPU_X86_64 -DOMNI_OS_LINUX -DNDEBUG 
-CPP_OPT = -cpp
 CPU = x86_64
 CPUDEF = NATA_CPU_X86_64
 CXX = g++
@@ -299,7 +298,7 @@ F2C_INT64_FLAGS = -DAllow_TYQUAD
 FC = mpif90
 FCFLAGS = -O2 -fopenmp -ffree-form -fcray-pointer $(am__append_3) \
 	$(am__append_4) $(am__append_7) $(am__append_11)
-GASNET_LIBS = -L/home/mnakao/work/GASNet-1.24.2/lib -lgasnet-mpi-seq -lammpi -lrt -L/usr/lib/gcc/x86_64-linux-gnu/4.9 -lgcc -lm
+GASNET_LIBS = 
 GMP_INCLUDE_DIR = /usr/include
 GMP_LIB_DIR = /usr/lib64
 GPGPU_PREFIX = /usr/local/cuda
@@ -316,8 +315,8 @@ INT_ENUFF_FOR_VOIDP = unsigned long
 JAR = jar
 JAVA = java
 JAVAC = javac
-JAVA_OPT = -Xmx200m -Xms200m
-LDFLAGS =  -O3 --param max-inline-insns-single=35000 --param inline-unit-growth=10000 --param large-function-growth=200000 -Winline -L/home/mnakao/work/GASNet-1.24.2/lib -lgasnet-mpi-seq -lammpi -lrt -L/usr/lib/gcc/x86_64-linux-gnu/4.9 -lgcc -lm
+JAVA_OPT = -Xmx400m -Xms200m
+LDFLAGS = 
 LEX = flex
 LEXLIB = -lfl
 LEX_OUTPUT_ROOT = lex.yy
@@ -328,48 +327,48 @@ LIBXML2_LIB_DIR = /usr/lib
 LTLIBOBJS = 
 MAINT = 
 MAKE = make
-MAKEINFO = ${SHELL} /home/mnakao/omni-compiler/buildutils/missing makeinfo
+MAKEINFO = ${SHELL} /tmp/omnicompiler-0.9.3/buildutils/missing makeinfo
 MKDIR_P = install -m 755 -d
-MKRULESDIR = /home/mnakao/omni-compiler/Driver/atool/mk
+MKRULESDIR = /tmp/omnicompiler-0.9.3/Driver/atool/mk
 MM5TGT = 
 MPFR_INCLUDE_DIR = /usr/include
 MPFR_LIB_DIR = /usr/lib64
 MPI_CC = mpicc
-MPI_CFLAGS = -O2 -std=gnu99 -Wall -Wpointer-arith -fopenmp -O3 --param max-inline-insns-single=35000 --param inline-unit-growth=10000 --param large-function-growth=200000 -Winline -DGASNET_SEQ -I/home/mnakao/work/GASNet-1.24.2/include -I/home/mnakao/work/GASNet-1.24.2/include/mpi-conduit
-MPI_CLIBS =  -O3 --param max-inline-insns-single=35000 --param inline-unit-growth=10000 --param large-function-growth=200000 -Winline -L/home/mnakao/work/GASNet-1.24.2/lib -lgasnet-mpi-seq -lammpi -lrt -L/usr/lib/gcc/x86_64-linux-gnu/4.9 -lgcc -lm
+MPI_CFLAGS = -O2 -std=gnu99 -Wall -Wpointer-arith -fopenmp
+MPI_CLIBS = 
 MPI_CPP = mpicc
 MPI_CPPFLAGS = -E -std=gnu99
 MPI_FC = mpif90
 MPI_FCFLAGS = -O2 -fopenmp
 MPI_FCLIBS = 
 MPI_FPP = mpif90
-MPI_FPPFLAGS = -E
+MPI_FPPFLAGS = -E -cpp
 MPI_MODINC = -J
-MPI_SUBVERSION = 1
-MPI_VERSION = 2
+MPI_SUBVERSION = 0
+MPI_VERSION = 3
 NM = nm
 NM_OPT = 
 OBJEXT = o
 OMNI_C2X_FLAGS = 
 OMNI_F2X_FLAGS = 
-OMNI_F_PP = mpif90 -E
-OMNI_HOME = /home/mnakao/work/xmp-trunk
-OMNI_LNK_CFLAGS = -std=gnu99 -lm -fopenmp  -L/home/mnakao/work/GASNet-1.24.2/lib -lgasnet-mpi-seq -lammpi -lrt -L/usr/lib/gcc/x86_64-linux-gnu/4.9 -lgcc -lm
-OMNI_LNK_FCFLAGS = -ffree-form -fcray-pointer -fopenmp -lgomp  -L/home/mnakao/work/GASNet-1.24.2/lib -lgasnet-mpi-seq -lammpi -lrt -L/usr/lib/gcc/x86_64-linux-gnu/4.9 -lgcc -lm
+OMNI_F_PP = mpif90 -E -cpp
+OMNI_HOME = /usr/local
+OMNI_LNK_CFLAGS = -std=gnu99 -lm -fopenmp 
+OMNI_LNK_FCFLAGS = -ffree-form -fcray-pointer -fopenmp -lgomp 
 OMNI_NTV_CFLAGS = -std=gnu99 -lm
 OMNI_NTV_FCFLAGS = -ffree-form -fcray-pointer
-OMNI_X2X_FLAGS = -gnu
+OMNI_X2X_FLAGS = -gnu -fasync
 OMP_LOCK_TYPE = mutex
 OMP_THREAD_TYPE = pthread
-OM_DRIVER_CONF_DIR = /home/mnakao/work/xmp-trunk/etc
+OM_DRIVER_CONF_DIR = /usr/local/etc
 OM_EXEC_CXX_LINKER = g++
 OM_EXEC_C_COMPILER = mpicc
 OM_EXEC_C_LINKER = mpicc
 OM_EXEC_C_PP = mpicc
 OM_EXEC_F_COMPILER = mpif90
 OM_EXEC_F_LINKER = mpif90
-OM_EXEC_F_PP = mpif90 -E
-ONESIDED_CPPFLAGS = -D_XMP_GASNET
+OM_EXEC_F_PP = mpif90 -E -cpp
+ONESIDED_CPPFLAGS = -D_XMP_MPI3_ONESIDED
 OPENMP_OPT_C = -fopenmp
 OPENMP_OPT_F = -fopenmp
 OS = linux
@@ -382,10 +381,10 @@ OS_LIBS = -lrt -lpthread
 PACKAGE = omni
 PACKAGE_BUGREPORT = h-murai@riken.jp
 PACKAGE_NAME = Omni Compiler
-PACKAGE_STRING = Omni Compiler 0.9.2
+PACKAGE_STRING = Omni Compiler 0.9.3
 PACKAGE_TARNAME = omni
 PACKAGE_URL = 
-PACKAGE_VERSION = 0.9.2
+PACKAGE_VERSION = 0.9.3
 PATH_SEPARATOR = :
 PERL5 = /usr/bin/perl
 POW_LIB = 
@@ -407,33 +406,19 @@ SIZEOF__BOOL = 1
 STRIP = 
 TARGET = x86_64-unknown-linux-gnu
 TARGET_ARCH = POSIX
-TOPDIR = /home/mnakao/omni-compiler
+TOPDIR = /tmp/omnicompiler-0.9.3
 TYPE_INT16 = short
 TYPE_INT32 = int
 TYPE_INT64 = long int
-VERSION = 0.9.2
+VERSION = 0.9.3
 XMPC_DEF = -D_XCALABLEMP
 XMPF_DEF = -D_XCALABLEMP
-XMPPKG_CHANGELOG_DATE = Fri, 27 Nov 2015 17:14:48 +0900
-XMPPKG_GROUP = Development Languages
-XMPPKG_LICENSE = LGPLv2
-XMPPKG_MAINTAINER = Hitoshi Murai <h-murai@riken.jp>
-XMPPKG_NAME = omni-compiler
-XMPPKG_PACKAGER = Hitoshi Murai <h-murai@riken.jp>
-XMPPKG_PREFIX = 
-XMPPKG_PRIORITY = extra
-XMPPKG_RELEASE = r20151127
-XMPPKG_SECTION = devel
-XMPPKG_SUMMARY = Omni Compiler Software
-XMPPKG_URL = http://omni-compiler.org/
-XMPPKG_VENDOR = Riken AICS and University of Tsukuba
-XMPPKG_VERSION = 0.9.2
 YACC = byacc
 YFLAGS = 
-abs_builddir = /home/mnakao/omni-compiler/libxmpf/src
-abs_srcdir = /home/mnakao/omni-compiler/libxmpf/src
-abs_top_builddir = /home/mnakao/omni-compiler
-abs_top_srcdir = /home/mnakao/omni-compiler
+abs_builddir = /tmp/omnicompiler-0.9.3/libxmpf/src
+abs_srcdir = /tmp/omnicompiler-0.9.3/libxmpf/src
+abs_top_builddir = /tmp/omnicompiler-0.9.3
+abs_top_srcdir = /tmp/omnicompiler-0.9.3
 ac_ct_CC = gcc
 ac_ct_CXX = g++
 ac_ct_FC = gfortran
@@ -466,7 +451,7 @@ host_vendor = unknown
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /home/mnakao/omni-compiler/buildutils/install-sh
+install_sh = ${SHELL} /tmp/omnicompiler-0.9.3/buildutils/install-sh
 javadir = ${prefix}/share/xcalablemp
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
@@ -475,18 +460,18 @@ localstatedir = ${prefix}/var
 mandir = ${datarootdir}/man
 mkdir_p = $(MKDIR_P)
 oldincludedir = /usr/include
-omniBinDir = /home/mnakao/work/xmp-trunk/bin/
-omniDir = /home/mnakao/work/xmp-trunk
-omniEtcDir = /home/mnakao/work/xmp-trunk/etc/
+omniBinDir = /usr/local/bin/
+omniDir = /usr/local
+omniEtcDir = /usr/local/etc/
 omniExpT = int
-omniIncDir = /home/mnakao/work/xmp-trunk/include
-omniLibDir = /home/mnakao/work/xmp-trunk/lib/
+omniIncDir = /usr/local/include
+omniLibDir = /usr/local/lib/
 omniLimbT = int
 omniQPrec = 
 omniQRealFillGap = 
 omniQRealPrecInLimb = 1
 pdfdir = ${docdir}
-prefix = /home/mnakao/work/xmp-trunk
+prefix = /usr/local
 program_transform_name = 
 psdir = ${docdir}
 sbindir = ${exec_prefix}/sbin
@@ -818,7 +803,7 @@ xmpf_main.o: xmpf_main.F90
 	. $< $(TARGET) > $@
 
 %.F90: %.F90.sh
-	. $< > $@
+	. $< $(TARGET) > $@
 
 install-exec-local: xmpf_main.o
 	test -z $(DESTDIR)$(libdir) || $(MKDIR_P) $(DESTDIR)$(libdir)
@@ -828,7 +813,6 @@ clean-local:
 	rm -f *~ *.core core core.*
 	rm -f xmpf_coarray_get_wrap.f90
 	rm -f xmpf_coarray_alloc_wrap.f90
-	rm -f xmpf_coarray_reduction.f90
 	rm -f xmpf_coarray_reduction.F90
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

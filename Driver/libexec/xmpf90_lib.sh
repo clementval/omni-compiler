@@ -57,11 +57,13 @@ function xmpf90_show_env()
 
 function get_target()
 {
-    xmpf90 --show-env | grep TARGET | sed 's/TARGET=//' | sed "s/\"//g"
+    DIR=$(cd $(dirname $0); pwd)
+    grep TARGET $DIR/../etc/xmpf90.conf | sed 's/TARGET=//' | sed "s/\"//g"
 }
 
 function xmpf90_set_parameters()
 {
+    target=`get_target`
     while [ -n "$1" ]; do
         case "$1" in
 	    *.f90|*.f|*.F90|*.F)
@@ -71,37 +73,55 @@ function xmpf90_set_parameters()
 	    *.o)
 		obj_files+=("$1");;
 	    -o)
-                shift; output_file=("$1");;
-	    -J)
+                shift;
+		output_file=("$1");;
+            -J)
 		shift;
 		module_dir=("${1#-J}")
 		module_opt=("-M${module_dir[0]}")
-		target=`get_target`
 		if [ "$target" = "Kcomputer-linux-gnu" -o "$target" = "FX10-linux-gnu" -o "$target" = "FX100-linux-gnu" ]; then
-                    other_args+=("${OMNI_MODINC}${module_dir}")
-                else
-                    other_args+=("${OMNI_MODINC}" "${module_dir}")
-                fi;;
+		    module_dirs+=("${OMNI_MODINC}${module_dir}")
+		elif [ "$target" = "sxace-nec-superux" ]; then
+		    module_dir="${module_dir//\ /\\ }" # replace [space] -> \[space]
+		    include_opt+=("-I" "${module_dir}")
+		    module_dirs=("${OMNI_MODINC}" "${module_dir}")
+		else
+		    module_dirs+=("${OMNI_MODINC}" "${module_dir}")
+		fi;;
 	    -J?*)
 		module_dir=("${1#-J}")
-                module_opt=("-M${module_dir[0]}")
-		target=`get_target`
+		module_opt=("-M${module_dir[0]}")
 		if [ "$target" = "Kcomputer-linux-gnu" -o "$target" = "FX10-linux-gnu" -o "$target" = "FX100-linux-gnu" ]; then
-                    other_args+=("${OMNI_MODINC}${module_dir}")
-                else
-                    other_args+=("${OMNI_MODINC}" "${module_dir}")
+		    module_dirs+=("${OMNI_MODINC}${module_dir}")
+		elif [ "$target" = "sxace-nec-superux" ]; then
+		    tmodule_dir="${module_dir//\ /\\ }" # replace [space] -> \[space]
+		    include_opt+=("-I" "${module_dir}")
+		    module_dirs=("${OMNI_MODINC}" "${module_dir}")
+		else
+		    module_dirs+=("${OMNI_MODINC}" "${module_dir}")
 		fi;;
             -I)
 		shift; 
 		include_opt+=("-I$1")
 		other_args+=("-I$1")
-		module_dir=("${1#-I}")
-		trans_module_opt+=("-M${module_dir[0]}");;
+		tmp_dir=("${1#-I}")
+		trans_module_opt+=("-M${tmp_dir[0]}");;
 	    -I?*)
 		include_opt+=("$1")
 		other_args+=("$1")
-		module_dir=("${1#-I}")
-		trans_module_opt+=("-M${module_dir[0]}");;
+		tmp_dir=("${1#-I}")
+		trans_module_opt+=("-M${tmp_dir[0]}");;
+	    -l?*)
+		lib_args+=("$1");;
+	    -D?*)
+		define_opts+=("$1");;
+	    -ew) # Fix [xmp-bts:475]
+		if [ "$target" = "sxace-nec-superux" ]; then
+		    echo "On SX-ACE, \"-ew\" option cannot be used."
+		    exit 1
+		else
+		    other_args+=("$1")
+		fi;;
             -c)
 		ENABLE_LINKER=false;;
 	    -E)

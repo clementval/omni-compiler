@@ -1,11 +1,9 @@
 #AC_PREREQ(2.60)
 #LT_PREREQ(2.4)
 
-AC_INIT([Omni Compiler], [0.9.2], [h-murai@riken.jp], [omni])
-
+AC_INIT([Omni Compiler], [0.9.3], [h-murai@riken.jp], [omni])
 AC_CONFIG_AUX_DIR([./buildutils])
 AC_CONFIG_MACRO_DIR([./buildutils])
-
 AC_CANONICAL_TARGET
 
 AC_CONFIG_SRCDIR([include/exc_platform.h])
@@ -415,9 +413,6 @@ if test "$target" = "Kcomputer-linux-gnu" -o "$target" = "FX10-linux-gnu" -o "$t
   OPENMP_OPT_C="-Kopenmp"
   OPENMP_OPT_F=$OPENMP_OPT_C
 
-# CPP_OPT
-  CPP_OPT="-Cpp"
-
 # XcalableMP
   XMPC_DEF="-D_XCALABLEMP"
   XMPF_DEF="-D_XCALABLEMP"
@@ -430,7 +425,7 @@ if test "$target" = "Kcomputer-linux-gnu" -o "$target" = "FX10-linux-gnu" -o "$t
 
 # MPI F
   AC_CHECK_PROG([MPI_FC], [mpifrtpx], [mpifrtpx])
-  MPI_FPPFLAGS="-E"
+  MPI_FPPFLAGS="-E -Cpp"
   MPI_FCFLAGS="-Kfast,openmp"
   MPI_MODINC="-M"
   MPI_FCLIBS=""
@@ -450,18 +445,15 @@ if test "$target" = "Kcomputer-linux-gnu" -o "$target" = "FX10-linux-gnu" -o "$t
   OMNI_X2X_FLAGS=""
 
 # ranlib & ar & nm
-  AC_CHECK_PROG([RANLIB], [ranlibpx], [ranlibpx])
-  AC_CHECK_PROG([AR], [arpx], [arpx])
+  AC_CHECK_PROG([RANLIB], [ranlibpx], [ranlibpx], [ranlib])
+  AC_CHECK_PROG([AR], [arpx], [arpx], [ar])
   ARFLAGS="cru"
-  AC_CHECK_PROG([NM], [nmpx], [nmpx])
+  AC_CHECK_PROG([NM], [nmpx], [nmpx], [nm])
 
 elif test "$target" = "MIC-linux-gnu"; then
 # OpenMP
   OPENMP_OPT_C="-mp"
   OPENMP_OPT_F=$OPENMP_OPT_C
-
-# CPP_OPT
-  CPP_OPT="-cpp"
 
 # XcalableMP
   XMPC_DEF="-D_XCALABLEMP"
@@ -475,7 +467,7 @@ elif test "$target" = "MIC-linux-gnu"; then
 
 # MPI F
   AC_CHECK_PROG([MPI_FC], [mpiifort], [mpiifort])
-  MPI_FPPFLAGS="-E"
+  MPI_FPPFLAGS="-E -cpp"
   MPI_FCFLAGS="-fast $OPENMP_OPT_F"
   MPI_MODINC="-module"
   MPI_FCLIBS=""
@@ -505,9 +497,6 @@ elif test "$target" = "Cray-linux-gnu"; then
   OPENMP_OPT_C="-h omp"
   OPENMP_OPT_F=$OPENMP_OPT_C
 
-# CPP_OPT
-  CPP_OPT="-cpp"
-
 # XcalableMP
   XMPC_DEF="-D_XCALABLEMP"
   XMPF_DEF="-D_XCALABLEMP"
@@ -520,7 +509,7 @@ elif test "$target" = "Cray-linux-gnu"; then
 
 # MPI F
   AC_CHECK_PROG([MPI_FC], [ftn], [ftn])
-  MPI_FPPFLAGS="-E"
+  MPI_FPPFLAGS="-E -cpp"
   MPI_FCFLAGS="-O2 $OPENMP_OPT_F"
   MPI_MODINC="-J"
   MPI_FCLIBS=""
@@ -550,9 +539,6 @@ elif test "$target" = "sxace-nec-superux"; then
   OPENMP_OPT_C="-Popenmp"
   OPENMP_OPT_F=$OPENMP_OPT_C
 
-# CPP_OPT
-  CPP_OPT="-cpp"
-
 # XcalableMP
   XMPC_DEF="-D_XCALABLEMP"
   XMPF_DEF="-D_XCALABLEMP"
@@ -568,7 +554,7 @@ elif test "$target" = "sxace-nec-superux"; then
   AC_CHECK_PROG([MPI_FC], [sxmpif90], [sxmpif90])
   # Fix:[Xmp-dev:5723] [xmp-bts:0432]
   MPI_FPPFLAGS="-P -D__SX__ -D_FLOAT0 -I."
-  MPI_FCFLAGS="-Chopt -f2003 -Wf,-ptr,byte"
+  MPI_FCFLAGS="-Chopt -f2003 -Wf,-ptr,byte -dW"  # Fix: [xmp-bts:0475]
   MPI_MODINC="-to"
   MPI_FCLIBS=""
   KIND_MPI_FORTRAN=other
@@ -580,7 +566,7 @@ elif test "$target" = "sxace-nec-superux"; then
 
 # Omni F
   OMNI_F2X_FLAGS=""
-  OMNI_NTV_FCFLAGS="-f4 -w -f2003 -Wf,-ptr,byte"
+  OMNI_NTV_FCFLAGS="-f4 -w -f2003 -Wf,-ptr,byte -dW" # Fix: [xmp-bts:0475]
   OMNI_LNK_FCFLAGS="$OMNI_NTV_FCFLAGS $OPENMP_OPT_F"
 
 # Omni Common
@@ -599,9 +585,6 @@ elif test "$target" = "sx9-nec-superux"; then
   OPENMP_OPT_C="-Popenmp"
   OPENMP_OPT_F=$OPENMP_OPT_C
 
-# CPP_OPT
-  CPP_OPT="-cpp"
-
 # XcalableMP
   XMPC_DEF="-D_XCALABLEMP"
   XMPF_DEF="-D_XCALABLEMP"
@@ -614,7 +597,7 @@ elif test "$target" = "sx9-nec-superux"; then
 
 # MPI F
   AC_CHECK_PROG([MPI_FC], [sxmpif90], [sxmpif90])
-  MPI_FPPFLAGS="-E"
+  MPI_FPPFLAGS="-E -cpp"
   MPI_FCFLAGS="-Chopt -f2003 $OPENMP_OPT_F -Wf,-ptr,byte"
   MPI_MODINC="-to"
   MPI_FCLIBS=""
@@ -648,9 +631,6 @@ elif test "$target" = "powerpc-ibm-cnk"; then
   OPENMP_OPT_C="-qsmp=omp"
   OPENMP_OPT_F=$OPENMP_OPT_C
 
-# CPP_OPT
-  CPP_OPT="-cpp"
-
 # XcalableMP
   XMPC_DEF="-D_XCALABLEMP"
   XMPF_DEF="-WF,-D_XCALABLEMP"
@@ -677,7 +657,7 @@ elif test "$target" = "powerpc-ibm-cnk"; then
 # MPI F
   AC_CHECK_PROG([MPI_FC], [mpixlf90_r], [mpixlf90_r])
   
-  MPI_FPPFLAGS="-E"
+  MPI_FPPFLAGS="-E -cpp"
   MPI_FCFLAGS="-O3 -qhot -qsimd=auto -q64 -qsource -qlist -qextname $INC_PATH $OPENMP_OPT_F"
   MPI_MODINC="-I"
 
@@ -714,9 +694,6 @@ elif test "$target" = "powerpc-hitachi-aix"; then
   OPENMP_OPT_C="-qsmp=omp"
   OPENMP_OPT_F=$OPENMP_OPT_C
 
-# CPP_OPT
-  CPP_OPT="-cpp"
-
 # XcalableMP
   XMPC_DEF="-D_XCALABLEMP"
   XMPF_DEF="-WF,-D_XCALABLEMP"
@@ -729,7 +706,7 @@ elif test "$target" = "powerpc-hitachi-aix"; then
 
 # MPI F
   AC_CHECK_PROG([MPI_FC], [mpxlf90_r], [mpxlf90_r])
-  MPI_FPPFLAGS="-E"
+  MPI_FPPFLAGS="-E -cpp"
   MPI_FCFLAGS="-q64 -qhot -qsimd=auto -O5 -qextname $OPENMP_OPT_F"
   MPI_MODINC="-I"
   MPI_FCLIBS=""
@@ -771,9 +748,6 @@ else
     # OpenMP
     OPENMP_OPT_C="-fopenmp"
 
-    # CPP_OPT
-    CPP_OPT="-cpp"
-
     # XcalableMP
     XMPC_DEF="-D_XCALABLEMP"
 
@@ -793,9 +767,6 @@ else
   *ICC*)
     # OpenMP
     OPENMP_OPT_C="-openmp"
-
-    # CPP_OPT
-    CPP_OPT="-cpp"
 
     # XcalableMP
     XMPC_DEF="-D_XCALABLEMP"
@@ -825,9 +796,6 @@ else
     pgcc*)
       # OpenMP
       OPENMP_OPT_C="-mp"
-
-      # CPP_OPT
-      CPP_OPT="-Mpreprocess"
 
       # XcalableMP
       XMPC_DEF="-D_XCALABLEMP"
@@ -878,7 +846,7 @@ else
     XMPF_DEF="-D_XCALABLEMP"
 
     # MPI F
-    MPI_FPPFLAGS="-E"
+    MPI_FPPFLAGS="-E -cpp"
     MPI_FCFLAGS="-O2 $OPENMP_OPT_F"
     MPI_MODINC="-J"
     MPI_FCLIBS=""
@@ -897,7 +865,7 @@ else
     XMPF_DEF="-D_XCALABLEMP"
 
     # MPI F
-    MPI_FPPFLAGS="-E"
+    MPI_FPPFLAGS="-E -cpp"
     MPI_FCFLAGS="-O2 $OPENMP_OPT_F"
     MPI_MODINC="-module"
     MPI_FCLIBS=""
@@ -915,14 +883,11 @@ else
       # OpenMP
       OPENMP_OPT_F="-mp"
 
-      # CPP_OPT
-      CPP_OPT="-Mpreprocess"
-
       # XcalableMP
       XMPF_DEF="-D_XCALABLEMP"
 
       # MPI F
-      MPI_FPPFLAGS="-E"
+      MPI_FPPFLAGS="-E -Mpreprocess"
       MPI_FCFLAGS="-fast $OPENMP_OPT_F"
       MPI_MODINC="-module"
       MPI_FCLIBS=""
@@ -1239,6 +1204,8 @@ if test -z ${MPI_CPP}; then
     # Instead of $MPI_CC, $CC (gcc) is used.
     # But, this is not a good idea. Wish to fix the bug.
     MPI_CPP="${CC}"
+  elif test "$target" = "sxace-nec-superux"; then
+    MPI_CPP=sxcpp
   else
     MPI_CPP="${MPI_CC}"
   fi
@@ -1280,9 +1247,6 @@ fi
 # OpenMP
 AC_SUBST(OPENMP_OPT_C)
 AC_SUBST(OPENMP_OPT_F)
-
-# CPP_OPT
-AC_SUBST(CPP_OPT)
 
 # XcalableMP
 AC_SUBST(XMPC_DEF)
@@ -1426,6 +1390,7 @@ fi
 
 #AM_CONDITIONAL(CRAY, test "$target" = "Cray-linux-gnu")
 AM_CONDITIONAL(SUPERUX, test "$target" = "sxace-nec-superux" -o "$target" = "sx9-nec-superux")
+AM_CONDITIONAL(SUPERUX_OR_POWERPC, test "$target" = "powerpc-hitachi-aix" -o "$target" = "sxace-nec-superux" -o "$target" = "sx9-nec-superux")
 
 #AC_SUBST(CRAY)
 #AC_SUBST(SUPERUX)
@@ -1531,8 +1496,8 @@ AC_SUBST(javadir)
 
 # java option
 # Fix: #338
-#JAVA_OPT="-Xmx1024m -Xms1024m"
-JAVA_OPT="-Xmx200m -Xms200m"
+JAVA_OPT="-Xmx400m -Xms200m"
+#JAVA_OPT="-Xmx200m -Xms200m"
 AC_SUBST(JAVA_OPT)
 
 #--------------------------------------------------------------------
@@ -1998,42 +1963,7 @@ AC_SUBST(OM_EXEC_F_LINKER)
 INCLUDECOM=include
 AC_SUBST(INCLUDECOM)
 
-XMPPKG_CONFFILE="./release/package_param.conf"
-
-if test -f "${XMPPKG_CONFFILE}"; then
-  . "${XMPPKG_CONFFILE}"
-else
-  AC_MSG_WARN([a configuration file for packaging is not found.])
-fi
-
-XMPPKG_CHANGELOG_DATE=`date '+%a, %d %b %Y %H:%M:%S %z'`
-
-AC_SUBST(XMPPKG_NAME)
-AC_SUBST(XMPPKG_VERSION)
-AC_SUBST(XMPPKG_SUMMARY)
-AC_SUBST(XMPPKG_LICENSE)
-AC_SUBST(XMPPKG_RELEASE)
-AC_SUBST(XMPPKG_MAINTAINER)
-AC_SUBST(XMPPKG_PREFIX)
-AC_SUBST(XMPPKG_DESCRIPTION)
-AC_SUBST(XMPPKG_URL)
-AC_SUBST(XMPPKG_GROUP)
-AC_SUBST(XMPPKG_PACKAGER)
-AC_SUBST(XMPPKG_VENDOR)
-AC_SUBST(XMPPKG_SECTION)
-AC_SUBST(XMPPKG_PRIORITY)
-AC_SUBST(XMPPKG_CHANGELOG_DATE)
-AM_SUBST_NOTMAKE(XMPPKG_DESCRIPTION)
-
-AC_CONFIG_FILES(
-  Makefile
-  release/debian/changelog
-  release/debian/control
-  release/debian/rules
-  release/xcalablemp.spec
-  release/make_rpm.sh
-  release/make_deb.sh
-)
+AC_CONFIG_FILES(Makefile)
 
 # --------------------------------------------------------------------
 # headers/macros
@@ -2243,7 +2173,7 @@ if test -d .git; then
   which git 1>/dev/null 2>/dev/null
   if test $? -eq 0; then
     VERSION=`git log --date=short --pretty=format:"Last Commit Day:%ad, Hash Value:%h" -1`
-    echo -n Version:${XMPPKG_VERSION}, ${VERSION} > ${VERSIONTXT}
+    echo -n Version:AC_PACKAGE_VERSION, ${VERSION} > ${VERSIONTXT}
   else
     echo -n "This omni compiler was compiled on no-git environment however git clone it." > ${VERSIONTXT}
   fi
