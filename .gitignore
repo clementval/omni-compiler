@@ -55,3 +55,13 @@ libxmpf/include/xmp_coarray_alloc.h
 libxmpf/include/xmp_coarray_get.h
 config.log
 config.status
+
+C-FrontEnd/src/c-exprcode.c
+
+C-FrontEnd/src/c-exprcode.h
+
+C-FrontEnd/src/c-parser.c
+
+C-FrontEnd/src/c-parser.h
+
+C-FrontEnd/src/c-token.c
