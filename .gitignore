@@ -65,3 +65,9 @@ C-FrontEnd/src/c-parser.c
 C-FrontEnd/src/c-parser.h
 
 C-FrontEnd/src/c-token.c
+
+F-FrontEnd/src/F95-parser.c
+
+F-FrontEnd/src/C-exprcode.h
+
+F-FrontEnd/src/C-exprcode.c
