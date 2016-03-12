@@ -259,7 +259,7 @@ exprError1(CExpr *nearExpr)
  * @param ek
  *      error kind
  * @param expr
- *      target node 
+ *      target node
  * @param fmt
  *      error message
  * @param args
@@ -309,7 +309,7 @@ addError0(CErrorKind ek, CExpr *expr, const char *fmt, va_list args)
  * @param expr
  *      taget node
  * @param fmt
- *      error message      
+ *      error message
  * @param ...
  *      argument for error message
  * @return
@@ -334,7 +334,7 @@ addWarn(CExpr *expr, const char *fmt, ...)
  * @param expr
  *      taget node
  * @param fmt
- *      error message      
+ *      error message
  * @param ...
  *      argument for error message
  * @return
@@ -359,7 +359,7 @@ addError(CExpr *expr, const char *fmt, ...)
  * @param expr
  *      taget node
  * @param fmt
- *      error message      
+ *      error message
  * @param ...
  *      argument for error message
  */
@@ -597,11 +597,11 @@ addSymbolAt(CExprOfSymbol *sym, CExpr *parent, CSymbolTable *symTab,
     assertExpr((CExpr*)sym, symTab != NULL);
 
     switch(symType) {
-    case ST_TYPE: 
+    case ST_TYPE:
     case ST_FUNC:
-    case ST_VAR: 
+    case ST_VAR:
     case ST_PARAM:
-    case ST_ENUM: 
+    case ST_ENUM:
         ht = &symTab->stb_identGroup;
         group = STB_IDENT;
         break;
@@ -780,7 +780,7 @@ pushSymbolTableToExpr(CExpr *expr)
         CCOL_DL_CONS(&s_symTabStack, s_defaultSymTab);
         isGlobal = 1;
     }
-    
+
     CSymbolTable *symTab = NULL;
 
     if(expr && EXPR_C(expr)->e_symTab) {
@@ -953,7 +953,7 @@ findSymbolByGroup(const char *symbol, CSymbolTableGroupEnum group)
  * @param group
  *      symbol table group
  * @return
- *      raw symbol table 
+ *      raw symbol table
  */
 CCOL_HashTable*
 getSymbolHashTable(CSymbolTable *symTab, CSymbolTableGroupEnum group)
@@ -990,7 +990,7 @@ findSymbolByGroup0(CSymbolTable *symTab, const char *symbol, CSymbolTableGroupEn
 {
     CCOL_HashTable *ht = getSymbolHashTable(symTab, group);
     CCOL_HashEntry *he;
-    
+
     he = CCOL_HT_FIND_STR(ht, symbol);
 
     if(he != NULL) {
@@ -1404,7 +1404,7 @@ allocExprOfNumberConst(CExprCodeEnum exprCode, CBasicTypeEnum bt,
     }
 
     expr->e_basicType = bt;
-    
+
     const char *cerr = (overRange1 ? CERR_121 : (overRange2 ? CERR_122 : 0));
 
     if(cerr)
@@ -1869,7 +1869,6 @@ allocExprOfList5(CExprCodeEnum exprCode, CExpr *expr1, CExpr *expr2,
   exprListAdd((CExpr*)expr, expr5);
   return expr;
 }
-
 
 /**
  * \brief
@@ -2574,7 +2573,7 @@ exprSetExprsType(CExpr *expr, CExprOfTypeDesc *td)
         EXPR_REF(td);
         CCOL_SL_CONS(&s_exprsTypeDescList, td);
     }
-    
+
     if(td->e_isUsed == 0)
         td->e_isUsed = 1;
 }
@@ -3188,7 +3187,7 @@ getExprOfSymbol(CExpr *expr)
             }
         }
         break;
- 
+
     default:
         break;
     }
@@ -3454,7 +3453,7 @@ skipPointerDeclNode(CCOL_DListNode *declrChildNode, CExpr *declarator, int *numP
     CCOL_DListNode *ite = declrChildNode;
 
     EXPR_FOREACH_FROM(ite, declarator) {
-        CExpr *next = EXPR_L_DATA(ite); 
+        CExpr *next = EXPR_L_DATA(ite);
         if(EXPR_CODE(next) != EC_DECL_SPECS)
             return ite;
 
@@ -3557,7 +3556,7 @@ addFuncDefDeclaratorSymbolInParser(CExpr *declarator)
 void
 addInitDeclSymbolInParser(CExpr *initDecl)
 {
-    assertExprCode(initDecl, EC_INIT_DECL);    
+    assertExprCode(initDecl, EC_INIT_DECL);
 
     CExpr *declr = exprListHeadData(initDecl);
     CExpr *varName = getExprOfSymbol(declr);
@@ -3632,7 +3631,7 @@ hasSymbols(CExpr *expr)
  * \brief
  * judge expr has EC_DECL or EC_DATA_DEF
  *
- * @param expr 
+ * @param expr
  *      target node
  * @return
  *      0:no, 1:yes
@@ -3954,7 +3953,7 @@ isStatementOrLabelOrDeclOrDef(CExpr *expr)
 
 /**
  * \brief
- * set parent node to children nodes of CExprOfUnaryNode, CExprOfBinaryNode, 
+ * set parent node to children nodes of CExprOfUnaryNode, CExprOfBinaryNode,
  * CExprOfList, CExprOfTypeDesc, CExprOfSymbol
  *
  * @param expr
@@ -4280,7 +4279,7 @@ int isCoArrayAssign(CExpr *expr)
  * @param fp
  *      output file pointer
  */
-void 
+void
 printErrors(FILE *fp)
 {
     CCOL_SListNode *nd;
@@ -4320,5 +4319,3 @@ printErrors(FILE *fp)
         fprintf(fp, "%s\n", pe->pe_msg);
     }
 }
-
-
