@@ -58,7 +58,7 @@ public class omompx
   private static void usage()
   {
     final String[] lines = {
-      "arguments: [-xc|-xf] [-l] [-fopenmp] [-f[no]coarray] [-dxcode] [-ddecomp] [-dump]",
+      "arguments: [-xc|-xf] [-l] [-fopenmp] [-f[{no|auto}]coarray] [-dxcode] [-ddecomp] [-dump]",
       "           <input XcodeML file>",
       "           [-o <output reconstructed XcodeML file>]",
       "",
@@ -66,8 +66,9 @@ public class omompx
       "  -xf          process XcodeML/Fortran document.",
       "  -l           suppress line directive in decompiled code.",
       "  -fopenmp     enable OpenMP translation.",
-      "  -fcoarry     enable coarray translation.",
-      "  -fnocoarry   pass without coarray translation (default).",
+      "  -fcoarry[=suboption]  enable coarray translation optionally with a suboption.",
+      "  -fnocoarry   pass without coarray translation (default for C).",
+      "  -fautocoarry enable coarray translation only if any coarray features are used (default, only for Fortran).",
       "  -fatomicio   enable transforming Fortran IO statements to atomic operations.",
       "  -w N         set max columns to N for Fortran source.",
       "  -gnu         decompile for GNU Fortran (default).",
@@ -82,10 +83,10 @@ public class omompx
       "  -dump        output Xcode file and decompiled file to standard output.",
       "  -domp        enable output OpenMP translation debug message.",
       " Profiling Options:",
-      "  -scalasca-all      : output results in scalasca format for all directives.",
-      "  -scalasca          : output results in scalasca format for selected directives.",
-      "  -tlog-all          : output results in tlog format for all directives.",
-      "  -tlog              : output results in tlog format for selected directives.",
+      "  -scalasca-all       : output results in scalasca format for all directives.",
+      "  -scalasca-selective : output results in scalasca format for selected directives.",
+      "  -tlog-all           : output results in tlog format for all directives.",
+      "  -tlog-selective     : output results in tlog format for selected directives.",
       "",
       "  -enable-threads  enable 'threads' clause",
       "  -enable-gpu      enable xmp-dev directive/clauses"
@@ -105,6 +106,8 @@ public class omompx
     boolean openMP = false;
     boolean openACC = false;
     boolean coarray = false;
+    String coarray_suboption = "";
+    boolean autocoarray = true;
     boolean xcalableMP = false;
     boolean xcalableMPthreads = false;
     boolean xcalableMPGPU = false;
@@ -119,6 +122,12 @@ public class omompx
     boolean doTlog = false;
     int maxColumns = 0;
         
+    // environment variable analysis
+    Boolean xmpf_onlyCafMode = "1".equals(System.getenv("XMP_ONLYCAF"));
+    Boolean xmpf_skipCafMode = "1".equals(System.getenv("XMP_SKIPCAF"));
+    //Boolean xmpf_cascadeMode = "1".equals(System.getenv("XMP_CASCADE"));
+    //Boolean xmpf_containsCoarray = false;
+
     for(int i = 0; i < args.length; ++i) {
       String arg = args[i];
       String narg = (i < args.length - 1) ? args[i + 1] : null;
@@ -135,8 +144,14 @@ public class omompx
         openMP = true;
       } else if(arg.equals("-fcoarray")) {
         coarray = true;
+        autocoarray = false;
       } else if(arg.equals("-fnocoarray")) {
         coarray = false;
+        autocoarray = false;
+      } else if(arg.equals("-fautocoarray")) {
+        autocoarray = true;
+      } else if(arg.startsWith("-fcoarray=")) {
+        coarray_suboption += arg.substring(arg.indexOf("=")+1);
       } else if(arg.equals("-facc")) {
         openACC = true; 
       } else if(arg.equals("-fxmp")) {
@@ -180,13 +195,13 @@ public class omompx
         XmOption.setCompilerVendor(XmOption.COMP_VENDOR_GNU);
       } else if(arg.equals("-intel")) {
         XmOption.setCompilerVendor(XmOption.COMP_VENDOR_INTEL);
-      } else if (arg.equals("-scalasca")) {
+      } else if (arg.equals("-scalasca-selective")) {
         selective_profile = true;
         doScalasca = true;
       } else if (arg.equals("-scalasca-all")) {
         all_profile = true;
         doScalasca = true;
-      } else if (arg.equals("-tlog")) {
+      } else if (arg.equals("-tlog-selective")) {
         selective_profile = true;
         doTlog = true;
       } else if (arg.equals("-tlog-all")) {
@@ -347,59 +362,54 @@ public class omompx
       }
     }
 
-    if(xmpf) {  // XcalableMP xmpF translation
+    if (xmpf && xmpf_skipCafMode) {
+      System.out.println("<SKIP-CAF MODE> XMP/F Coarray translator is " +
+                         "bypassed for " + xobjFile.getSourceFileName() + ".");
+    }
 
-      // Error check and light analysis
-      exc.xmpF.XMPtransCoarray
-        caf_translator0 = new exc.xmpF.XMPtransCoarray(xobjFile, 0);
-      xobjFile.iterateDef(caf_translator0);
+    if (xmpf && !xmpf_skipCafMode) {
+
+      // Coarray Fortran pass#1
+      exc.xmpF.XMPtransCoarray caf_translator1 =
+        new exc.xmpF.XMPtransCoarray(xobjFile, 1, coarray_suboption,
+                                     xmpf_onlyCafMode);
+      xobjFile.iterateDef(caf_translator1);
       if(exc.xmpF.XMP.hasErrors())
         System.exit(1);
-      Boolean containsCoarray = caf_translator0.containsCoarray();
-      caf_translator0.finish();
+      caf_translator1.finish();
 
-      Boolean cascadeMode = "1".equals(System.getenv("XMP_CASCADE"));
-      Boolean onlyCafMode = "1".equals(System.getenv("XMP_ONLYCAF"));
-
-      if (containsCoarray || cascadeMode || onlyCafMode) {
-        if (cascadeMode || onlyCafMode) {
-          System.out.println("Translating CAF Program File: " +
-                             xobjFile.getSourceFileName());
-        }
-        // Coarray Fortran pass#1
-        exc.xmpF.XMPtransCoarray
-          caf_translator1 = new exc.xmpF.XMPtransCoarray(xobjFile, 1);
-        xobjFile.iterateDef(caf_translator1);
-        if(exc.xmpF.XMP.hasErrors())
-          System.exit(1);
-        caf_translator1.finish();
-
-        // Coarray Fortran pass#2
-        exc.xmpF.XMPtransCoarray
-          caf_translator2 = new exc.xmpF.XMPtransCoarray(xobjFile, 2);
-        xobjFile.iterateDef(caf_translator2);
-        if(exc.xmpF.XMP.hasErrors())
-          System.exit(1);
-        caf_translator2.finish();
-      }
-
-      if ((!containsCoarray || cascadeMode) && !onlyCafMode) {
-        if (cascadeMode) {
-          System.out.println("Translating XMP/F Program File: " +
-                             xobjFile.getSourceFileName());
-        }
-        // XMP Fortran
-        exc.xmpF.XMPtranslate
-          xmp_translator = new exc.xmpF.XMPtranslate(xobjFile);
-        xobjFile.iterateDef(xmp_translator);
-        if(exc.xmpF.XMP.hasErrors())
-          System.exit(1);
-        xmp_translator.finish();
-      }
+      // Coarray Fortran pass#2
+      exc.xmpF.XMPtransCoarray caf_translator2 =
+        new exc.xmpF.XMPtransCoarray(xobjFile, 2, coarray_suboption,
+                                     xmpf_onlyCafMode);
+      xobjFile.iterateDef(caf_translator2);
+      if(exc.xmpF.XMP.hasErrors())
+        System.exit(1);
+      caf_translator2.finish();
 
       if(xcodeWriter != null) {
-          xobjFile.Output(xcodeWriter);
-          xcodeWriter.flush();
+        xobjFile.Output(xcodeWriter);
+        xcodeWriter.flush();
+      }
+    }
+
+    if (xmpf && xmpf_onlyCafMode) {
+      System.out.println("<ONLY-CAF MODE> XMP/F gloval-view translator is " +
+                         "bypassed for " + xobjFile.getSourceFileName() + ".");
+    }
+
+    if (xmpf && !xmpf_onlyCafMode) {
+      // XMP Fortran
+      exc.xmpF.XMPtranslate
+        xmp_translator = new exc.xmpF.XMPtranslate(xobjFile);
+      xobjFile.iterateDef(xmp_translator);
+      if(exc.xmpF.XMP.hasErrors())
+        System.exit(1);
+      xmp_translator.finish();
+
+      if(xcodeWriter != null) {
+        xobjFile.Output(xcodeWriter);
+        xcodeWriter.flush();
       }
     }
 

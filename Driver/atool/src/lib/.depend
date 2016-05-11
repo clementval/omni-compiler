@@ -1,9 +1,9 @@
 nata_logger.lo: nata_logger.cpp /usr/include/stdc-predef.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_rcsid.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/libnata.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_includes.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_config.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_platform.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_rcsid.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/libnata.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_includes.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_config.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_platform.h \
  /usr/include/inttypes.h /usr/include/features.h \
  /usr/include/x86_64-linux-gnu/sys/cdefs.h \
  /usr/include/x86_64-linux-gnu/bits/wordsize.h \
@@ -93,33 +93,33 @@ nata_logger.lo: nata_logger.cpp /usr/include/stdc-predef.h \
  /usr/lib/gcc/x86_64-linux-gnu/4.9/include/stdbool.h \
  /usr/include/x86_64-linux-gnu/sys/resource.h \
  /usr/include/x86_64-linux-gnu/bits/resource.h /usr/include/regex.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_types.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_macros.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_logger.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_perror.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_safe_syscall.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_util.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_uid.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_sha1.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/Mutex.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/ScopedLock.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/Thread.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_types.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_macros.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_logger.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_perror.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_safe_syscall.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_util.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_uid.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_sha1.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/Mutex.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/ScopedLock.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/Thread.h \
  /usr/include/x86_64-linux-gnu/sys/syscall.h \
  /usr/include/x86_64-linux-gnu/asm/unistd.h \
  /usr/include/x86_64-linux-gnu/asm/unistd_64.h \
  /usr/include/x86_64-linux-gnu/bits/syscall.h \
  /usr/include/x86_64-linux-gnu/sys/prctl.h /usr/include/linux/prctl.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/WaitCondition.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/NanoSecond.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/Statistics.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/WaitCondition.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/NanoSecond.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/Statistics.h \
  /usr/include/syslog.h /usr/include/x86_64-linux-gnu/sys/syslog.h \
  /usr/include/x86_64-linux-gnu/bits/syslog-path.h
 nata_util.lo: nata_util.cpp /usr/include/stdc-predef.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_rcsid.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/libnata.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_includes.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_config.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_platform.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_rcsid.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/libnata.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_includes.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_config.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_platform.h \
  /usr/include/inttypes.h /usr/include/features.h \
  /usr/include/x86_64-linux-gnu/sys/cdefs.h \
  /usr/include/x86_64-linux-gnu/bits/wordsize.h \
@@ -209,20 +209,20 @@ nata_util.lo: nata_util.cpp /usr/include/stdc-predef.h \
  /usr/lib/gcc/x86_64-linux-gnu/4.9/include/stdbool.h \
  /usr/include/x86_64-linux-gnu/sys/resource.h \
  /usr/include/x86_64-linux-gnu/bits/resource.h /usr/include/regex.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_types.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_macros.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_logger.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_perror.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_safe_syscall.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_util.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_uid.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_sha1.h
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_types.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_macros.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_logger.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_perror.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_safe_syscall.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_util.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_uid.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_sha1.h
 nata_uid.lo: nata_uid.cpp /usr/include/stdc-predef.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_rcsid.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/libnata.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_includes.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_config.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_platform.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_rcsid.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/libnata.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_includes.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_config.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_platform.h \
  /usr/include/inttypes.h /usr/include/features.h \
  /usr/include/x86_64-linux-gnu/sys/cdefs.h \
  /usr/include/x86_64-linux-gnu/bits/wordsize.h \
@@ -312,20 +312,20 @@ nata_uid.lo: nata_uid.cpp /usr/include/stdc-predef.h \
  /usr/lib/gcc/x86_64-linux-gnu/4.9/include/stdbool.h \
  /usr/include/x86_64-linux-gnu/sys/resource.h \
  /usr/include/x86_64-linux-gnu/bits/resource.h /usr/include/regex.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_types.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_macros.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_logger.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_perror.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_safe_syscall.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_util.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_uid.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_sha1.h
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_types.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_macros.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_logger.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_perror.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_safe_syscall.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_util.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_uid.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_sha1.h
 nata_sha1.lo: nata_sha1.cpp /usr/include/stdc-predef.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_rcsid.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/libnata.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_includes.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_config.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_platform.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_rcsid.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/libnata.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_includes.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_config.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_platform.h \
  /usr/include/inttypes.h /usr/include/features.h \
  /usr/include/x86_64-linux-gnu/sys/cdefs.h \
  /usr/include/x86_64-linux-gnu/bits/wordsize.h \
@@ -415,19 +415,19 @@ nata_sha1.lo: nata_sha1.cpp /usr/include/stdc-predef.h \
  /usr/lib/gcc/x86_64-linux-gnu/4.9/include/stdbool.h \
  /usr/include/x86_64-linux-gnu/sys/resource.h \
  /usr/include/x86_64-linux-gnu/bits/resource.h /usr/include/regex.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_types.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_macros.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_logger.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_perror.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_safe_syscall.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_util.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_uid.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_sha1.h
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_types.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_macros.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_logger.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_perror.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_safe_syscall.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_util.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_uid.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_sha1.h
 nata_safe_syscall.lo: nata_safe_syscall.cpp /usr/include/stdc-predef.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_rcsid.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_includes.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_config.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_platform.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_rcsid.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_includes.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_config.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_platform.h \
  /usr/include/inttypes.h /usr/include/features.h \
  /usr/include/x86_64-linux-gnu/sys/cdefs.h \
  /usr/include/x86_64-linux-gnu/bits/wordsize.h \
@@ -517,17 +517,17 @@ nata_safe_syscall.lo: nata_safe_syscall.cpp /usr/include/stdc-predef.h \
  /usr/lib/gcc/x86_64-linux-gnu/4.9/include/stdbool.h \
  /usr/include/x86_64-linux-gnu/sys/resource.h \
  /usr/include/x86_64-linux-gnu/bits/resource.h /usr/include/regex.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_types.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_macros.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_logger.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_perror.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_safe_syscall.h
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_types.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_macros.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_logger.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_perror.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_safe_syscall.h
 ProcessJanitor.lo: ProcessJanitor.cpp /usr/include/stdc-predef.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_rcsid.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/libnata.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_includes.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_config.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_platform.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_rcsid.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/libnata.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_includes.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_config.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_platform.h \
  /usr/include/inttypes.h /usr/include/features.h \
  /usr/include/x86_64-linux-gnu/sys/cdefs.h \
  /usr/include/x86_64-linux-gnu/bits/wordsize.h \
@@ -617,28 +617,28 @@ ProcessJanitor.lo: ProcessJanitor.cpp /usr/include/stdc-predef.h \
  /usr/lib/gcc/x86_64-linux-gnu/4.9/include/stdbool.h \
  /usr/include/x86_64-linux-gnu/sys/resource.h \
  /usr/include/x86_64-linux-gnu/bits/resource.h /usr/include/regex.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_types.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_macros.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_logger.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_perror.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_safe_syscall.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_util.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_uid.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_sha1.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/ProcessJanitor.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/Thread.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_types.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_macros.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_logger.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_perror.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_safe_syscall.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_util.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_uid.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_sha1.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/ProcessJanitor.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/Thread.h \
  /usr/include/x86_64-linux-gnu/sys/syscall.h \
  /usr/include/x86_64-linux-gnu/asm/unistd.h \
  /usr/include/x86_64-linux-gnu/asm/unistd_64.h \
  /usr/include/x86_64-linux-gnu/bits/syscall.h \
  /usr/include/x86_64-linux-gnu/sys/prctl.h /usr/include/linux/prctl.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/Mutex.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/WaitCondition.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/NanoSecond.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/ScopedLock.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/Statistics.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/BoundedBlockingQueue.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/BlockingContainer.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/Mutex.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/WaitCondition.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/NanoSecond.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/ScopedLock.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/Statistics.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/BoundedBlockingQueue.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/BlockingContainer.h \
  /usr/include/c++/4.9/queue /usr/include/c++/4.9/deque \
  /usr/include/c++/4.9/bits/stl_algobase.h \
  /usr/include/x86_64-linux-gnu/c++/4.9/bits/c++config.h \
@@ -676,16 +676,16 @@ ProcessJanitor.lo: ProcessJanitor.cpp /usr/include/stdc-predef.h \
  /usr/include/c++/4.9/bits/stl_function.h \
  /usr/include/c++/4.9/backward/binders.h \
  /usr/include/c++/4.9/bits/stl_queue.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/SynchronizedMap.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/SynchronizedMap.h \
  /usr/include/c++/4.9/map /usr/include/c++/4.9/bits/stl_tree.h \
  /usr/include/c++/4.9/bits/stl_map.h \
  /usr/include/c++/4.9/bits/stl_multimap.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/Completion.h
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/Completion.h
 ThreadStatics.lo: ThreadStatics.cpp /usr/include/stdc-predef.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_rcsid.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_includes.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_config.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_platform.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_rcsid.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_includes.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_config.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_platform.h \
  /usr/include/inttypes.h /usr/include/features.h \
  /usr/include/x86_64-linux-gnu/sys/cdefs.h \
  /usr/include/x86_64-linux-gnu/bits/wordsize.h \
@@ -775,16 +775,16 @@ ThreadStatics.lo: ThreadStatics.cpp /usr/include/stdc-predef.h \
  /usr/lib/gcc/x86_64-linux-gnu/4.9/include/stdbool.h \
  /usr/include/x86_64-linux-gnu/sys/resource.h \
  /usr/include/x86_64-linux-gnu/bits/resource.h /usr/include/regex.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_types.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_macros.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_logger.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_perror.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/Mutex.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/WaitCondition.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/NanoSecond.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/ScopedLock.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/Statistics.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/SynchronizedMap.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_types.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_macros.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_logger.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_perror.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/Mutex.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/WaitCondition.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/NanoSecond.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/ScopedLock.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/Statistics.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/SynchronizedMap.h \
  /usr/include/c++/4.9/map /usr/include/c++/4.9/bits/stl_tree.h \
  /usr/include/c++/4.9/bits/stl_algobase.h \
  /usr/include/x86_64-linux-gnu/c++/4.9/bits/c++config.h \
@@ -815,17 +815,17 @@ ThreadStatics.lo: ThreadStatics.cpp /usr/include/stdc-predef.h \
  /usr/include/c++/4.9/bits/stl_map.h \
  /usr/include/c++/4.9/bits/stl_multimap.h \
  /usr/include/c++/4.9/bits/range_access.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/Thread.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/Thread.h \
  /usr/include/x86_64-linux-gnu/sys/syscall.h \
  /usr/include/x86_64-linux-gnu/asm/unistd.h \
  /usr/include/x86_64-linux-gnu/asm/unistd_64.h \
  /usr/include/x86_64-linux-gnu/bits/syscall.h \
  /usr/include/x86_64-linux-gnu/sys/prctl.h /usr/include/linux/prctl.h
 NanoSecondStatics.lo: NanoSecondStatics.cpp /usr/include/stdc-predef.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_rcsid.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_includes.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_config.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_platform.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_rcsid.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_includes.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_config.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_platform.h \
  /usr/include/inttypes.h /usr/include/features.h \
  /usr/include/x86_64-linux-gnu/sys/cdefs.h \
  /usr/include/x86_64-linux-gnu/bits/wordsize.h \
@@ -915,11 +915,11 @@ NanoSecondStatics.lo: NanoSecondStatics.cpp /usr/include/stdc-predef.h \
  /usr/lib/gcc/x86_64-linux-gnu/4.9/include/stdbool.h \
  /usr/include/x86_64-linux-gnu/sys/resource.h \
  /usr/include/x86_64-linux-gnu/bits/resource.h /usr/include/regex.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_types.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_macros.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_logger.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/nata_perror.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/Mutex.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/ScopedLock.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/Statistics.h \
- /tmp/omnicompiler-0.9.3/Driver/atool/src/include/nata/NanoSecond.h
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_types.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_macros.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_logger.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/nata_perror.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/Mutex.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/ScopedLock.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/Statistics.h \
+ /tmp/omnicompiler-1.0.0/Driver/atool/src/include/nata/NanoSecond.h

@@ -5,9 +5,9 @@ TARGET_ARCH	= POSIX
 SHELL		= /bin/bash
 VPATH		= .
 srcdir		= .
-TOPDIR		= /tmp/omnicompiler-0.9.3
+TOPDIR		= /tmp/omnicompiler-1.0.0
 top_builddir	?= $(TOPDIR)
-MKRULESDIR	= /tmp/omnicompiler-0.9.3/Driver/atool/mk
+MKRULESDIR	= /tmp/omnicompiler-1.0.0/Driver/atool/mk
 
 PREFIX		= /usr/local
 DEST_EXEDIR	= $(PREFIX)/bin

@@ -25,7 +25,7 @@ public class XMPtranslate implements XobjectDefVisitor
   XMPrewriteExpr rewriteExpr = new XMPrewriteExpr();
   XMPtransPragma transPragma = new XMPtransPragma();
     
-  final String XMPmainFunc = "xmpf_main";
+  static final String XMPmainFunc = "xmpf_main";
 
   public XMPtranslate() {  }
     
@@ -65,7 +65,7 @@ public class XMPtranslate implements XobjectDefVisitor
     // generate child's ID list
 
     Xobject idList = d.getFuncIdList();
-    Xobject childIdList = Xcons.List();
+    Xobject childIdList = Xcons.List(Xcode.ID_LIST);
 
     for (Xobject k: (XobjList)idList){
       Ident id = (Ident)k;
@@ -218,6 +218,8 @@ public class XMPtranslate implements XobjectDefVisitor
       	newChild = wrap_external(d);
       }
       fd = new FuncDefBlock(d);
+    } else if (d.isBlockData()){
+      return;
     } else 
       XMP.fatal("Fotran: unknown decls");
 
@@ -284,7 +286,7 @@ public class XMPtranslate implements XobjectDefVisitor
 
   private boolean isGeneratedProcedure(XobjectDef d) {
     String name = d.getName();
-    if (name.startsWith("xmpf_traverse_"))
+    if (name != null && name.startsWith("xmpf_traverse_"))
       return true;
 
     return false;

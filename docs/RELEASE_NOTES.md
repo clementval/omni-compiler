@@ -1,5 +1,12 @@
 Omni Compiler Software RELEASE NOTES
 
+# ver. 1.0.0      2016/05/10
+* Support the in and out clauses of the gmove directive.
+* Support xmp_atomic_define()/xmp_atomic_ref() functions.
+* Support max/min loc in reduction directive.
+* Support array section in bcast directive.
+* Fixed lots of bugs.
+
 # ver. 0.9.3      2016/01/25
 * Improve performance of the task directive on a single node.
 * Support a full shadow for multi-dimensional arrays in XMP/F.

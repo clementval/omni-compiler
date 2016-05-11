@@ -1,9 +1,3 @@
-/* 
- * $TSUKUBA_Release: Omni XcalableMP Compiler 3 $
- * $TSUKUBA_Copyright:
- *  PLEASE DESCRIBE LICENSE AGREEMENT HERE
- *  $
- */
 package exc.xmpF;
 
 import exc.object.*;
@@ -47,6 +41,11 @@ public class XMPtransPragma
     BlockList prolog = Bcons.emptyBody();
     BlockList epilog = Bcons.emptyBody();
     buildXMPobjectBlock(prolog, epilog);
+
+    if (def.getDef().getName().equals(XMPtranslate.XMPmainFunc)){
+      Ident f = env.declIdent("xmp_barrier", Xtype.FsubroutineType);
+      epilog.add(f.callSubroutine(Xcons.List()));
+    }
     
     // move OMP_THREADPRIVATE to the head of prolog
     // NOTE: Hereafter any addition of statements to prolog must be done
@@ -139,6 +138,15 @@ public class XMPtransPragma
 	a.buildConstructor(prolog,env);
 	a.buildDestructor(epilog,env);
       }
+      XobjectDef def = env.getCurrentDef().getDef();
+      Xobject id_list = def.getDef().getArg(1);
+      for(Xobject id: (XobjList)id_list){
+        Ident ident = (Ident)id;
+        if (ident.isCoarray()) {
+          XMPcoarray coarray = new XMPcoarray(ident, env);
+          coarray.build_setMappingNodes(prolog);
+        }
+      }
     }
   }
 
@@ -181,6 +189,9 @@ public class XMPtransPragma
       return translateGmove(pb,info);
     case TEMPLATE_FIX:
       return translateTemplateFix(pb, info);
+    case IMAGE:
+      return XMPtransCoarrayRun.translateImageDirective(pb, info);
+
     case ARRAY:
       // should not reaach here.
 
@@ -342,10 +353,15 @@ public class XMPtransPragma
     Ident f, g, h;
 
     f = env.declInternIdent(XMP.reflect_f,Xtype.FsubroutineType);
-
+    
+    if (info.getAsyncId() != null){
+      Xobject arg = Xcons.List(info.getAsyncId());
+      g = env.declInternIdent(XMP.init_async_f, Xtype.FsubroutineType);
+      bb.add(g.callSubroutine(arg));
+    }
+    
     Vector<XMParray> reflectArrays = info.getReflectArrays();
     for(XMParray a: reflectArrays){
-
       for (int i = 0; i < info.widthList.size(); i++){
 	  g = env.declInternIdent(XMP.set_reflect_f,Xtype.FsubroutineType);
 	  XMPdimInfo w = info.widthList.get(i);
@@ -368,6 +384,12 @@ public class XMPtransPragma
       else {
 	  bb.add(f.callSubroutine(Xcons.List(a.getDescId().Ref())));
       }
+    }
+
+    if (info.getAsyncId() != null){
+      Xobject arg = Xcons.List();
+      g = env.declInternIdent(XMP.start_async_f, Xtype.FsubroutineType);
+      bb.add(g.callSubroutine(arg));
     }
 
     return b;
@@ -495,7 +517,8 @@ public class XMPtransPragma
     }
 
     if (info.getAsyncId() != null){
-      Xobject arg = Xcons.List(info.getAsyncId());
+      //      Xobject arg = Xcons.List(info.getAsyncId());
+      Xobject arg = Xcons.List();
       Ident g = env.declInternIdent(XMP.start_async_f, Xtype.FsubroutineType);
       ret_body.add(g.callSubroutine(arg));
     }
@@ -596,7 +619,8 @@ public class XMPtransPragma
     }
 
     if (info.getAsyncId() != null){
-      Xobject arg = Xcons.List(info.getAsyncId());
+      //      Xobject arg = Xcons.List(info.getAsyncId());
+      Xobject arg = Xcons.List();
       Ident g = env.declInternIdent(XMP.start_async_f, Xtype.FsubroutineType);
       ret_body.add(g.callSubroutine(arg));
     }
@@ -729,9 +753,9 @@ public class XMPtransPragma
   private final static int GMOVE_INDEX = 1;
   private final static int GMOVE_RANGE = 2;
   
-  private final static int GMOVE_COLL   = 0;
-  private final static int GMOVE_IN = 1;
-  private final static int GMOVE_OUT = 2;
+  private final static int GMOVE_COLL   = 400;
+  private final static int GMOVE_IN = 401;
+  private final static int GMOVE_OUT = 402;
 
   private Block translateGmove(PragmaBlock pb, XMPinfo i) {
 
@@ -741,6 +765,8 @@ public class XMPtransPragma
     Xobject left = i.getGmoveLeft();
     Xobject right = i.getGmoveRight();
     
+    if (left == null && right == null) return pb.getBody().getHead();
+
     Ident left_desc = buildGmoveDesc(left, bb, pb);
     Ident right_desc = buildGmoveDesc(right, bb, pb);
 
@@ -751,8 +777,9 @@ public class XMPtransPragma
     }
 
     Ident f = env.declInternIdent(XMP.gmove_do_f, Xtype.FsubroutineType);
-    Xobject args = Xcons.List(left_desc.Ref(), right_desc.Ref(),
-			      Xcons.IntConstant(GMOVE_COLL));
+    // Xobject args = Xcons.List(left_desc.Ref(), right_desc.Ref(),
+    // 			      Xcons.IntConstant(GMOVE_COLL));
+    Xobject args = Xcons.List(left_desc.Ref(), right_desc.Ref(), i.getGmoveOpt());
     bb.add(f.callSubroutine(args));
 
     Ident d = env.declInternIdent(XMP.gmove_dealloc_f, Xtype.FsubroutineType);

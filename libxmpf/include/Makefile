@@ -161,15 +161,15 @@ am__define_uniq_tagged_files = \
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
-ACLOCAL = ${SHELL} /tmp/omnicompiler-0.9.3/buildutils/missing aclocal-1.14
+ACLOCAL = ${SHELL} /tmp/omnicompiler-1.0.0/buildutils/missing aclocal-1.14
 AMTAR = $${TAR-tar}
 AM_DEFAULT_VERBOSITY = 1
 API_FLAVOR = NATA_API_POSIX
 AR = ar
 ARFLAGS = cru
-AUTOCONF = ${SHELL} /tmp/omnicompiler-0.9.3/buildutils/missing autoconf
-AUTOHEADER = ${SHELL} /tmp/omnicompiler-0.9.3/buildutils/missing autoheader
-AUTOMAKE = ${SHELL} /tmp/omnicompiler-0.9.3/buildutils/missing automake-1.14
+AUTOCONF = ${SHELL} /tmp/omnicompiler-1.0.0/buildutils/missing autoconf
+AUTOHEADER = ${SHELL} /tmp/omnicompiler-1.0.0/buildutils/missing autoheader
+AUTOMAKE = ${SHELL} /tmp/omnicompiler-1.0.0/buildutils/missing automake-1.14
 AWK = mawk
 CC = gcc
 CCDEPMODE = depmode=none
@@ -178,6 +178,7 @@ CPP = gcc -E
 CPPFLAGS = -DOMNI_CPU_X86_64 -DOMNI_OS_LINUX -DNDEBUG 
 CPU = x86_64
 CPUDEF = NATA_CPU_X86_64
+CUDA_PREFIX = /usr/local/cuda
 CXX = g++
 CXXDEPMODE = depmode=none
 CXXFLAGS = -g -O2
@@ -197,7 +198,6 @@ FCFLAGS = -g -O2
 GASNET_LIBS = 
 GMP_INCLUDE_DIR = /usr/include
 GMP_LIB_DIR = /usr/lib64
-GPGPU_PREFIX = /usr/local/cuda
 GPU_CFLAGS = -arch=sm_20 -O3
 GPU_CMD = nvcc
 GREP = /bin/grep
@@ -211,7 +211,7 @@ INT_ENUFF_FOR_VOIDP = unsigned long
 JAR = jar
 JAVA = java
 JAVAC = javac
-JAVA_OPT = -Xmx400m -Xms200m
+JAVA_OPT = -Xmx1600m -Xms800m
 LDFLAGS = 
 LEX = flex
 LEXLIB = -lfl
@@ -223,9 +223,9 @@ LIBXML2_LIB_DIR = /usr/lib
 LTLIBOBJS = 
 MAINT = 
 MAKE = make
-MAKEINFO = ${SHELL} /tmp/omnicompiler-0.9.3/buildutils/missing makeinfo
+MAKEINFO = ${SHELL} /tmp/omnicompiler-1.0.0/buildutils/missing makeinfo
 MKDIR_P = install -m 755 -d
-MKRULESDIR = /tmp/omnicompiler-0.9.3/Driver/atool/mk
+MKRULESDIR = /tmp/omnicompiler-1.0.0/Driver/atool/mk
 MM5TGT = 
 MPFR_INCLUDE_DIR = /usr/include
 MPFR_LIB_DIR = /usr/lib64
@@ -265,6 +265,7 @@ OM_EXEC_F_COMPILER = mpif90
 OM_EXEC_F_LINKER = mpif90
 OM_EXEC_F_PP = mpif90 -E -cpp
 ONESIDED_CPPFLAGS = -D_XMP_MPI3_ONESIDED
+ONESIDED_LIB = MPI3
 OPENMP_OPT_C = -fopenmp
 OPENMP_OPT_F = -fopenmp
 OS = linux
@@ -277,10 +278,10 @@ OS_LIBS = -lrt -lpthread
 PACKAGE = omni
 PACKAGE_BUGREPORT = h-murai@riken.jp
 PACKAGE_NAME = Omni Compiler
-PACKAGE_STRING = Omni Compiler 0.9.3
+PACKAGE_STRING = Omni Compiler 1.0.0
 PACKAGE_TARNAME = omni
 PACKAGE_URL = 
-PACKAGE_VERSION = 0.9.3
+PACKAGE_VERSION = 1.0.0
 PATH_SEPARATOR = :
 PERL5 = /usr/bin/perl
 POW_LIB = 
@@ -302,19 +303,19 @@ SIZEOF__BOOL = 1
 STRIP = 
 TARGET = x86_64-unknown-linux-gnu
 TARGET_ARCH = POSIX
-TOPDIR = /tmp/omnicompiler-0.9.3
+TOPDIR = /tmp/omnicompiler-1.0.0
 TYPE_INT16 = short
 TYPE_INT32 = int
 TYPE_INT64 = long int
-VERSION = 0.9.3
+VERSION = 1.0.0
 XMPC_DEF = -D_XCALABLEMP
 XMPF_DEF = -D_XCALABLEMP
 YACC = byacc
 YFLAGS = 
-abs_builddir = /tmp/omnicompiler-0.9.3/libxmpf/include
-abs_srcdir = /tmp/omnicompiler-0.9.3/libxmpf/include
-abs_top_builddir = /tmp/omnicompiler-0.9.3
-abs_top_srcdir = /tmp/omnicompiler-0.9.3
+abs_builddir = /tmp/omnicompiler-1.0.0/libxmpf/include
+abs_srcdir = /tmp/omnicompiler-1.0.0/libxmpf/include
+abs_top_builddir = /tmp/omnicompiler-1.0.0
+abs_top_srcdir = /tmp/omnicompiler-1.0.0
 ac_ct_CC = gcc
 ac_ct_CXX = g++
 ac_ct_FC = gfortran
@@ -347,7 +348,7 @@ host_vendor = unknown
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /tmp/omnicompiler-0.9.3/buildutils/install-sh
+install_sh = ${SHELL} /tmp/omnicompiler-1.0.0/buildutils/install-sh
 javadir = ${prefix}/share/xcalablemp
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
@@ -382,7 +383,7 @@ target_vendor = unknown
 top_build_prefix = ../../
 top_builddir = ../..
 top_srcdir = ../..
-include_HEADERS = xmp_lib.h xmp_coarray.h xmp_coarray_get.h xmp_coarray_alloc.h xmp_coarray_reduction.h
+include_HEADERS = xmp_lib.h xmp_coarray.h xmp_coarray_put.h xmp_coarray_get.h xmp_coarray_alloc.h xmp_coarray_reduction.h
 COARRAY_SYNC_H = xmp_coarray_sync.h
 #COARRAY_SYNC_H = xmp_coarray_sync_sxace.h
 all: all-am
@@ -645,6 +646,9 @@ install:
 	$(INSTALL) -m 644 $(COARRAY_SYNC_H) $(includedir)/xmp_coarray_sync.h
 	$(INSTALL) -m 644 $(include_HEADERS) $(includedir)/
 
+xmp_coarray_put.h:  xmp_coarray_put.h.sh
+	. $< $(TARGET) > $@
+
 xmp_coarray_get.h:  xmp_coarray_get.h.sh
 	. $< $(TARGET) > $@
 
@@ -655,6 +659,7 @@ xmp_coarray_reduction.h:  xmp_coarray_reduction.h.sh
 	. $< $(TARGET) > $@
 
 clean-local:
+	rm -f xmp_coarray_put.h
 	rm -f xmp_coarray_get.h
 	rm -f xmp_coarray_alloc.h
 	rm -f xmp_coarray_reduction.h

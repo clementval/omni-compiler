@@ -21,6 +21,7 @@ extern int _XMPF_running;
 #include <stddef.h>
 #include <stdarg.h>
 #include <stdint.h>
+#include <string.h>
 // --------------- macro functions -----------------------------------
 #ifdef DEBUG
 #define _XMP_ASSERT(_flag) \
@@ -58,7 +59,6 @@ extern void (*_xmp_pack_array)(void *buffer, void *src, int array_type, size_t a
 extern void (*_xmp_unpack_array)(void *dst, void *buffer, int array_type, size_t array_type_size,
 				 int array_dim, int *l, int *u, int *s, unsigned long long *d);
 
-
 // ----- libxmp ------------------------------------------------------
 // xmp_align.c
 extern void _XMP_calc_array_dim_elmts(_XMP_array_t *array, int array_index);
@@ -81,8 +81,8 @@ extern void _XMP_align_array_GBLOCK(_XMP_array_t *array, int array_index, int te
 extern void _XMP_init_array_nodes(_XMP_array_t *array);
 extern void _XMP_init_array_comm(_XMP_array_t *array, ...);
 extern void _XMP_init_array_comm2(_XMP_array_t *array, int args[]);
-extern void _XMP_alloc_array(void **array_addr, _XMP_array_t *array_desc, ...);
-extern void _XMP_alloc_array2(void **array_addr, _XMP_array_t *array_desc, unsigned long long *acc[]);
+extern void _XMP_alloc_array(void **array_addr, _XMP_array_t *array_desc, int is_coarray, ...);
+extern void _XMP_alloc_array2(void **array_addr, _XMP_array_t *array_desc, int is_coarray, unsigned long long *acc[]);
 extern void _XMP_dealloc_array(_XMP_array_t *array_desc);
 
 // xmp_array_section.c
@@ -106,7 +106,10 @@ extern void _XMPC_unpack_array(void *dst, void *buffer, int array_type, size_t a
 			       int array_dim, int *l, int *u, int *s, unsigned long long *d);
 
 // xmp_async.c
-_XMP_async_comm_t *_XMP_get_or_create_async(int async_id);
+extern _XMP_async_comm_t *_XMP_get_current_async();
+extern void _XMP_initialize_async_comm_tab();
+extern void _XMP_nodes_dealloc_after_wait_async(_XMP_nodes_t* n);
+extern void xmpc_end_async(int);
 
 // xmp_barrier.c
 extern void _XMP_barrier_NODES_ENTIRE(_XMP_nodes_t *nodes);
@@ -128,9 +131,26 @@ typedef struct _XMP_coarray_list_type {
 extern _XMP_coarray_list_t *_XMP_coarray_list_head;
 extern _XMP_coarray_list_t *_XMP_coarray_list_tail;
 
+#ifdef _XMP_MPI3_ONESIDED
+extern void _XMP_coarray_malloc_info_n(const long*, const int, const size_t);
+extern void _XMP_coarray_malloc_image_info_n(const int*, const int);
+extern void _XMP_coarray_attach(_XMP_coarray_t*, void*, const size_t);
+extern void _XMP_coarray_detach(_XMP_coarray_t*);
+extern void _XMP_coarray_rdma_coarray_set_n(const int, const long[], const long[], const long[]);
+extern void _XMP_coarray_rdma_array_set_1(const long start1, const long length1, const long stride1,
+					  const long elmts1, const long distance1);
+extern void _XMP_coarray_rdma_array_set_n(const int, const long[], const long[], const long[],
+					  const long[], const long[]);
+extern void _XMP_coarray_rdma_image_set_n(const int, const int[]);
+extern void _XMP_coarray_rdma_do(const int, void*, void*, void*);
+extern void _XMP_coarray_rdma_do2(const int rdma_code, void *remote_coarray, void *local_array, void *local_coarray,
+				  const long coarray_elmts[], const long coarray_distance[]);
+#endif
+
 extern void _XMP_onesided_initialize(int, char **);
 extern void _XMP_onesided_finalize(const int);
 extern void _XMP_build_sync_images_table();
+extern void _XMP_sync_images_EXEC(int* status);
 extern void _XMP_build_coarray_queue();
 extern void _XMP_coarray_lastly_deallocate();
 extern void _XMP_set_stride(size_t*, const _XMP_array_section_t*, const int, const size_t, const size_t);
@@ -177,7 +197,8 @@ extern int _XMP_calc_global_index_BCAST(int dst_dim, int *dst_l, int *dst_u, int
 					int *src_l, int *src_u, int *src_s);
 extern void _XMP_gmove_SENDRECV_ARRAY(_XMP_array_t *dst_array, _XMP_array_t *src_array,
 				      int type, size_t type_size, ...);
-extern void _XMP_gmove_array_array_common(_XMP_gmv_desc_t *gmv_desc_leftp, _XMP_gmv_desc_t *gmv_desc_rightp, int *dst_l, int *dst_u, int *dst_s, unsigned long long  *dst_d, int *src_l, int *src_u, int *src_s, unsigned long long *src_d);
+extern void _XMP_gmove_array_array_common(_XMP_gmv_desc_t *gmv_desc_leftp, _XMP_gmv_desc_t *gmv_desc_rightp, int *dst_l, int *dst_u, int *dst_s, unsigned long long  *dst_d, int *src_l, int *src_u, int *src_s, unsigned long long *src_d, int mode);
+extern void _XMP_gmove_inout_scalar(void *scalar, _XMP_gmv_desc_t *gmv_desc, int rdma_type);
 extern unsigned long long _XMP_gtol_calc_offset(_XMP_array_t *a, int g_idx[]);
   //extern void _XMP_gmove_1to1(_XMP_gmv_desc_t *gmv_desc_leftp, _XMP_gmv_desc_t *gmv_desc_rightp);
 
@@ -259,6 +280,7 @@ extern void _XMPF_reduce_FLMM_NODES_ENTIRE(_XMP_nodes_t *nodes,
 					   void *addr, int count, int datatype, int op,
 					   int num_locs, void **loc_vars, int *loc_types);
 extern void _XMP_reduce_CLAUSE(void *data_addr, int count, int datatype, int op);
+extern void xmp_reduce_initialize();
 
 // xmp_reflect.c
 extern void _XMP_set_reflect__(_XMP_array_t *a, int dim, int lwidth, int uwidth,
@@ -281,6 +303,7 @@ extern _XMP_csd_t *intersection_csds(_XMP_csd_t *csd1, _XMP_csd_t *csd2);
 extern _XMP_csd_t *alloc_csd(int n);
 extern void free_csd(_XMP_csd_t *csd);
 extern _XMP_csd_t *copy_csd(_XMP_csd_t *csd);
+extern int get_csd_size(_XMP_csd_t *csd);
 extern void free_comm_set(_XMP_comm_set_t *comm_set);
 extern _XMP_csd_t *rsd2csd(_XMP_rsd_t *rsd);
 extern _XMP_csd_t *bsd2csd(_XMP_bsd_t *bsd);
@@ -324,6 +347,7 @@ extern void _XMP_free(void *p);
 extern void _XMP_fatal(char *msg);
 extern void _XMP_fatal_nomsg();
 extern void _XMP_unexpected_error(void);
+extern void _XMP_warning(char *msg);
 
 // xmp_world.c
 extern int _XMP_world_size;
@@ -334,12 +358,17 @@ extern void _XMP_init_world(int *argc, char ***argv);
 extern void _XMP_finalize_world(void);
 extern int _XMP_split_world_by_color(int color);
 
+
+// xmp_async.c
+extern _Bool xmp_is_async();
+  
 #ifdef _XMP_XACC
 extern void _XMP_reflect_do_gpu(_XMP_array_t *array_desc);
 extern void _XMP_reflect_init_gpu(void *acc_addr, _XMP_array_t *array_desc);
 extern int _XMP_get_owner_pos(_XMP_array_t *a, int dim, int index);
 extern void _XMP_reduce_gpu_NODES_ENTIRE(_XMP_nodes_t *nodes, void *addr, int count, int datatype, int op);
 extern void _XMP_reduce_gpu_CLAUSE(void *data_addr, int count, int datatype, int op);
+extern void _XMP_set_reflect_gpu(_XMP_array_t *a, int dim, int lwidth, int uwidth, int is_periodic);
 #endif
 
 // ----- libxmp_threads ----------------------------------------------
@@ -396,8 +425,10 @@ extern size_t _XMP_calc_max_copy_chunk(const int, const int, const _XMP_array_se
 	gasnet_barrier_wait(0,GASNET_BARRIERFLAG_ANONYMOUS);   \
   } while (0)
 
+
 extern void _XMP_gasnet_malloc_do(_XMP_coarray_t *, void **, const size_t);
 extern void _XMP_gasnet_initialize(int, char**, const size_t, const size_t);
+extern void _XMP_gasnet_intrinsic_initialize();
 extern void _XMP_gasnet_finalize(const int);
 extern void _XMP_gasnet_put(const int, const int, const int, const int, const int, const _XMP_array_section_t*, 
 			    const _XMP_array_section_t*, const _XMP_coarray_t*, const void*, const size_t, const size_t);
@@ -421,10 +452,12 @@ extern void _xmp_gasnet_post_sync_images(const int, const int*);
 extern void _xmp_gasnet_wait_sync_images(const int, const int*);
 extern void _xmp_gasnet_add_notify(gasnet_token_t t, const int);
 extern void _xmp_gasnet_notiy_reply(gasnet_token_t t);
+extern void _XMP_gasnet_atomic_define(int, _XMP_coarray_t*, size_t, int, _XMP_coarray_t*, size_t, size_t);
+extern void _XMP_gasnet_atomic_ref(int, _XMP_coarray_t*, size_t, int*, size_t);
 #endif
 
 #ifdef _XMP_FJRDMA
-#define _XMP_COARRAY_FLAG_NIC (FJMPI_RDMA_LOCAL_NIC0 | FJMPI_RDMA_REMOTE_NIC1 | FJMPI_RDMA_IMMEDIATE_RETURN)
+#define _XMP_COARRAY_FLAG_NIC (FJMPI_RDMA_LOCAL_NIC0 | FJMPI_RDMA_REMOTE_NIC1)
 #define _XMP_COARRAY_SEND_NIC  FJMPI_RDMA_LOCAL_NIC0
 
 #define _XMP_SYNC_IMAGES_FLAG_NIC (FJMPI_RDMA_LOCAL_NIC0 | FJMPI_RDMA_REMOTE_NIC1 | FJMPI_RDMA_REMOTE_NOTICE)
@@ -433,11 +466,14 @@ extern void _xmp_gasnet_notiy_reply(gasnet_token_t t);
 #define _XMP_POSTREQ_NIC_FLAG (FJMPI_RDMA_LOCAL_NIC2 | FJMPI_RDMA_REMOTE_NIC3 | FJMPI_RDMA_REMOTE_NOTICE)
 #define _XMP_POSTREQ_SEND_NIC  FJMPI_RDMA_LOCAL_NIC2
 #define _XMP_POSTREQ_RECV_NIC  FJMPI_RDMA_LOCAL_NIC3
-#define _XMP_TEMP_MEMID     0
-#define _XMP_POSTREQ_ID     1
-#define _XMP_SYNC_IMAGES_ID 2
+#define _XMP_TEMP_MEMID         0
+#define _XMP_POSTREQ_ID         1
+#define _XMP_SYNC_IMAGES_ID     2
+#define _XMP_FJRDMA_START_MEMID 3
 #define _XMP_INIT_RDMA_INTERVAL      8192
 #define _XMP_ONESIDED_MAX_PROCS     82944
+#define _XMP_FJRDMA_TAG         0
+#define _XMP_SYNC_IMAGES_TAG    1
 
 #include <mpi-ext.h>
 extern void _XMP_fjrdma_initialize(int, char**);
@@ -447,6 +483,7 @@ extern void _XMP_fjrdma_sync_all();
 extern void _XMP_fjrdma_sync_images(const int, int*, int*);
 extern void _XMP_fjrdma_build_sync_images_table();
 extern void _XMP_fjrdma_malloc_do(_XMP_coarray_t *, void **, const unsigned long);
+extern void _XMP_fjrdma_regmem_do(_XMP_coarray_t *, void *, const unsigned long);
 extern void _XMP_fjrdma_put(const int, const int, const int, const int, const int, const _XMP_array_section_t *,  
 			    const _XMP_array_section_t *, const _XMP_coarray_t *, const _XMP_coarray_t *, void *,
 			    const size_t, const size_t);
@@ -471,6 +508,12 @@ extern void _XMP_set_coarray_addresses_with_chunk(uint64_t*, const uint64_t, con
 extern int _XMP_is_the_same_constant_stride(const _XMP_array_section_t *, const _XMP_array_section_t *, 
 					    const int, const int);
 extern size_t _XMP_calc_stride(const _XMP_array_section_t *, const int, const size_t);
+extern void _XMP_add_num_of_puts();
+extern void _XMP_add_num_of_gets();
+extern void _XMP_fjrdma_sync_memory_put();
+extern void _XMP_fjrdma_sync_memory_get();
+extern void _XMP_fjrdma_atomic_define(int, _XMP_coarray_t*, size_t, int, _XMP_coarray_t*, size_t, size_t);
+extern void _XMP_fjrdma_atomic_ref(int, _XMP_coarray_t*, size_t, int*, _XMP_coarray_t*, size_t, size_t);
 #endif
 
 #ifdef _XMP_TCA
@@ -543,9 +586,13 @@ void _xmp_mpi_wait(const int node, const int tag);
 void _xmp_mpi_wait_node(const int node);
 void _xmp_mpi_wait_noargs();
 void _XMP_mpi_sync_images(const int num, int *image_set, int *status);
+void _XMP_sync_images_EXEC(int* status);
+void _XMP_sync_images_COMM(MPI_Comm *comm, int* status);
 void _XMP_mpi_build_sync_images_table();
 
 MPI_Win _XMP_mpi_coarray_get_window(const _XMP_coarray_t *desc, bool is_acc);
+void _XMP_mpi_atomic_define(int, _XMP_coarray_t*, size_t, int, size_t);
+void _XMP_mpi_atomic_ref(int, _XMP_coarray_t*, size_t, int*, size_t);
 #endif
 
 #ifdef _XMP_TIMING
@@ -630,6 +677,14 @@ extern void _xmp_gasnet_pack(gasnet_token_t, const char*, const size_t,
 extern void _xmp_gasnet_unpack_get_reply(gasnet_token_t, char *, size_t, const int, const int);
 extern void _XMP_pack_coarray(char*, const char*, const int, const _XMP_array_section_t*);
 extern void _XMP_unpack_coarray(char*, const int, const char*, const _XMP_array_section_t*, const int);
+extern void _xmp_gasnet_atomic_define_do(gasnet_token_t, const char*, const size_t, gasnet_handlerarg_t,
+					 gasnet_handlerarg_t, gasnet_handlerarg_t, gasnet_handlerarg_t);
+extern void _xmp_gasnet_atomic_define_reply_do(gasnet_token_t, gasnet_handlerarg_t, gasnet_handlerarg_t);
+extern void _xmp_gasnet_atomic_ref_do(gasnet_token_t, const size_t, gasnet_handlerarg_t, gasnet_handlerarg_t,
+				      gasnet_handlerarg_t, gasnet_handlerarg_t, gasnet_handlerarg_t,
+				      gasnet_handlerarg_t);
+extern void _xmp_gasnet_atomic_ref_reply_do(gasnet_token_t, int *, size_t, gasnet_handlerarg_t,
+					    gasnet_handlerarg_t, gasnet_handlerarg_t, gasnet_handlerarg_t);
 
 /* Every handler function needs a uniqe number between 200-255.   
  * The Active Message library reserves ID's 1-199 for itself: client libs must
@@ -650,6 +705,11 @@ extern void _XMP_unpack_coarray(char*, const int, const char*, const _XMP_array_
 #define _XMP_GASNET_PACK_GET_HANDLER           212
 #define _XMP_GASNET_UNPACK_GET_REPLY_NONC      213
 #define _XMP_GASNET_ADD_NOTIFY                 214
+#define _XMP_GASNET_ATOMIC_DEFINE_DO           215
+#define _XMP_GASNET_ATOMIC_DEFINE_REPLY_DO     216
+#define _XMP_GASNET_ATOMIC_REF_DO              217
+#define _XMP_GASNET_ATOMIC_REF_REPLY_DO        218
+
 extern void _xmp_gasnet_lock_request(gasnet_token_t, int, uint32_t, uint32_t);
 extern void _xmp_gasnet_setlockstate(gasnet_token_t, int);
 extern void _xmp_gasnet_do_setlockstate(int);
