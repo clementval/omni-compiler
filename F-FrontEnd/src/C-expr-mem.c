@@ -1,4 +1,4 @@
-/*
+/* 
  * $TSUKUBA_Release: Omni OpenMP Compiler 3 $
  * $TSUKUBA_Copyright:
  *  PLEASE DESCRIBE LICENSE AGREEMENT HERE
@@ -57,7 +57,7 @@ find_symbol(const char *name) {
         hcode = (hcode << 1) + *cp;
     }
     hcode &= SYMBOL_HASH_MASK;
-
+    
     for (sp = symbol_hash_table[hcode]; sp != NULL; sp = sp->s_next) {
         if (strcmp(name, sp->s_name) == 0) {
             return sp;
@@ -94,7 +94,7 @@ find_symbol_without_allocate(const char *name) {
         hcode = (hcode << 1) + *cp;
     }
     hcode &= SYMBOL_HASH_MASK;
-
+    
     for (sp = symbol_hash_table[hcode]; sp != NULL; sp = sp->s_next) {
         if (strcmp(name, sp->s_name) == 0) {
             return sp;
@@ -110,7 +110,7 @@ strdup(s)
 {
     char *p;
     int len = strlen(s);
-
+    
     p = XMALLOC(char *, len + 1);
     memcpy(p, s, len);
     p[len] = '\0';
@@ -124,7 +124,7 @@ make_enode(code,v)
      void *v;
 {
     expr ep;
-
+    
     ep = XMALLOC(expr,sizeof(*ep));
     ep->e_code = code;
     ep->e_line = current_line;
@@ -138,7 +138,7 @@ expr make_float_enode(code,d,token)
      const char *token;
 {
     expr ep;
-
+    
     ep = XMALLOC(expr,sizeof(*ep));
     ep->e_code = code;
     ep->e_line = current_line;
@@ -151,7 +151,7 @@ expr make_int_enode(i)
      omllint_t i;
 {
     expr ep;
-
+    
     ep = XMALLOC(expr,sizeof(*ep));
     ep->e_code = INT_CONSTANT;
     ep->e_line = current_line;
@@ -164,7 +164,7 @@ struct list_node *cons_list(x,l)
      struct list_node *l;
 {
     struct list_node *lp;
-
+    
     lp = XMALLOC(struct list_node *,sizeof(struct list_node));
     lp->l_next = l;
     lp->l_item = x;
@@ -214,14 +214,6 @@ expr list5(code,x1,x2,x3,x4,x5)
 {
     return(make_enode(code,(void *)cons_list(x1,cons_list(x2,cons_list(x3,cons_\
 list(x4,cons_list(x5,NULL)))))));
-}
-
-expr list6(code,x1,x2,x3,x4,x5,x6)
-     enum expr_code code;
-     expr x1,x2,x3,x4,x5,x6;
-{
-     return(make_enode(code,(void *)cons_list(x1,cons_list(x2,cons_list(x3,cons_\
-list(x4,cons_list(x5,cons_list(x6,NULL))))))));
 }
 
 expr list_cons(v,w)
@@ -310,3 +302,4 @@ delete_list(expr lx)
 
     free(lx);
 }
+

@@ -41,6 +41,9 @@ public class XMPrewriteExpr {
     XMPlocalDecl.setupConstructor(fb);
     XMPlocalDecl.setupDestructor(fb);
 
+    // add a barrier at the end of the original main
+    if (fb.getName() == "main") addBarrier(fb);
+
     def.Finalize();
   }
 
@@ -135,10 +138,174 @@ public class XMPrewriteExpr {
     else if ((leftExpr.Opcode() == Xcode.CO_ARRAY_REF) || (rightExpr.Opcode() == Xcode.CO_ARRAY_REF)) {
       return rewriteCoarrayAssignExpr(myExpr, exprParentBlock, localXMPsymbolTable, iter);
     }
+    // else if (leftExpr.Opcode() == Xcode.SUB_ARRAY_REF){
+    //   return rewriteSubArrayAssignExpr(myExpr, exprParentBlock);
+    // }
     else {
       return rewriteExpr(myExpr, exprParentBlock);
     }
   }
+
+
+  // private Xobject rewriteSubArrayAssignExpr(Xobject assignStmt, Block b) throws XMPexception {
+
+  //   Xobject left = assignStmt.left();
+
+  //   assert left.Opcode() == Xcode.SUB_ARRAY_REF;
+
+  //   List<Ident> varList = new ArrayList<Ident>(XMP.MAX_DIM);
+  //   List<Ident> varListTemplate = new ArrayList<Ident>(XMP.MAX_DIM);
+  //   for (int i = 0; i < XMP.MAX_DIM; i++) varListTemplate.add(null);
+  //   List<Xobject> lbList = new ArrayList<Xobject>(XMP.MAX_DIM);
+  //   List<Xobject> lenList = new ArrayList<Xobject>(XMP.MAX_DIM);
+  //   List<Xobject> stList = new ArrayList<Xobject>(XMP.MAX_DIM);
+
+  //   //
+  //   // convert LHS
+  //   //
+
+  //   String arrayName = left.getArg(0).getSym();
+
+  //   Xtype arrayType = null;
+  //   Ident arrayId = b.findVarIdent(arrayName);
+  //   if (arrayId != null){
+  //     arrayType = arrayId.Type();
+  //   }
+	
+  //   if (arrayType == null) throw new XMPexception("array should be declared statically");
+
+  //   Xtype elemType = arrayType.getArrayElementType();
+  //   int n = arrayType.getNumDimensions();
+
+  //   XobjList subscripts = (XobjList)left.getArg(1);
+
+  //   for (int i = 0; i < n; i++, arrayType = arrayType.getRef()){
+
+  //     long dimSize = arrayType.getArraySize();
+  //     Xobject sizeExpr;
+  //     if (dimSize == 0 || arrayType.getKind() == Xtype.POINTER){
+  // 	throw new XMPexception("array should be declared statically");
+  //     }
+  //     else if (dimSize == -1){
+  //       sizeExpr = arrayType.getArraySizeExpr();
+  //     }
+  //     else {
+  // 	sizeExpr = Xcons.LongLongConstant(0, dimSize);
+  //     }
+
+  //     Xobject sub = subscripts.getArg(i);
+
+  //     Ident var;
+  //     Xobject lb, len, st;
+
+  //     if (sub.Opcode() != Xcode.LIST) continue;
+
+  //     var = XMPtranslateLocalPragma.declIdentWithBlock(b, "_XMP_loop_i" + Integer.toString(i), Xtype.intType);
+  //     varList.add(var);
+
+  //     lb = ((XobjList)sub).getArg(0);
+  //     if (lb == null) lb = Xcons.IntConstant(0);
+  //     len = ((XobjList)sub).getArg(1);
+  //     if (len == null) len = sizeExpr;
+  //     st = ((XobjList)sub).getArg(2);
+  //     if (st == null) st = Xcons.IntConstant(1);
+
+  //     lbList.add(lb);
+  //     lenList.add(len);
+  //     stList.add(st);
+
+  //     Xobject expr;
+  //     expr = Xcons.binaryOp(Xcode.MUL_EXPR, var.Ref(), st);
+  //     expr = Xcons.binaryOp(Xcode.PLUS_EXPR, expr, lb);
+
+  //     subscripts.setArg(i, expr);
+
+  //   }
+
+  //   Xobject new_left = Xcons.arrayRef(elemType, left.getArg(0), subscripts);
+
+  //   //
+  //   // convert RHS
+  //   //
+
+  //   // NOTE: Since the top level object cannot be replaced, the following conversion is applied to
+  //   //       the whole assignment.
+  //   XobjectIterator j = new topdownXobjectIterator(assignStmt);
+  //   for (j.init(); !j.end(); j.next()) {
+  //     Xobject x = j.getXobject();
+
+  //     if (x.Opcode() != Xcode.SUB_ARRAY_REF) continue;
+
+  //     int k = 0;
+
+  //     String arrayName1 = x.getArg(0).getSym();
+
+  //     XMPalignedArray array1 = _globalDecl.getXMPalignedArray(arrayName1, b);
+  //     Xtype arrayType1 = null;
+  //     if (array1 != null){
+  // 	arrayType1 = array1.getArrayType();
+  //     }
+  //     else {
+  // 	Ident arrayId1 = b.findVarIdent(arrayName1);
+  // 	if (arrayId1 != null){
+  // 	  arrayType1 = arrayId1.Type();
+  // 	}
+  //     }
+	
+  //     if (arrayType1 == null) throw new XMPexception("array should be declared statically");
+
+  //     Xtype elemType1 = arrayType1.getArrayElementType();
+  //     int m = arrayType1.getNumDimensions();
+
+  //     XobjList subscripts1 = (XobjList)x.getArg(1);
+
+  //     for (int i = 0; i < m; i++, arrayType1 = arrayType1.getRef()){
+
+  // 	Xobject sub = subscripts1.getArg(i);
+
+  // 	Ident var;
+  // 	Xobject lb, st;
+
+  // 	if (sub.Opcode() != Xcode.LIST) continue;
+
+  // 	lb = ((XobjList)sub).getArg(0);
+  // 	if (lb == null) lb = Xcons.IntConstant(0);
+  // 	st = ((XobjList)sub).getArg(2);
+  // 	if (st == null) st = Xcons.IntConstant(1);
+
+  // 	Xobject expr;
+  // 	expr = Xcons.binaryOp(Xcode.MUL_EXPR, varList.get(k).Ref(), st);
+  // 	expr = Xcons.binaryOp(Xcode.PLUS_EXPR, expr, lb);
+
+  // 	subscripts1.setArg(i, expr);
+  // 	k++;
+  //     }
+
+  //     Xobject new_x = Xcons.arrayRef(elemType1, x.getArg(0), subscripts1);
+  //     j.setXobject(new_x);
+
+  //   }
+
+  //   //
+  //   // construct loop
+  //   //
+
+  //   BlockList loop = null;
+
+  //   BlockList body = Bcons.emptyBody();
+  //   body.add(Xcons.Set(new_left, assignStmt.right()));
+
+  //   for (int i = varList.size() - 1; i >= 0; i--){
+  //     loop = Bcons.emptyBody();
+  //     loop.add(Bcons.FORall(varList.get(i).Ref(), Xcons.IntConstant(0), lenList.get(i), Xcons.IntConstant(1),
+  // 			    Xcode.LOG_LT_EXPR, body));
+  //     body = loop;
+  //   }
+
+  //   return Bcons.COMPOUND(loop).toXobject();
+
+  // }
+
 
   private Xobject createShortcutCoarray(int imageDims, XobjList imageList, String commkind, 
                                         XMPcoarray dstCoarray, XMPcoarray srcCoarray,
@@ -952,11 +1119,12 @@ public class XMPrewriteExpr {
   }
 
   private boolean isCoarray(Xobject myExpr, Block block){
-    if(myExpr.Opcode() == Xcode.ARRAY_REF || myExpr.Opcode() == Xcode.SUB_ARRAY_REF){
+    if(myExpr.Opcode() == Xcode.ARRAY_REF || myExpr.Opcode() == Xcode.SUB_ARRAY_REF ||
+       myExpr.Opcode() == Xcode.ADDR_OF){
       myExpr = myExpr.getArg(0);
     }
 
-    if(myExpr.Opcode() == Xcode.POINTER_REF)
+    if(myExpr.Opcode() == Xcode.POINTER_REF || myExpr.Opcode() == Xcode.ARRAY_REF)
       myExpr = myExpr.getArg(0);
 
     XMPcoarray coarray = _globalDecl.getXMPcoarray(myExpr.getSym(), block);
@@ -1206,6 +1374,9 @@ public class XMPrewriteExpr {
             else if (f.Opcode() == Xcode.FUNC_ADDR && f.getString().equals("xmp_atomic_define")){
               iter.setXobject(rewriteXmpAtomicDefine(myExpr, block));
             }
+            else if (f.Opcode() == Xcode.FUNC_ADDR && f.getString().equals("xmp_atomic_ref")){
+              iter.setXobject(rewriteXmpAtomicRef(myExpr, block));
+            }
 	  default:
 	  }
 	}
@@ -1217,39 +1388,156 @@ public class XMPrewriteExpr {
   private boolean isOneElement(Xobject myExpr) throws XMPexception {
     if(myExpr.Opcode() == Xcode.CO_ARRAY_REF)
       myExpr = myExpr.getArg(0);
-    
-    if(myExpr.Opcode() == Xcode.VAR || myExpr.Opcode() == Xcode.ARRAY_REF)
+
+    Xcode op = myExpr.Opcode();
+    if(op == Xcode.VAR || op == Xcode.ARRAY_REF || op == Xcode.ADDR_OF || op == Xcode.INT_CONSTANT)
       return true;
-    else if(myExpr.Opcode() == Xcode.SUB_ARRAY_REF)
+    else if(op == Xcode.SUB_ARRAY_REF)
       return false;
     else{
       throw new XMPexception("Unexpected value.");
     }
   }
-  
-  private Xobject rewriteXmpAtomicDefine(Xobject myExpr, Block block) throws XMPexception {
-    Xobject coarrayExpr = myExpr.getArg(1).getArg(0);
-    Xobject localExpr   = myExpr.getArg(1).getArg(1);
-    String coarrayName  = XMPutil.getXobjSymbolName(coarrayExpr.getArg(0));
-    XMPcoarray coarray  = _globalDecl.getXMPcoarray(coarrayName, block);
+
+  private Xobject rewriteXmpAtomicRef(Xobject myExpr, Block block) throws XMPexception {
+    Xobject localExpr   = myExpr.getArg(1).getArg(0);
+    Xobject coarrayExpr = myExpr.getArg(1).getArg(1);
+
+    String coarrayName;
+    if(coarrayExpr.Opcode() == Xcode.CO_ARRAY_REF){  // xmp_atomic_ref(&value, atom[1]:[2]);
+      coarrayName = XMPutil.getXobjSymbolName(coarrayExpr.getArg(0));
+    }
+    else if(coarrayExpr.Opcode() == Xcode.VAR){      // xmp_atomic_ref(&value, atom);
+      coarrayName = coarrayExpr.getName();
+    }
+    else if(Xcode.ARRAY_REF == Xcode.ARRAY_REF){     // xmp_atomic_ref(&value, atom[1]);
+      coarrayName = coarrayExpr.getArg(0).getName();
+    }
+    else{
+      throw new XMPexception("UNKNOWN DATA TYPE of the 1st argument in xmp_atomic_ref().");
+    }
+    
+    XMPcoarray coarray = _globalDecl.getXMPcoarray(coarrayName, block);
+    XobjList funcArgs  = Xcons.List(coarray.getDescId());
 
     if(coarray == null)
       throw new XMPexception("cannot find coarray '" + coarrayName + "'");
 
+    // Two arguments in xmp_atomic_ref() must be int-type
+    if(! localExpr.Type().isPointer())
+      throw new XMPexception("The first argument of atomic_ref() must be an int-type pointer.");
+
+    if(coarray.getElmtType() != Xtype.intType)
+      throw new XMPexception("The second argument of atomic_ref() must be an int-type.");
+    
     // i.e. Only 1 element can be used.
     if(!isOneElement(coarrayExpr) || !isOneElement(localExpr))
-      throw new XMPexception("An argument of atomic_define(atom, value) must be a scalar coarray or coindexed object.");
+      throw new XMPexception("An argument of atomic_ref() must be a scalar coarray or coindexed object.");
+      
+    // Add offset
+    funcArgs.add(getCoarrayOffset(coarrayExpr, coarray));
 
     // Get Coarray Dims
-    int imageDims     = coarray.getImageDim();
-    String funcName   = "_XMP_atomic_define_" + imageDims;
-    Ident funcId      = _globalDecl.declExternFunc(funcName);
-    XobjList funcArgs = Xcons.List(coarray.getDescId());
-
+    int imageDims = (coarrayExpr.Opcode() == Xcode.CO_ARRAY_REF)? coarray.getImageDim() : 0;
+    String funcName = "_XMP_atomic_ref_" + imageDims;
+    Ident funcId    = _globalDecl.declExternFunc(funcName);
     for(int i=0;i<imageDims;i++)
       funcArgs.add(coarrayExpr.getArg(1).getArg(i));
 
-    funcArgs.add(localExpr);
+    // When localExpr is coarray, descriptor of the coarray is added to argument
+    if(isCoarray(localExpr, block)){
+      localExpr = localExpr.getArg(0);
+      if(localExpr.Opcode() == Xcode.VAR){
+        funcArgs.add(rewriteVarRef(localExpr, block, false));
+      }
+      else{  //  else if(localExpr.Opcode() == Xcode.ARRAY_REF){
+        funcArgs.add(Xcons.AddrOf(rewriteArrayRef(localExpr, block)));
+      }
+      String localName = (localExpr.Opcode() == Xcode.VAR)? localExpr.getName() : localExpr.getArg(0).getName();
+      funcArgs.add(_globalDecl.getXMPcoarray(localName, block).getDescId());
+      funcArgs.add(getCoarrayOffset(localExpr, _globalDecl.getXMPcoarray(localName, block)));
+    }
+    else{
+      funcArgs.add(localExpr);
+      funcArgs.add(Xcons.Cast(Xtype.voidPtrType, Xcons.IntConstant(0))); // NULL
+      funcArgs.add(Xcons.IntConstant(0));                                // offset (This value is not used)
+    }
+
+    // The variable must be an int-type
+    funcArgs.add(Xcons.SizeOf(Xtype.intType));
+    
+    return funcId.Call(funcArgs);
+  }
+  
+  private Xobject rewriteXmpAtomicDefine(Xobject myExpr, Block block) throws XMPexception {
+    Xobject coarrayExpr = myExpr.getArg(1).getArg(0);
+    Xobject localExpr   = myExpr.getArg(1).getArg(1);
+    
+    String coarrayName;
+    if(coarrayExpr.Opcode() == Xcode.CO_ARRAY_REF){  // xmp_atomic_define(atom[1]:[2]), value);
+      coarrayName = XMPutil.getXobjSymbolName(coarrayExpr.getArg(0));
+    }
+    else if(coarrayExpr.Opcode() == Xcode.VAR){      // xmp_atomic_define(atom, value);
+      coarrayName = coarrayExpr.getName();
+    }
+    else if(Xcode.ARRAY_REF == Xcode.ARRAY_REF){     // xmp_atomic_define(atom[1], value);
+      coarrayName = coarrayExpr.getArg(0).getName();
+    }
+    else{
+      throw new XMPexception("UNKNOWN DATA TYPE of the 1st argument in xmp_atomic_define().");
+    }
+
+    XMPcoarray coarray = _globalDecl.getXMPcoarray(coarrayName, block);
+    XobjList funcArgs  = Xcons.List(coarray.getDescId());
+
+    if(coarray == null)
+      throw new XMPexception("cannot find coarray '" + coarrayName + "'");
+
+    // Two arguments in xmp_atomic_define() must be int-type
+    if(coarray.getElmtType() != Xtype.intType || localExpr.Type() != Xtype.intType)
+      throw new XMPexception("An argument of atomic_define() must be an int-type.");
+
+    // i.e. Only 1 element can be used.
+    if(!isOneElement(coarrayExpr) || !isOneElement(localExpr))
+      throw new XMPexception("An argument of atomic_define() must be a scalar coarray or coindexed object.");
+
+    // Add offset
+    funcArgs.add(getCoarrayOffset(coarrayExpr, coarray));
+
+    // Get Coarray Dims
+    int imageDims = (coarrayExpr.Opcode() == Xcode.CO_ARRAY_REF)? coarray.getImageDim() : 0;
+    String funcName = "_XMP_atomic_define_" + imageDims;
+    Ident funcId    = _globalDecl.declExternFunc(funcName);
+    for(int i=0;i<imageDims;i++)
+      funcArgs.add(coarrayExpr.getArg(1).getArg(i));
+
+    if(localExpr.Opcode() == Xcode.INT_CONSTANT){
+      funcArgs.add(localExpr);
+      funcArgs.add(Xcons.Cast(Xtype.voidPtrType, Xcons.IntConstant(0))); // NULL
+      funcArgs.add(Xcons.IntConstant(0));                                // offset (This value is not used)
+    }
+    else{
+      // When localExpr is coarray, descriptor of the coarray is added to argument
+      if(isCoarray(localExpr, block)){
+        if(localExpr.Opcode() == Xcode.VAR){
+          funcArgs.add(rewriteVarRef(localExpr, block, true));
+        }
+        else{ //  else if(localExpr.Opcode() == Xcode.ARRAY_REF){
+          funcArgs.add(rewriteArrayRef(localExpr, block));
+        }
+        String localName = (localExpr.Opcode() == Xcode.VAR)? localExpr.getName() : localExpr.getArg(0).getName();
+        funcArgs.add(_globalDecl.getXMPcoarray(localName, block).getDescId());
+	funcArgs.add(getCoarrayOffset(localExpr, _globalDecl.getXMPcoarray(localName, block)));
+      }
+      else{
+        funcArgs.add(localExpr);
+        funcArgs.add(Xcons.Cast(Xtype.voidPtrType, Xcons.IntConstant(0))); // NULL
+	funcArgs.add(Xcons.IntConstant(0));                                // offset (This value is not used)
+      }
+    }
+    
+    // The variable must be an int-type
+    funcArgs.add(Xcons.SizeOf(Xtype.intType));
     
     return funcId.Call(funcArgs);
   }
@@ -1415,8 +1703,18 @@ public class XMPrewriteExpr {
   private Xobject getCoarrayOffset(Xobject myExpr, XMPcoarray coarray){
     // "a[N][M][K]" is defined as a coarray.
     // If a[i][j][k] is referred, this function returns "(i * M * K) + (j * K) + (k)"
+
     if(myExpr.Opcode() == Xcode.VAR){
       return Xcons.Int(Xcode.INT_CONSTANT, 0);
+    }
+    else if(myExpr.Opcode() == Xcode.ARRAY_REF){
+      myExpr = myExpr.getArg(1);
+    }
+    else if(myExpr.Opcode() == Xcode.CO_ARRAY_REF){
+      if(myExpr.getArg(0).Opcode() == Xcode.VAR)
+        return Xcons.Int(Xcode.INT_CONSTANT, 0);
+      else  // (myExpr.Opcode() == Xcode.ARRAY_REF)
+        myExpr = myExpr.getArg(0).getArg(1);
     }
 
     Xobject newExpr = null;
@@ -1438,9 +1736,11 @@ public class XMPrewriteExpr {
       if(tmp != null){
         var = Xcons.binaryOp(Xcode.MUL_EXPR, tmp, var);
       }
+
       if(newExpr == null){
         newExpr = var.copy();
-      } else{
+      }
+      else{
         newExpr = Xcons.binaryOp(Xcode.PLUS_EXPR, newExpr, var);
       }
     }
@@ -1721,53 +2021,41 @@ public class XMPrewriteExpr {
     return XMPrewriteExpr.createRewriteAlignedArrayFunc(alignedArray, arrayDimCount, args);
   }
 
-  public static void rewriteLoopIndexInLoop(Xobject expr, String loopIndexName,
-					    XMPtemplate templateObj, int templateIndex,
-                                            XMPglobalDecl globalDecl, Block block) throws XMPexception {
+  public static void rewriteLoopIndexInLoop(Xobject expr, String loopIndexName, XMPtemplate templateObj,
+                                            int templateIndex, XMPglobalDecl globalDecl, Block block) throws XMPexception {
     if (expr == null) return;
     topdownXobjectIterator iter = new topdownXobjectIterator(expr);
     for (iter.init(); !iter.end(); iter.next()) {
       Xobject myExpr = iter.getXobject();
       if (myExpr == null) {
         continue;
-      } else if (myExpr.isRewrittedByXmp()) {
+      }
+      else if (myExpr.isRewrittedByXmp()) {
         continue;
       }
+      
       switch (myExpr.Opcode()) {
       case VAR:
 	{
 	  if (loopIndexName.equals(myExpr.getSym())) {
 	    iter.setXobject(calcLtoG(templateObj, templateIndex, myExpr));
 	  }
-	} break;
+	}
+        break;
       case ARRAY_REF:
 	{
 	  XMPalignedArray alignedArray = globalDecl.getXMPalignedArray(myExpr.getArg(0).getSym(), block);
 	  if (alignedArray == null) {
 	    rewriteLoopIndexVar(templateObj, templateIndex, loopIndexName, myExpr);
-	  } else {
+	  }
+          else {
 	    myExpr.setArg(1, rewriteLoopIndexArrayRefList(templateObj, templateIndex, alignedArray,
 							  loopIndexName, (XobjList)myExpr.getArg(1)));
 	  }
-	} break;
+	}
+        break;
       case POINTER_REF:
 	{
-	  // Xobject addr_expr = myExpr.getArg(0);
-	  // if (addr_expr.Opcode() == Xcode.PLUS_EXPR){
-
-	  //   Xobject pointer = addr_expr.getArg(0);
-	  //   Xobject offset = addr_expr.getArg(1);
-
-	  //   if (pointer.Opcode() == Xcode.VAR){
-	  //     XMPalignedArray alignedArray = globalDecl.getXMPalignedArray(pointer.getSym(), block);
-	  //     if (alignedArray != null){
-	  // 	  addr_expr.setArg(0, alignedArray.getAddrId().Ref());
-	  // 	  addr_expr.setArg(1, rewriteLoopIndexArrayRef(templateObj, templateIndex, alignedArray, 0,
-	  // 						       loopIndexName, offset));
-	  //     }
-	  //   }
-	  // }
-
 	  XMPalignedArray alignedArray = null;
 	  XobjList indexList = Xcons.List();
 
@@ -1791,9 +2079,6 @@ public class XMPrewriteExpr {
 					     rewriteLoopIndexArrayRefList(templateObj, templateIndex, alignedArray,
 									  loopIndexName, indexList));
 	    iter.setXobject(newExpr);
-	    // myExpr.getArg(0).setArg(0, alignedArray.getAddrId().Ref());
-	    // myExpr.getArg(0).setArg(1, rewriteLoopIndexArrayRefList(templateObj, templateIndex, alignedArray,
-	    // 							    loopIndexName, indexList));
 	  }
 
 	  break;
@@ -1836,6 +2121,7 @@ public class XMPrewriteExpr {
 
     XobjList newArrayRefList = Xcons.List();
     int arrayDimIdx = 0;
+
     for (Xobject x : arrayRefList) {
       newArrayRefList.add(rewriteLoopIndexArrayRef(t, ti, a, arrayDimIdx, loopIndexName, x));
       arrayDimIdx++;
@@ -1851,7 +2137,8 @@ public class XMPrewriteExpr {
     if (arrayRef.Opcode() == Xcode.VAR) {
       if (loopIndexName.equals(arrayRef.getString())) {
         return calcShadow(t, ti, a, ai, arrayRef);
-      } else {
+      }
+      else {
         return arrayRef;
       }
     }
@@ -2308,6 +2595,29 @@ public class XMPrewriteExpr {
         XMP.error(varDecl.getLineNo(), e.getMessage());
       }
     }
+  }
+
+  private void addBarrier(FunctionBlock fb){
+
+    topdownBlockIterator iter = new topdownBlockIterator(fb);
+
+    for (iter.init(); !iter.end(); iter.next()) {
+
+      Block b = iter.getBlock();
+
+      // insert a barrier before each return statement
+      if (b.Opcode() == Xcode.RETURN_STATEMENT){
+    	Ident f = _globalDecl.declExternFunc("_XMP_barrier_EXEC", Xtype.Function(Xtype.voidType));
+    	b.insert(f.Call(Xcons.List()));
+      }
+	
+    }
+
+    // add a barrier at the end of the function
+    Ident f = _globalDecl.declExternFunc("_XMP_barrier_EXEC", Xtype.Function(Xtype.voidType));
+    BlockList bl = fb.getBody().getHead().getBody();
+    bl.add(f.Call(Xcons.List()));
+
   }
 
 }

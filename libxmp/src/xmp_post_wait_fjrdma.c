@@ -35,7 +35,7 @@ void _xmp_fjrdma_post_wait_initialize()
   _postreq.max_size = _XMP_POSTREQ_TABLE_INITIAL_SIZE;
   _postreq.table    = malloc(sizeof(_XMP_postreq_info_t) * _postreq.max_size);
   
-  double *token    = _XMP_alloc(sizeof(double));
+  double *token     = _XMP_alloc(sizeof(double));
   _local_rdma_addr  = FJMPI_Rdma_reg_mem(_XMP_POSTREQ_ID, token, sizeof(double));
   _remote_rdma_addr = _XMP_alloc(sizeof(uint64_t) * _XMP_world_size);
 
@@ -43,10 +43,7 @@ void _xmp_fjrdma_post_wait_initialize()
   MPI_Barrier(MPI_COMM_WORLD);
   for(int ncount=0,i=1; i<_XMP_world_size+1; ncount++,i++){
     int partner_rank = (_XMP_world_rank + _XMP_world_size - i) % _XMP_world_size;
-    if(partner_rank == _XMP_world_rank)
-      _remote_rdma_addr[partner_rank] = _local_rdma_addr;
-    else
-      _remote_rdma_addr[partner_rank] = FJMPI_Rdma_get_remote_addr(partner_rank, _XMP_POSTREQ_ID);
+    _remote_rdma_addr[partner_rank] = FJMPI_Rdma_get_remote_addr(partner_rank, _XMP_POSTREQ_ID);
 
     if(ncount > _XMP_INIT_RDMA_INTERVAL){
       MPI_Barrier(MPI_COMM_WORLD);
@@ -86,6 +83,7 @@ void _xmp_fjrdma_post(const int node, const int tag)
     _XMP_fatal_nomsg();
   }
 
+  _XMP_fjrdma_sync_memory();
   if(node == _XMP_world_rank){
     add_postreq(node, tag);
   }
@@ -138,6 +136,8 @@ static bool remove_postreq(const int node, const int tag)
  */
 void _xmp_fjrdma_wait(const int node, const int tag)
 {
+  _XMP_fjrdma_sync_memory();
+
   struct FJMPI_Rdma_cq cq;
 
   while(1){
@@ -156,6 +156,8 @@ void _xmp_fjrdma_wait(const int node, const int tag)
  */
 void _xmp_fjrdma_wait_node(const int node)
 {
+  _XMP_fjrdma_sync_memory();
+  
   struct FJMPI_Rdma_cq cq;
 
   while(1){
@@ -172,6 +174,8 @@ void _xmp_fjrdma_wait_node(const int node)
  */
 void _xmp_fjrdma_wait_noargs()
 {
+  _XMP_fjrdma_sync_memory();
+  
   if(_postreq.num == 0){
     struct FJMPI_Rdma_cq cq;
     while(FJMPI_Rdma_poll_cq(_XMP_POSTREQ_RECV_NIC, &cq) != FJMPI_RDMA_HALFWAY_NOTICE);

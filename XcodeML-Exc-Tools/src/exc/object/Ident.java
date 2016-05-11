@@ -217,6 +217,7 @@ public class Ident extends Xobject
         return (Type() == null) ? false : Type().wasCoarray();
     }
 
+
     public boolean isDeclared()
     {
         return declared;
@@ -276,7 +277,7 @@ public class Ident extends Xobject
     @Override
     public Xobject cfold(Block block)
     {
-      if (fparam_value != null) {
+      if (Type().isFparameter() && fparam_value != null) {
         // I don't know why but fparam_value is always in this form.
         if (fparam_value.Nargs() == 2 && fparam_value.getArg(1) == null) {
           Xobject value = fparam_value.getArg(0);

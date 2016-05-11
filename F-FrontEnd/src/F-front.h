@@ -1,4 +1,4 @@
-/*
+/* 
  * $TSUKUBA_Release: Omni OpenMP Compiler 3 $
  * $TSUKUBA_Copyright:
  *  PLEASE DESCRIBE LICENSE AGREEMENT HERE
@@ -402,8 +402,8 @@ extern int leave_comment_flag;
  */
 extern int is_in_kind_compilation_flag_for_declare_ident;
 
-/*
- * prototype
+/* 
+ * prototype 
  */
 extern char *   xmalloc _ANSI_ARGS_((int size));
 #define XMALLOC(type, size) ((type)xmalloc(size))
@@ -482,7 +482,7 @@ extern expv     compile_expression _ANSI_ARGS_((expr x));
 extern expv     expv_assignment _ANSI_ARGS_((expv v1, expv v2));
 extern expv     compile_function_call _ANSI_ARGS_((ID f_id, expr args));
 extern expv     compile_highorder_function_call _ANSI_ARGS_((ID f_id,
-                                                             expr args,
+                                                             expr args, 
                                                              int isCall));
 
 extern expv     compile_struct_constructor _ANSI_ARGS_((ID struct_id, expr args));
@@ -619,7 +619,6 @@ extern expr     list2 _ANSI_ARGS_((enum expr_code code, expr x1, expr x2));
 extern expr     list3 _ANSI_ARGS_((enum expr_code code, expr x1, expr x2, expr x3));
 extern expr     list4 _ANSI_ARGS_((enum expr_code code, expr x1, expr x2, expr x3, expr x4));
 extern expr     list5 _ANSI_ARGS_((enum expr_code code, expr x1, expr x2, expr x3, expr x4, expr x5));
-extern expr     list6 _ANSI_ARGS_((enum expr_code code, expr x1, expr x2, expr x3, expr x4, expr x5, expr x6));
 
 extern expr     expr_list_get_n _ANSI_ARGS_((expr x, int n));
 extern int      expr_list_set_n _ANSI_ARGS_((expr x, int n, expr val, int doOverride));

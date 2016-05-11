@@ -21,11 +21,11 @@ you need to use xmp_sync_all() or barrier directive to divide communication.
   /* ... local-view program ... */
 ---
 
-## The K computer and FX10
-* Coarray transfer data size is 16,777,212 (2^24-4) Byte and fewer.
-* Post tag value is 0 and over && 14 and fewer (0 <= tag <= 14).
-* The number of coarrays in one application is 508 and fewer.
-* Onesided operations cannot be used in more than 82944 processes.
+## On the K computer, FX100, and FX10
+* The number of coarrays in an application is 508 or less
+* An application cannot be used in more than 82,944 processes
+* Post tag value is between 0 and 14 (0 <= tag <= 14)
 
-# Only XMP/Fortran
-* In "use statement", only a module compiled with the Omni XMP Fortran Compiler can be used.
+## The in and out clauses of the gmove directives
+* The target of the gmove in/out directives must be declared as a module variable or
+  a variable with the SAVE attribute in XMP/F, or as an external variable in XMP/C
