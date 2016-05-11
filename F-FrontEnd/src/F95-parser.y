@@ -136,6 +136,10 @@
 %token NULLIFY
 %token KW_STAT
 
+/* Fortran 2003 */
+%token BIND
+%token KW_NAME
+
 /* Coarray keywords #060 */
 %token SYNCALL
 %token SYNCIMAGES
@@ -383,7 +387,7 @@ gen_default_real_kind(void) {
 %type <val> name name_or_null generic_name defined_operator intrinsic_operator func_prefix prefix_spec
 %type <val> declaration_statement95 attr_spec_list attr_spec access_spec
 %type <val> intent_spec kind_selector kind_or_len_selector char_selector len_key_spec len_spec kind_key_spec array_allocation_list  array_allocation defered_shape_list defered_shape
-%type <val> result_opt type_keyword
+%type <val> result_opt type_keyword bind_opt
 %type <val> action_statement95
 %type <val> action_coarray_statement coarray_syncall_keyword coarray_syncall_stat_keyword coarray_syncimages_keyword other_coarray_keyword
 %type <val> syncimages_arg_list
@@ -472,7 +476,7 @@ statement:      /* entry */
           { $$ = list3(F_SUBROUTINE_STATEMENT,$3,$4,$1); }
         | ENDSUBROUTINE name_or_null 
           { $$ = list1(F95_ENDSUBROUTINE_STATEMENT,$2); }
-        | FUNCTION IDENTIFIER dummy_arg_list KW result_opt
+        | FUNCTION IDENTIFIER dummy_arg_list KW result_opt bind_opt /* TODO pass result of name */
           { $$ = list5(F_FUNCTION_STATEMENT,$2,$3,NULL,NULL, $5); }
         | func_prefix FUNCTION IDENTIFIER dummy_arg_list KW result_opt
           { $$ = list5(F_FUNCTION_STATEMENT,$3,$4,NULL,$1, $6); }
@@ -517,6 +521,15 @@ result_opt:    /* null */
         | RESULT '(' name ')'
           { $$ = $3; }
         ;
+
+bind_opt: /* null */
+        { $$ = NULL; }
+        /* BIND(C) */
+        | ',' BIND '(' IDENTIFIER /* C */ ')' /* TODO set C as constant */
+        { $$ = NULL; }
+        /* BIND (C, NAME='<ident>') */
+        | ',' BIND '(' IDENTIFIER /* C */ ',' KW KW_NAME '=' CONSTANT ')'
+        { $$ = $9; }
 
 intrinsic_operator: '.'
         { $$ = list0(F95_DOTOP); }
@@ -677,7 +690,10 @@ declaration_statement95:
         { $$ = list1(F95_PRIVATE_STATEMENT, $3); }
         | SEQUENCE
         { $$ = list0(F95_SEQUENCE_STATEMENT); }
-        | KW_USE IDENTIFIER 
+        /* ISO C BINDING FEATURE */
+        | KW_USE ',' KW INTRINSIC COL2 IDENTIFIER
+        { $$ = list2(F95_USE_STATEMENT,$6,NULL); }        
+        | KW_USE IDENTIFIER  
         { $$ = list2(F95_USE_STATEMENT,$2,NULL); }
         | KW_USE IDENTIFIER ',' KW use_rename_list
         { $$ = list2(F95_USE_STATEMENT,$2,$5); }
@@ -685,6 +701,12 @@ declaration_statement95:
         { $$ = list2(F95_USE_ONLY_STATEMENT,$2, NULL); }
         | KW_USE IDENTIFIER ',' KW KW_ONLY ':' use_only_list
         { $$ = list2(F95_USE_ONLY_STATEMENT,$2,$7); }
+        /* ISO C BINDING FEATURE */
+        | KW_USE ',' KW INTRINSIC COL2 IDENTIFIER ',' KW KW_ONLY ':' /* empty */
+        { $$ = list2(F95_USE_ONLY_STATEMENT,$6, NULL); }
+        /* ISO C BINDING FEATURE */
+        | KW_USE ',' KW INTRINSIC COL2 IDENTIFIER ',' KW KW_ONLY ':' use_only_list
+        { $$ = list2(F95_USE_ONLY_STATEMENT,$6,$11); }
         | INTENT '(' KW intent_spec ')' COL2_or_null ident_list
         { $$ = list2(F95_INTENT_STATEMENT, $4, $7); }
         | ALLOCATABLE COL2_or_null array_allocation_list
