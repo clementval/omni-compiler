@@ -510,6 +510,7 @@ elif test "$target" = "Cray-linux-gnu"; then
   ARFLAGS="cru"
   AC_CHECK_PROG([NM], [nm], [nm])
 
+
 elif test "$target" = "sxace-nec-superux"; then
 # OpenMP
   OPENMP_OPT_C="-Popenmp"
@@ -892,6 +893,10 @@ else
     esac ;;
   esac
 fi
+
+
+# Upper case module 
+AM_CONDITIONAL(UPPER_CASE, test "$target" = "Cray-linux-gnu")
 
 # "POWERPC" flag is used in libxmpf/src/Makefile.am
 AM_CONDITIONAL(POWERPC, test "$target" = "powerpc-ibm-cnk" -o "$target" = "powerpc-hitachi-aix")
