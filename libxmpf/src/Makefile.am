@@ -1,4 +1,8 @@
-include_HEADERS = xmpf_coarray_decl.mod
+if UPPER_CASE
+    include_HEADERS = xmpf_coarray_decl.mod
+else
+    include_HEADERS = xmpf_coarray_decl.mod
+endif
 
 CC           = @MPI_CC@
 FC           = @MPI_FC@

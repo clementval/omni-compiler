@@ -744,6 +744,8 @@ GPU_CMD
 ARFLAGS
 POWERPC_FALSE
 POWERPC_TRUE
+UPPER_CASE_FALSE
+UPPER_CASE_TRUE
 NM
 AR
 RANLIB
@@ -7299,6 +7301,7 @@ fi
 
 
 
+
 elif test "$target" = "sxace-nec-superux"; then
 # OpenMP
   OPENMP_OPT_C="-Popenmp"
@@ -8511,6 +8514,17 @@ fi
     esac ;;
   esac
 fi
+
+
+# Upper case module
+ if test "$target" = "Cray-linux-gnu"; then
+  UPPER_CASE_TRUE=
+  UPPER_CASE_FALSE='#'
+else
+  UPPER_CASE_TRUE='#'
+  UPPER_CASE_FALSE=
+fi
+
 
 # "POWERPC" flag is used in libxmpf/src/Makefile.am
  if test "$target" = "powerpc-ibm-cnk" -o "$target" = "powerpc-hitachi-aix"; then
@@ -13114,6 +13128,10 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${XACC_TRUE}" && test -z "${XACC_FALSE}"; then
   as_fn_error $? "conditional \"XACC\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${UPPER_CASE_TRUE}" && test -z "${UPPER_CASE_FALSE}"; then
+  as_fn_error $? "conditional \"UPPER_CASE\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${POWERPC_TRUE}" && test -z "${POWERPC_FALSE}"; then
