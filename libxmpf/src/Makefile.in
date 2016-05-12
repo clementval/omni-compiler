@@ -443,7 +443,10 @@ target_vendor = @target_vendor@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-include_HEADERS = xmpf_coarray_decl.mod
+@UPPER_CASE_FALSE@include_HEADERS = xmpf_coarray_decl.mod
+
+# If compiler generates module file with upper case name
+@UPPER_CASE_TRUE@include_HEADERS = XMPF_COARRAY_DECL.mod
 XMP_INC_DIR = ../../libxmp/include
 XMPF_INC_DIR = ../include
 PPFCCOMPILE = $(FC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
