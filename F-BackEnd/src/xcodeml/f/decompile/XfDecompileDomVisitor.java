@@ -3261,10 +3261,12 @@ public class XfDecompileDomVisitor {
             writer.incrementIndentLevel();
             typeManager.enterScope();
             //////////////////////////////
+            /* TODO will be probably fixed in next version
             if (true) {
               writer.writeToken("use xmpf_coarray_decl");
               writer.setupNewLine();
             }
+            */
             //////////////////////////////
 
             // ======
