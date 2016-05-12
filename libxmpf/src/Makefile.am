@@ -1,5 +1,5 @@
 if UPPER_CASE
-    include_HEADERS = xmpf_coarray_decl.mod
+    include_HEADERS = XMPF_COARRAY_DECL.mod
 else
     include_HEADERS = xmpf_coarray_decl.mod
 endif
